@@ -58,8 +58,8 @@ document.querySelectorAll('.icon-button').forEach(button => {
 });
   
 let i = 0;
-let txt = '<b>Peter'; /* The text */
-let speed = 100; /* The speed/duration of the effect in milliseconds */
+let txt = '<b>Ali'; /* The text */
+let speed = 100; 
   
 function typeWriter() {
     if (i < txt.length) {
