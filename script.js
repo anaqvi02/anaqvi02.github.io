@@ -69,7 +69,7 @@ function typeWriter() {
     } else {
         // After the typing is finished, wait for 1 second then replace the text with bolded text
         setTimeout(function() {
-            document.getElementById('typing').innerHTML = '<b>Peter</b>';
+            document.getElementById('typing').innerHTML = '<b>Ali</b>';
             document.getElementById('typing').classList.remove('cursor');
             // Add the glow effect
             document.getElementById('typing').classList.add('greeting-js');
