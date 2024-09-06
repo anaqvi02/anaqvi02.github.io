@@ -8,7 +8,6 @@ function changeImage() {
     setTimeout(function() {
         var newSrc;
         if (body.classList.contains('dark-mode')) {
-            // If dark mode is active, use a different image that is visible in dark mode
             newSrc = image.src.includes('Static/pfp.jpg') ? 'hovercode_dark.svg' : 'Static/pfp.jpg';
         } else {
             newSrc = image.src.includes('Static/pfp.jpg') ? 'hovercode.svg' : 'Static/pfp.jpg';
@@ -149,9 +148,9 @@ function updateBackground() {
             animatedBackground.style.background = `
                 linear-gradient(
                     45deg,
-                    hsl(${hue1}, 100%, 97%),
-                    hsl(${hue2}, 100%, 97%),
-                    hsl(${(hue1 + hue2) / 2}, 100%, 97%)
+                    hsl(${hue1}, 100%, 80%),
+                    hsl(${hue2}, 100%, 80%),
+                    hsl(${(hue1 + hue2) / 2}, 100%, 80%)
                 )
             `;
         } else {
