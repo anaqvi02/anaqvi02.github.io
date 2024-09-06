@@ -158,9 +158,9 @@ function updateBackground() {
             animatedBackground.style.background = `
                 linear-gradient(
                     45deg,
-                    hsl(${hue1}, 30%, 15%),
-                    hsl(${hue2}, 30%, 15%),
-                    hsl(${(hue1 + hue2) / 2}, 30%, 15%)
+                    hsl(${hue1}, 100%, 80%),
+                    hsl(${hue2}, 100%, 80%),
+                    hsl(${(hue1 + hue2) / 2}, 100%, 80%)
                 )
             `;
         }

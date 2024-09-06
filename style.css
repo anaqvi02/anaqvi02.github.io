@@ -32,7 +32,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -3;
-    background: linear-gradient(45deg, #FFF0F5, #E6F3FF, #FFF0F5);
+    background: linear-gradient(45deg, #f4bbce, #b6dcff, #ffc8da);
     background-size: 400% 400%;
     animation: gradientAnimation 15s ease infinite;
     transition: background 0.5s;
@@ -107,33 +107,6 @@ body {
     backdrop-filter: blur(12vmax);
     -webkit-backdrop-filter: blur(12vmax);
     color: transparent;
-}
-
-.background-ellipse {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 30vw;
-    height: 30vh;
-    background: linear-gradient(45deg, rgb(92, 14, 236), rgb(0, 247, 255));
-    border-radius: 50%;
-    z-index: -2;
-    animation: spin 200s, expand 1.5s ease-in-out;
-    opacity: 0.5;
-}
-
-.background-ellipse-m {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(45deg, rgb(92, 14, 236), rgb(0, 247, 255));
-    border-radius: 50%;
-    z-index: -2;
-    animation: spin 200s, expand 1.5s ease-in-out;
 }
 
 @keyframes spin {
@@ -373,14 +346,10 @@ body.dark-mode {
     color: #ffffff;
 }
 
-body.dark-mode .animated-background {
+/* body.dark-mode .animated-background {
     background: linear-gradient(45deg, #1a1a1a, #2a2a2a, #1a1a1a);
-}
+} */
 
-body.dark-mode .background-ellipse,
-body.dark-mode .background-ellipse-m {
-    opacity: 0.3;
-}
 
 body.dark-mode #blur {
     backdrop-filter: blur(8vmax);
