@@ -35,27 +35,28 @@ document.querySelectorAll('.icon-button').forEach(button => {
         var profilePic = document.getElementById('profilePic');
         body.classList.toggle('dark-mode');
         if (body.classList.contains('dark-mode')) {
-            body.classList.add('light-icon');
             // If dark mode is active and the current image is the hovercode, use the dark mode version
             if (profilePic.src.includes('hovercode.svg')) {
                 profilePic.src = 'hovercode_dark.svg';
             }
         } else {
-            body.classList.remove('light-icon');
-            body.classList.remove('dark-mode');
             // If dark mode is not active and the current image is the dark mode hovercode, use the original version
             if (profilePic.src.includes('hovercode_dark.svg')) {
                 profilePic.src = 'hovercode.svg';
             }
         }
-  
+
         var container = this.parentElement;
         container.classList.add('loading');
         setTimeout(function() {
             container.classList.remove('loading');
         }, 1000);
+
+        // Update background for dark/light mode
+        updateBackground();
     });
 });
+
   
 let i = 0;
 let txt = '<b>Ali'; /* The text */
@@ -144,19 +145,30 @@ function updateBackground() {
         const hue1 = Math.floor(timeProgress * 360);
         const hue2 = (hue1 + 180) % 360;
         
-        animatedBackground.style.background = `
-            linear-gradient(
-                45deg,
-                hsl(${hue1}, 100%, 97%),
-                hsl(${hue2}, 100%, 97%),
-                hsl(${(hue1 + hue2) / 2}, 100%, 97%)
-            )
-        `;
+        if (!document.body.classList.contains('dark-mode')) {
+            animatedBackground.style.background = `
+                linear-gradient(
+                    45deg,
+                    hsl(${hue1}, 100%, 97%),
+                    hsl(${hue2}, 100%, 97%),
+                    hsl(${(hue1 + hue2) / 2}, 100%, 97%)
+                )
+            `;
+        } else {
+            animatedBackground.style.background = `
+                linear-gradient(
+                    45deg,
+                    hsl(${hue1}, 30%, 15%),
+                    hsl(${hue2}, 30%, 15%),
+                    hsl(${(hue1 + hue2) / 2}, 30%, 15%)
+                )
+            `;
+        }
     }
 }
 
+updateBackground();
 // Call updateBackground every second
 setInterval(updateBackground, 1000);
 
 // Initial call to set the background immediately
-updateBackground();
