@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Interactive Resume</title>
+    <style>
+        :root {
+            --primary-color: #6200ea;
+            --secondary-color: #b388ff;
+            --text-color: #333;
+            --bg-color: #f5f3ff;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        .nav-links a {
+            margin-left: 1rem;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        .auth-buttons .btn {
+            margin-left: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .app-preview {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 1000px;
+            overflow: hidden;
+        }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #f0f0f0;
+        }
+        .app-content {
+            display: flex;
+            height: 600px;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f9f9f9;
+            padding: 1rem;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            padding: 0.5rem 0;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .sidebar li:hover, .sidebar li.active {
+            color: var(--primary-color);
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .experience-item, .project-item, .skill-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .experience-item:hover, .project-item:hover, .skill-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">YourName</div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#experience">Experience</a>
+            <a href="#projects">Projects</a>
+            <a href="#skills">Skills</a>
+        </div>
+        <div class="auth-buttons">
+            <button class="btn">Contact</button>
+            <button class="btn btn-primary">Download CV</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Your Professional Journey</h1>
+        <p>Innovative Software Engineer | Problem Solver | Tech Enthusiast</p>
+        <button class="btn btn-primary">Get in Touch</button>
+    </section>
+
+    <div class="app-preview">
+        <div class="app-header">
+            <div>Resume Dashboard</div>
+            <div>
+                <input type="text" placeholder="Search..." id="search-input">
+            </div>
+        </div>
+        <div class="app-content">
+            <div class="sidebar">
+                <ul>
+                    <li class="active" data-section="about">About Me</li>
+                    <li data-section="experience">Experience</li>
+                    <li data-section="projects">Projects</li>
+                    <li data-section="skills">Skills</li>
+                </ul>
+            </div>
+            <div class="main-content">
+                <div id="about" class="content-section active">
+                    <h2>About Me</h2>
+                    <p>I'm a passionate software engineer with a keen interest in creating efficient and user-friendly applications. With a strong foundation in various programming languages and a knack for problem-solving, I strive to deliver high-quality solutions that make a difference.</p>
+                </div>
+                <div id="experience" class="content-section">
+                    <h2>Experience</h2>
+                    <div class="experience-item">
+                        <h3>Senior Software Engineer</h3>
+                        <p>TechCorp Inc. | 2020 - Present</p>
+                        <ul>
+                            <li>Lead development of cloud-based SaaS platform</li>
+                            <li>Implemented microservices architecture, improving scalability</li>
+                            <li>Mentored junior developers and conducted code reviews</li>
+                        </ul>
+                    </div>
+                    <div class="experience-item">
+                        <h3>Software Developer</h3>
+                        <p>InnoSoft Solutions | 2017 - 2020</p>
+                        <ul>
+                            <li>Developed and maintained multiple web applications</li>
+                            <li>Collaborated with UX team to improve user interfaces</li>
+                            <li>Optimized database queries, resulting in 30% performance boost</li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="projects" class="content-section">
+                    <h2>Projects</h2>
+                    <div class="project-item">
+                        <h3>AI-Powered Task Manager</h3>
+                        <p>A smart to-do list application that uses machine learning to prioritize tasks and suggest optimal scheduling.</p>
+                    </div>
+                    <div class="project-item">
+                        <h3>Eco-Track: Environmental Monitoring System</h3>
+                        <p>IoT-based solution for real-time monitoring of air quality, water pollution, and noise levels in urban areas.</p>
+                    </div>
+                </div>
+                <div id="skills" class="content-section">
+                    <h2>Skills</h2>
+                    <div class="skill-item">
+                        <h3>Programming Languages</h3>
+                        <p>JavaScript, Python, Java, C++, Ruby</p>
+                    </div>
+                    <div class="skill-item">
+                        <h3>Frameworks & Technologies</h3>
+                        <p>React, Node.js, Django, Docker, Kubernetes, AWS</p>
+                    </div>
+                    <div class="skill-item">
+                        <h3>Soft Skills</h3>
+                        <p>Team Leadership, Project Management, Agile Methodologies, Technical Writing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.querySelectorAll('.sidebar li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar li').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(this.dataset.section).classList.add('active');
+            });
+        });
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            document.querySelectorAll('.main-content h3, .main-content p, .main-content li').forEach(element => {
+                const content = element.textContent.toLowerCase();
+                element.style.display = content.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

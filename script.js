@@ -58,7 +58,7 @@ document.querySelectorAll('.icon-button').forEach(button => {
 
   
 let i = 0;
-let txt = '<b>Ali'; /* The text */
+let txt = '<b>Ali!'; /* The text */
 let speed = 100; 
   
 function typeWriter() {
@@ -69,7 +69,7 @@ function typeWriter() {
     } else {
         // After the typing is finished, wait for 1 second then replace the text with bolded text
         setTimeout(function() {
-            document.getElementById('typing').innerHTML = '<b>Ali</b>';
+            document.getElementById('typing').innerHTML = '<b>Ali!</b>';
             document.getElementById('typing').classList.remove('cursor');
             // Add the glow effect
             document.getElementById('typing').classList.add('greeting-js');
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// New function to handle background animation
+// Background animation
 function updateBackground() {
     const animatedBackground = document.querySelector('.animated-background');
     if (animatedBackground) {
@@ -148,9 +148,9 @@ function updateBackground() {
             animatedBackground.style.background = `
                 linear-gradient(
                     45deg,
-                    hsl(${hue1}, 100%, 80%),
-                    hsl(${hue2}, 100%, 80%),
-                    hsl(${(hue1 + hue2) / 2}, 100%, 80%)
+                    hsl(${hue1}, 20%, 80%),
+                    hsl(${hue2}, 20%, 80%),
+                    hsl(${(hue1 + hue2) / 2}, 20%, 80%)
                 )
             `;
         } else {
