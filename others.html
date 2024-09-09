@@ -3,245 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Interactive Resume</title>
+    <title>Your Name - Resume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rich-black': '#0d1b2a',
+                        'oxford-blue': '#1b263b',
+                        'yinmn-blue': '#415a77',
+                        'silver-lake-blue': '#778da9',
+                        'platinum': '#e0e1dd',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #6200ea;
-            --secondary-color: #b388ff;
-            --text-color: #333;
-            --bg-color: #f5f3ff;
+        .gradient-text {
+            background: linear-gradient(90deg, #7F00FF, #E100FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
         }
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .logo {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: var(--primary-color);
+
+        .skill-tag, .project-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
         }
-        .nav-links a {
-            margin-left: 1rem;
-            text-decoration: none;
-            color: var(--text-color);
-            transition: color 0.3s ease;
-        }
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-        .auth-buttons .btn {
-            margin-left: 0.5rem;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-        .hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            color: white;
-        }
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-        }
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-        }
-        .app-preview {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin: 2rem auto;
-            max-width: 1000px;
-            overflow: hidden;
-        }
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background-color: #f0f0f0;
-        }
-        .app-content {
-            display: flex;
-            height: 600px;
-        }
-        .sidebar {
-            width: 200px;
-            background-color: #f9f9f9;
-            padding: 1rem;
-        }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .sidebar li {
-            padding: 0.5rem 0;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .sidebar li:hover, .sidebar li.active {
-            color: var(--primary-color);
-        }
-        .main-content {
-            flex-grow: 1;
-            padding: 1rem;
-            overflow-y: auto;
-        }
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-        .experience-item, .project-item, .skill-item {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .experience-item:hover, .project-item:hover, .skill-item:hover {
+
+        .skill-tag:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-card:hover {
+            transform: scale(1.05);
+        }
+
+        .dimmed {
+            opacity: 0.3;
+            filter: grayscale(50%);
+        }
+
+        .custom-shape-divider-bottom-1678649938 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .custom-shape-divider-bottom-1678649938 svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 150px;
+        }
+
+        .custom-shape-divider-bottom-1678649938 .shape-fill {
+            fill: #1B263B;
+        }
+
+        /* New styles for full-screen header */
+        .full-screen-header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="logo">YourName</div>
-        <div class="nav-links">
-            <a href="#about">About</a>
-            <a href="#experience">Experience</a>
-            <a href="#projects">Projects</a>
-            <a href="#skills">Skills</a>
-        </div>
-        <div class="auth-buttons">
-            <button class="btn">Contact</button>
-            <button class="btn btn-primary">Download CV</button>
-        </div>
-    </nav>
+<body class="bg-gradient-to-br from-rich-black to-oxford-blue text-platinum font-sans">
+    <div class="container mx-auto px-4 py-12 max-w-5xl">
+        
+        <header class="text-center mb-16 fade-in relative overflow-hidden full-screen-header">
+            <div class="bg-oxford-blue rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50 w-full flex flex-col justify-center items-center">
+                <h1 class="text-9xl md:text-9xl font-bold mb-4 gradient-text">Ali Naqvi's Home</h1>
+                <p class="text-2xl text-silver-lake-blue">Hello! I'm a backend developer!</p>
+                <div class="custom-shape-divider-bottom-1678649938">
 
-    <section class="hero">
-        <h1>Your Professional Journey</h1>
-        <p>Innovative Software Engineer | Problem Solver | Tech Enthusiast</p>
-        <button class="btn btn-primary">Get in Touch</button>
-    </section>
+                </div>
+            </div>
+        </header>
 
-    <div class="app-preview">
-        <div class="app-header">
-            <div>Resume Dashboard</div>
-            <div>
-                <input type="text" placeholder="Search..." id="search-input">
+        <section id="about" class="mb-16 fade-in">
+            <h2 class="text-3xl md:text-4xl font-semibold mb-6 gradient-text">About Me</h2>
+            <div id="about-content" class="bg-oxford-blue rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50">
+                <p class="text-lg leading-relaxed">I'm a passionate frontend developer with a keen eye for design and a love for creating seamless user experiences. With expertise in modern web technologies, I strive to build responsive and accessible websites that leave a lasting impression.</p>
             </div>
-        </div>
-        <div class="app-content">
-            <div class="sidebar">
-                <ul>
-                    <li class="active" data-section="about">About Me</li>
-                    <li data-section="experience">Experience</li>
-                    <li data-section="projects">Projects</li>
-                    <li data-section="skills">Skills</li>
-                </ul>
+        </section>
+
+        <section id="skills" class="mb-16 fade-in">
+            <h2 class="text-3xl md:text-4xl font-semibold mb-6 gradient-text">Skills</h2>
+            <div class="bg-oxford-blue rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50">
+                <div id="skills-container" class="flex flex-wrap gap-3">
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">HTML5</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">CSS3</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">JavaScript</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">React</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">Vue.js</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">Tailwind CSS</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">Responsive Design</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">Git</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">Webpack</span>
+                    <span class="skill-tag px-4 py-2 bg-yinmn-blue rounded-full text-sm font-semibold cursor-pointer transition-colors duration-300 hover:bg-silver-lake-blue">UI/UX Design</span>
+                </div>
             </div>
-            <div class="main-content">
-                <div id="about" class="content-section active">
-                    <h2>About Me</h2>
-                    <p>I'm a passionate software engineer with a keen interest in creating efficient and user-friendly applications. With a strong foundation in various programming languages and a knack for problem-solving, I strive to deliver high-quality solutions that make a difference.</p>
-                </div>
-                <div id="experience" class="content-section">
-                    <h2>Experience</h2>
-                    <div class="experience-item">
-                        <h3>Senior Software Engineer</h3>
-                        <p>TechCorp Inc. | 2020 - Present</p>
-                        <ul>
-                            <li>Lead development of cloud-based SaaS platform</li>
-                            <li>Implemented microservices architecture, improving scalability</li>
-                            <li>Mentored junior developers and conducted code reviews</li>
-                        </ul>
-                    </div>
-                    <div class="experience-item">
-                        <h3>Software Developer</h3>
-                        <p>InnoSoft Solutions | 2017 - 2020</p>
-                        <ul>
-                            <li>Developed and maintained multiple web applications</li>
-                            <li>Collaborated with UX team to improve user interfaces</li>
-                            <li>Optimized database queries, resulting in 30% performance boost</li>
-                        </ul>
+        </section>
+
+        <section id="projects" class="fade-in">
+            <h2 class="text-3xl md:text-4xl font-semibold mb-6 gradient-text">Projects</h2>
+            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card bg-oxford-blue rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50">
+                    <img src="Focus Flow.png" alt="Project 1" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="focus">FocusFlow</h3>
+                        <p class="text-sm text-silver-lake-blue">A chrome extension that utilizes the Pomodoro Technique to keep you productive.</p>
                     </div>
                 </div>
-                <div id="projects" class="content-section">
-                    <h2>Projects</h2>
-                    <div class="project-item">
-                        <h3>AI-Powered Task Manager</h3>
-                        <p>A smart to-do list application that uses machine learning to prioritize tasks and suggest optimal scheduling.</p>
-                    </div>
-                    <div class="project-item">
-                        <h3>Eco-Track: Environmental Monitoring System</h3>
-                        <p>IoT-based solution for real-time monitoring of air quality, water pollution, and noise levels in urban areas.</p>
+                <div class="project-card bg-oxford-blue rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50">
+                    <img src="/api/placeholder/400/200" alt="Project 2" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 gradient-text">Auto Grammar Corrector</h3>
+                        <p class="text-sm text-silver-lake-blue">Automatically corrects incorrect grammar.</p>
                     </div>
                 </div>
-                <div id="skills" class="content-section">
-                    <h2>Skills</h2>
-                    <div class="skill-item">
-                        <h3>Programming Languages</h3>
-                        <p>JavaScript, Python, Java, C++, Ruby</p>
-                    </div>
-                    <div class="skill-item">
-                        <h3>Frameworks & Technologies</h3>
-                        <p>React, Node.js, Django, Docker, Kubernetes, AWS</p>
-                    </div>
-                    <div class="skill-item">
-                        <h3>Soft Skills</h3>
-                        <p>Team Leadership, Project Management, Agile Methodologies, Technical Writing</p>
+                <div class="project-card bg-oxford-blue rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50">
+                    <img src="/api/placeholder/400/200" alt="Project 3" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 gradient-text">Portfolio Website</h3>
+                        <p class="text-sm text-silver-lake-blue">Does this count?</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
+</body>
+</html>
 
     <script>
-        // Navigation functionality
-        document.querySelectorAll('.sidebar li').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.sidebar li').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.content-section').forEach(section => {
-                    section.classList.remove('active');
-                });
-                document.getElementById(this.dataset.section).classList.add('active');
+        // Fade-in animation
+        function handleIntersection(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }
+
+        const observer = new IntersectionObserver(handleIntersection, {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Global dimming effect
+        const aboutContent = document.getElementById('about-content');
+        const skillsContainer = document.getElementById('skills-container');
+        const projectsContainer = document.getElementById('projects-container');
+        const allItems = [
+            aboutContent,
+            ...skillsContainer.querySelectorAll('.skill-tag'),
+            ...projectsContainer.querySelectorAll('.project-card')
+        ];
+
+        function dimOtherItems(hoveredItem) {
+            allItems.forEach(item => {
+                if (item !== hoveredItem) {
+                    item.classList.add('dimmed');
+                }
+            });
+        }
+
+        function undimAllItems() {
+            allItems.forEach(item => item.classList.remove('dimmed'));
+        }
+
+        // Apply dimming effect to about section
+        aboutContent.addEventListener('mouseenter', () => dimOtherItems(aboutContent));
+        aboutContent.addEventListener('mouseleave', undimAllItems);
+
+        // Apply dimming effect to skills
+        skillsContainer.querySelectorAll('.skill-tag').forEach(tag => {
+            tag.addEventListener('mouseenter', () => dimOtherItems(tag));
+            tag.addEventListener('mouseleave', undimAllItems);
+            tag.addEventListener('click', () => {
+                alert(`You clicked on ${tag.textContent}! Here you could add more details about your experience with this skill.`);
             });
         });
 
-        // Search functionality
-        document.getElementById('search-input').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            document.querySelectorAll('.main-content h3, .main-content p, .main-content li').forEach(element => {
-                const content = element.textContent.toLowerCase();
-                element.style.display = content.includes(searchTerm) ? '' : 'none';
+        // Apply dimming effect to projects
+        projectsContainer.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mouseenter', () => dimOtherItems(card));
+            card.addEventListener('mouseleave', undimAllItems);
+        });
+
+        // Add smooth scrolling to section links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
     </script>
