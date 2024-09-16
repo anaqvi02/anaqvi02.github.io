@@ -31,7 +31,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-fill-color: transparent;
         }
 
         .fade-in {
@@ -225,11 +224,8 @@
         // Apply dimming effect to skills
         skillsContainer.querySelectorAll('.skill-tag').forEach(tag => {
             tag.addEventListener('mouseenter', () => dimOtherItems(tag));
-            tag.addEventListener('mouseleave', undimAllItems);
-            tag.addEventListener('click', () => {
-                alert(`You clicked on ${tag.textContent}! Here you could add more details about your experience with this skill.`);
+            tag.addEventListener('mouseleave', undimAllItems);;
             });
-        });
 
         // Apply dimming effect to projects
         projectsContainer.querySelectorAll('.project-card').forEach(card => {
