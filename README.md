@@ -1,10 +1,11 @@
 # anaqvi02.github.io
 
-Personal GitHub Pages site for Ali Naqvi — a small card grid featuring my main projects:
+Personal site for Ali Naqvi — React + Vite + Tailwind portfolio.
 
-- [mtdi](https://github.com/anaqvi02/mtdi) — zero-privilege macOS syscall tracer + dynamic instrumentation (Rust)
-- [Ali's Mach Docs](https://github.com/anaqvi02/alis-mach-docs) — Mach IPC API reference for XNU/macOS
-- [PicoEmulator](https://github.com/anaqvi02/PicoEmulator6000) — RP2040 (Cortex-M0+) emulator in Python/Cython
-- [Knucklebones-AI](https://github.com/anaqvi02/Knucklebones-AI) — MCTS / RAVE bot
+- Hero with tagline (BMath @ UWaterloo)
+- Tabbed project explorer (mtdi, Ali's Mach Docs, PicoEmulator, Knucklebones-AI)
+- mtdi "creation replay" terminal page
+- Resume (`/resume.pdf`) + LinkedIn
+- Served by GitHub Pages from `main` (built output in this repo root; source lives in `~/workspace/react-site/app`)
 
-Static single-page site. Build with `index.html`; served by GitHub Pages from the `main` branch root.
+Built output is committed directly; rebuild with `npm run build` in the source checkout, then copy `dist/*` here.

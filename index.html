@@ -1,149 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="google-site-verification" content="gjQHbuBS_65L7FHYXqowllig2DRE2Vjxx2lh4otB97M" />
-<title>Ali Naqvi · Projects</title>
-<meta name="description" content="Personal GitHub Pages site for Ali Naqvi — mtdi, Ali's Mach Docs, PicoEmulator, and Knucklebones-AI.">
-<style>
-  :root {
-    --bg: #0d1117;
-    --panel: #161b22;
-    --border: #30363d;
-    --text: #e6edf3;
-    --muted: #8b949e;
-    --accent: #58a6ff;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    line-height: 1.55;
-    padding: 0 1.25rem;
-  }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 4rem 0 5rem; }
-  header { margin-bottom: 2.5rem; }
-  header h1 { font-size: 2.1rem; margin: 0 0 .35rem; }
-  header p { color: var(--muted); margin: 0; }
-  header .role { color: var(--accent); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; }
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem 1.35rem;
-    display: flex;
-    flex-direction: column;
-    min-height: 190px;
-    transition: border-color .15s ease, transform .15s ease;
-  }
-  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .card h2 { font-size: 1.15rem; margin: 0 0 .5rem; }
-  .card h2 a { color: var(--text); text-decoration: none; }
-  .card h2 a:hover { color: var(--accent); }
-  .lang { display: inline-block; font-size: .78rem; color: var(--accent); border: 1px solid var(--border); border-radius: 999px; padding: .1rem .6rem; margin-left: .4rem; vertical-align: middle; }
-  .card p.desc { color: var(--muted); font-size: .92rem; margin: 0 0 1rem; flex: 1; }
-  .meta { display: flex; align-items: center; gap: 1rem; font-size: .85rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: .8rem; }
-  .meta .stars { display: flex; align-items: center; gap: .35rem; }
-  .meta a { color: var(--muted); text-decoration: none; flex: 1; text-align: right; }
-  .meta a:hover { color: var(--accent); }
-  footer { margin-top: 3.5rem; color: var(--muted); font-size: .85rem; text-align: center; }
-  .star-icon { color: #f0b429; }
-  .anon { color: var(--muted); font-style: italic; }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <h1>👋 Hey, I'm Ali Naqvi</h1>
-      <p class="role">Systems / security engineering hobbyist</p>
-      <p>A few of the projects I've built. Check out <a href="https://github.com/anaqvi02" style="color:var(--accent)">my GitHub profile</a> for the full list.</p>
-    </header>
-
-    <section class="grid" id="projects">
-      <!-- Cards injected from /data.js -->
-    </section>
-
-    <footer>
-      Built for GitHub Pages · <a href="https://github.com/anaqvi02/anaqvi02.github.io" style="color:var(--muted)">source</a>
-    </footer>
-  </div>
-
-  <script>
-    const projects = [
-      {
-        name: "mtdi",
-        url: "https://github.com/anaqvi02/mtdi",
-        lang: "Rust",
-        desc: "Zero-privilege macOS user-space syscall tracer and dynamic-instrumentation engine in Rust — a daemon-less dtrace-style tool with a fast-path hook mechanism.",
-        stars: 2
-      },
-      {
-        name: "Ali's Mach Docs",
-        url: "https://github.com/anaqvi02/alis-mach-docs",
-        lang: "HTML",
-        desc: "A complete, function-by-function reference to the Mach IPC API in XNU (macOS/iOS): signatures, semantics, notes, example code, an A-Z glossary, and a machine-readable INDEX.json.",
-        stars: 3
-      },
-      {
-        name: "PicoEmulator",
-        url: "https://github.com/anaqvi02/PicoEmulator6000",
-        lang: "Python",
-        desc: "A high-performance RP2040 (ARM Cortex-M0+) emulator in Python with Cython optimization, reaching ~33 MHz emulated clock speed with the full Thumb-1 instruction set.",
-        stars: 0
-      },
-      {
-        name: "Knucklebones-AI",
-        url: "https://github.com/anaqvi02/Knucklebones-AI",
-        lang: "Python",
-        desc: "Monte Carlo Tree Search (MCTS) and RAVE algorithm using a heuristic function to determine the optimal move.",
-        stars: 0
-      }
-    ];
-
-    const grid = document.getElementById("projects");
-
-    function starSpan(n) {
-      return '<span class="stars"><span class="star-icon">★</span><span class="star-count">' + n + '</span></span>';
-    }
-
-    function renderCards(list) {
-      grid.innerHTML = list.map(p =>
-        '<article class="card">' +
-          '<h2><a href="' + p.url + '" target="_blank" rel="noopener">' + p.name + '</a>' +
-          '<span class="lang">' + (p.lang || "") + '</span></h2>' +
-          '<p class="desc">' + p.desc + '</p>' +
-          '<div class="meta">' +
-            starSpan(p.stars !== undefined ? p.stars : 0) +
-            '<a href="' + p.url + '" target="_blank" rel="noopener">view →</a>' +
-          '</div>' +
-        '</article>'
-      ).join("");
-    }
-
-    renderCards(projects);
-
-    // Refresh star counts / topics from the public GitHub API on load (no key needed).
-    fetch("https://api.github.com/users/anaqvi02/repos?per_page=100")
-      .then(r => r.json())
-      .then(repos => {
-        if (!Array.isArray(repos)) return;
-        const byName = Object.fromEntries(repos.map(r => [r.name, r]));
-        const updated = projects.map(p => {
-          const repoKey = p.name === "PicoEmulator" ? "PicoEmulator6000" : (p.name === "Ali's Mach Docs" ? "alis-mach-docs" : p.name);
-          const info = byName[repoKey];
-          if (!info) return p;
-          return Object.assign({}, p, {
-            stars: info.stargazers_count,
-            desc: info.description && info.description.length > 0 ? info.description : p.desc
-          });
-        });
-        renderCards(updated);
-      })
-      .catch(() => { /* keep the static defaults */ });
-  </script>
-</body>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-site-verification" content="gjQHbuBS_65L7FHYXqowllig2DRE2Vjxx2lh4otB97M" />
+    <meta name="description" content="Ali Naqvi — low-level systems and security prototypes: mtdi, Ali's Mach Docs, PicoEmulator, Knucklebones-AI." />
+    <meta name="theme-color" content="#101013" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <title>Ali Naqvi — systems &amp; security prototypes</title>
+    <script type="module" crossorigin src="/assets/index-DlINcv-a.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-lX17GEEd.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
