@@ -9,6 +9,7 @@
   const effectivePause = reduced.matches || paused;
   document.documentElement.classList.toggle('motion-paused', effectivePause);
   document.body.classList.toggle('motion-paused', effectivePause);
+  if (effectivePause) document.querySelectorAll('.is-entering').forEach(node => node.classList.remove('is-entering'));
   if (!motion) return;
   motion.setAttribute('aria-pressed', String(effectivePause));
   motion.disabled = reduced.matches;
@@ -25,16 +26,27 @@
  const syncVisibility = () => document.documentElement.classList.toggle('motion-background', document.hidden);
  document.addEventListener('visibilitychange', syncVisibility);
  syncVisibility();
+ // Clear completed/interrupted entrances so resume and blur never replay them.
+ document.addEventListener('animationend', event => {
+  if (event.animationName === 'content-arrival') event.target.classList.remove('is-entering');
+ });
+ document.addEventListener('focusin', event => {
+  for (let node = event.target; node instanceof Element; node = node.parentElement) node.classList.remove('is-entering');
+ });
  // Content remains visible without JavaScript; each arrival animates only once.
  if ('IntersectionObserver' in window) {
   const arrivals = new IntersectionObserver(entries => {
+   let order = 0;
    entries.forEach(entry => {
     if (!entry.isIntersecting) return;
-    if (!document.body.classList.contains('motion-paused')) entry.target.classList.add('is-entering');
+    if (!document.body.classList.contains('motion-paused')) {
+     entry.target.style.setProperty('--arrival-delay', Math.min(order++ * 45, 135) + 'ms');
+     entry.target.classList.add('is-entering');
+    }
     arrivals.unobserve(entry.target);
    });
   }, {threshold: .12});
-  document.querySelectorAll('.reveal, .dossier-chapter').forEach(node => arrivals.observe(node));
+  document.querySelectorAll('.reveal, .dossier-chapter, #hero-name, .hero-status, .hero-summary, .hero-bottom>.text-link, .section-heading, .catalog-intro>h1, .catalog-intro>p, .about-title-band, .about-intro>.education, .portrait-wrap, .about-lead, .about-story, .interest-columns, .gallery-callout, .contact-heading, .contact-links>a, .project-headline, .dossier-summary, .dossier-next, footer').forEach(node => arrivals.observe(node));
   const ambientMotion = new IntersectionObserver(entries => {
    entries.forEach(entry => entry.target.classList.toggle('motion-offscreen', !entry.isIntersecting));
   });

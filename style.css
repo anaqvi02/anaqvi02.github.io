@@ -1165,3 +1165,9 @@ body{background-image:none}
 .hero-status-label::after{content:'';width:54px;height:1px;background:var(--red);opacity:.5;margin-left:4px}
 @media(max-width:700px){.work-section>.section-heading{padding-bottom:28px}.work-section .mark-stamp{max-width:100%}.gallery-callout .gallery-button-title em{padding-bottom:5px;background-size:100% 8px}}
 @media(forced-colors:active){.gallery-callout .gallery-button-arrow{background:none;color:LinkText}}
+
+/* Once-only arrivals: restrained opacity and three pixels of movement. */
+.is-entering{animation:content-arrival .56s cubic-bezier(.2,.6,.3,1) var(--arrival-delay,0ms) both}
+@keyframes content-arrival{from{opacity:.84;translate:0 3px}to{opacity:1;translate:0 0}}
+.is-entering:focus-within,html.motion-paused .is-entering{animation:none!important}
+@media(prefers-reduced-motion:reduce){.is-entering{animation:none!important}}
