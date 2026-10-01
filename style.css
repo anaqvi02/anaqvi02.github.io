@@ -1166,7 +1166,7 @@ body{background-image:none}
 
 /* Prepare entrances before they enter view, without changing document layout. */
 .arrival-pending{opacity:0}
-.is-entering{animation:content-arrival .8s cubic-bezier(.2,.65,.25,1) var(--arrival-delay,0ms) both}
+.is-entering{animation:content-arrival 1s ease-in-out var(--arrival-delay,0ms) both}
 @keyframes content-arrival{from{opacity:0}to{opacity:1}}
 /* Ambient offscreen suspension must never freeze a reading-content entrance. */
 .motion-offscreen.is-entering,.motion-offscreen .is-entering{animation-play-state:running!important}

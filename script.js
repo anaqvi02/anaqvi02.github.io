@@ -33,30 +33,43 @@
  document.addEventListener('focusin', event => {
   for (let node = event.target; node instanceof Element; node = node.parentElement) node.classList.remove('is-entering', 'arrival-pending');
  });
- // Content remains visible without JavaScript; each arrival animates only once.
+ // Content stays readable without JavaScript. Re-arm only well outside the
+ // viewport, so returning sections fade again without blinking at its edges.
  if ('IntersectionObserver' in window) {
+  const prepareArrival = node => {
+   if (document.body.classList.contains('motion-paused') || node.contains(document.activeElement)) return;
+   node.classList.remove('is-entering');
+   node.classList.add('arrival-pending');
+  };
+  const resetArrivals = new IntersectionObserver(entries => {
+   entries.forEach(entry => {
+    if (entry.isIntersecting) return;
+    const box = entry.target.getBoundingClientRect();
+    if (box.bottom < -160 || box.top > innerHeight + 160) prepareArrival(entry.target);
+   });
+  }, {rootMargin: '160px 0px'});
   const arrivals = new IntersectionObserver(entries => {
    let order = 0;
    entries.forEach(entry => {
     if (!entry.isIntersecting) return;
     if (entry.target.classList.contains('arrival-pending') && !document.body.classList.contains('motion-paused')) {
-     entry.target.style.setProperty('--arrival-delay', Math.min(order++ * 75, 225) + 'ms');
+     entry.target.style.setProperty('--arrival-delay', Math.min(order++ * 80, 240) + 'ms');
      entry.target.classList.add('is-entering');
     }
-    arrivals.unobserve(entry.target);
    });
-  }, {threshold: 0, rootMargin: '0px 0px 80px 0px'});
-  const prepareArrival = node => {
-   if (!document.body.classList.contains('motion-paused') && !node.contains(document.activeElement)) node.classList.add('arrival-pending');
+  }, {threshold: 0, rootMargin: '0px 0px -48px 0px'});
+  const observeArrival = node => {
+   prepareArrival(node);
+   resetArrivals.observe(node);
    arrivals.observe(node);
   };
-  document.querySelectorAll('.reveal, .dossier-chapter, #hero-name, .hero-status, .hero-summary, .hero-bottom>.text-link, .section-heading, .catalog-intro>h1, .catalog-intro>p, .about-title-band, .about-intro>.education, .portrait-wrap, .about-lead, .about-story, .interest-columns, .gallery-callout, .contact-heading, .contact-links>a, .project-headline, .dossier-summary, .dossier-next, footer').forEach(prepareArrival);
+  document.querySelectorAll('.reveal, .dossier-chapter, #hero-name, .hero-status, .hero-summary, .hero-bottom>.text-link, .section-heading, .catalog-intro>h1, .catalog-intro>p, .about-title-band, .about-intro>.education, .portrait-wrap, .about-lead, .about-story, .interest-columns, .gallery-callout, .contact-heading, .contact-links>a, .project-headline, .dossier-summary, .dossier-next, footer').forEach(observeArrival);
   const ambientMotion = new IntersectionObserver(entries => {
    entries.forEach(entry => entry.target.classList.toggle('motion-offscreen', !entry.isIntersecting));
   });
   document.querySelectorAll('.hero-art, .hero-proof, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
   document.addEventListener('projectsloaded', () => {
-   document.querySelectorAll('[data-project-gallery] .reveal').forEach(prepareArrival);
+   document.querySelectorAll('[data-project-gallery] .reveal').forEach(observeArrival);
    document.querySelectorAll('[data-project-gallery] .project-art').forEach(node => ambientMotion.observe(node));
   });
  }
