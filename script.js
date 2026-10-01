@@ -70,7 +70,7 @@
   markReadingPosition();
  }
  // Progress comes from the project's current status file and refreshes without inventing movement.
- if (document.querySelector('[data-progress-value]')) {
+ if (document.querySelector('[data-progress-value], [data-personal-status]')) {
   // An unavailable ETA helper must not block independently valid progress.
   const readEta = deadline => {
    try { return typeof projectEta === 'function' ? projectEta(deadline) : null; }
@@ -87,7 +87,13 @@
     const response = await fetch(statusUrl, {cache:'no-store'});
     if (!response.ok) return;
     const status = await response.json();
-    if (status.project !== 'mtdi' || !Number.isFinite(status.completion) || status.completion < 0 || status.completion > 100) return;
+    if (status.project !== 'mtdi') return;
+    // Personal copy updates independently of the project's numeric progress.
+    if (typeof status.personal_status === 'string') {
+     const personal = status.personal_status.trim();
+     if (personal && personal.length <= 80) document.querySelectorAll('[data-personal-status]').forEach(node => { node.textContent = personal; });
+    }
+    if (!Number.isFinite(status.completion) || status.completion < 0 || status.completion > 100) return;
     document.querySelectorAll('[data-progress-value]').forEach(node => {
      node.replaceChildren(document.createTextNode(String(status.completion)));
      const suffix = document.createElement('span'); suffix.textContent = '%'; node.appendChild(suffix);

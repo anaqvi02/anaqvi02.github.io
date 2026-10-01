@@ -13,3 +13,7 @@ Each project is an independent HTML card in `projects/items/`. `index.json` list
 5. Add a detail page if needed and preview narrow/desktop layouts before publishing.
 
 Homepage selected work is curated separately; adding a gallery entry does not require changing the homepage. Data-load failures preserve available static cards. Motion controls and reduced-motion behavior also apply to loaded cards.
+
+## Current status
+
+Edit `personal_status` in `status.json` to change the hero’s Current status readout (up to 80 characters). It refreshes from that file alongside mtdi progress, once per minute while the page is visible. It keeps the authored text if the file is unavailable or the value is invalid; the homepage HTML is the no-JavaScript fallback.
