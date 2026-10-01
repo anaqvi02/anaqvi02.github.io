@@ -9,7 +9,7 @@
   const effectivePause = reduced.matches || paused;
   document.documentElement.classList.toggle('motion-paused', effectivePause);
   document.body.classList.toggle('motion-paused', effectivePause);
-  if (effectivePause) document.querySelectorAll('.is-entering').forEach(node => node.classList.remove('is-entering'));
+  if (effectivePause) document.querySelectorAll('.is-entering, .arrival-pending').forEach(node => node.classList.remove('is-entering', 'arrival-pending'));
   if (!motion) return;
   motion.setAttribute('aria-pressed', String(effectivePause));
   motion.disabled = reduced.matches;
@@ -28,10 +28,10 @@
  syncVisibility();
  // Clear completed/interrupted entrances so resume and blur never replay them.
  document.addEventListener('animationend', event => {
-  if (event.animationName === 'content-arrival') event.target.classList.remove('is-entering');
+  if (event.animationName === 'content-arrival') event.target.classList.remove('is-entering', 'arrival-pending');
  });
  document.addEventListener('focusin', event => {
-  for (let node = event.target; node instanceof Element; node = node.parentElement) node.classList.remove('is-entering');
+  for (let node = event.target; node instanceof Element; node = node.parentElement) node.classList.remove('is-entering', 'arrival-pending');
  });
  // Content remains visible without JavaScript; each arrival animates only once.
  if ('IntersectionObserver' in window) {
@@ -39,20 +39,24 @@
    let order = 0;
    entries.forEach(entry => {
     if (!entry.isIntersecting) return;
-    if (!document.body.classList.contains('motion-paused')) {
+    if (entry.target.classList.contains('arrival-pending') && !document.body.classList.contains('motion-paused')) {
      entry.target.style.setProperty('--arrival-delay', Math.min(order++ * 75, 225) + 'ms');
      entry.target.classList.add('is-entering');
     }
     arrivals.unobserve(entry.target);
    });
-  }, {threshold: .12});
-  document.querySelectorAll('.reveal, .dossier-chapter, #hero-name, .hero-status, .hero-summary, .hero-bottom>.text-link, .section-heading, .catalog-intro>h1, .catalog-intro>p, .about-title-band, .about-intro>.education, .portrait-wrap, .about-lead, .about-story, .interest-columns, .gallery-callout, .contact-heading, .contact-links>a, .project-headline, .dossier-summary, .dossier-next, footer').forEach(node => arrivals.observe(node));
+  }, {threshold: 0, rootMargin: '0px 0px 80px 0px'});
+  const prepareArrival = node => {
+   if (!document.body.classList.contains('motion-paused') && !node.contains(document.activeElement)) node.classList.add('arrival-pending');
+   arrivals.observe(node);
+  };
+  document.querySelectorAll('.reveal, .dossier-chapter, #hero-name, .hero-status, .hero-summary, .hero-bottom>.text-link, .section-heading, .catalog-intro>h1, .catalog-intro>p, .about-title-band, .about-intro>.education, .portrait-wrap, .about-lead, .about-story, .interest-columns, .gallery-callout, .contact-heading, .contact-links>a, .project-headline, .dossier-summary, .dossier-next, footer').forEach(prepareArrival);
   const ambientMotion = new IntersectionObserver(entries => {
    entries.forEach(entry => entry.target.classList.toggle('motion-offscreen', !entry.isIntersecting));
   });
   document.querySelectorAll('.hero-art, .hero-proof, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
   document.addEventListener('projectsloaded', () => {
-   document.querySelectorAll('[data-project-gallery] .reveal').forEach(node => arrivals.observe(node));
+   document.querySelectorAll('[data-project-gallery] .reveal').forEach(prepareArrival);
    document.querySelectorAll('[data-project-gallery] .project-art').forEach(node => ambientMotion.observe(node));
   });
  }

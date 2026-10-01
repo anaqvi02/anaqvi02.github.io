@@ -980,8 +980,6 @@ html.motion-paused{scroll-behavior:auto}
 .about-header-traces{animation:quiet-fade 14s ease-in-out -5s infinite}
 .connect-schematic{animation:quiet-fade 13s ease-in-out -7s infinite}
 @keyframes quiet-fade{0%,100%{opacity:.65}50%{opacity:1}}
-.is-entering{animation:content-arrival .65s ease-out both}
-@keyframes content-arrival{from{opacity:.68;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.is-entering,.about-backplane,.about-header-traces,.connect-schematic{animation:none}}
 
 .project-page-knucklebones .project-header h1{font-size:min(7.6vw,16cqi)}
@@ -1166,8 +1164,11 @@ body{background-image:none}
 @media(max-width:700px){.work-section>.section-heading{padding-bottom:28px}.work-section .mark-stamp{max-width:100%}.gallery-callout .gallery-button-title em{padding-bottom:5px;background-size:100% 8px}}
 @media(forced-colors:active){.gallery-callout .gallery-button-arrow{background:none;color:LinkText}}
 
-/* Clear, once-only entrances with a soft fade and a short upward settle. */
+/* Prepare entrances before they enter view, without changing document layout. */
+.arrival-pending{opacity:0}
 .is-entering{animation:content-arrival .8s cubic-bezier(.2,.65,.25,1) var(--arrival-delay,0ms) both}
-@keyframes content-arrival{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
-.is-entering:focus-within,html.motion-paused .is-entering{animation:none!important}
-@media(prefers-reduced-motion:reduce){.is-entering{animation:none!important}}
+@keyframes content-arrival{from{opacity:0}to{opacity:1}}
+/* Ambient offscreen suspension must never freeze a reading-content entrance. */
+.motion-offscreen.is-entering,.motion-offscreen .is-entering{animation-play-state:running!important}
+.arrival-pending:focus-within,html.motion-paused .arrival-pending{opacity:1;animation:none!important}
+@media(prefers-reduced-motion:reduce){.arrival-pending{opacity:1;animation:none!important}}
