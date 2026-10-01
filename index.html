@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Antonio:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261001an">
+<link rel="stylesheet" href="style.css?v=20261001ao">
 <link rel="canonical" href="https://anaqvi02.github.io/">
 </head>
 <body>
@@ -99,13 +99,20 @@
 <div class="about-intro"><div class="education mono"><span>ALI NAQVI</span><span>BMATH @ UWATERLOO</span></div>
 <figure class="portrait-wrap" data-chromatic-target="portrait"><svg class="chromatic-filter-defs" data-chromatic-filter aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs>
 <filter id="portrait-chromatic" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
-<feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
-<feOffset in="red" dx="7" dy="0.6" data-chromatic-channel="red" result="red-shift"></feOffset>
-<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
-<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
-<feOffset in="blue" dx="-7" dy="-0.6" data-chromatic-channel="blue" result="blue-shift"></feOffset>
-<feBlend in="red-shift" in2="green" mode="screen" result="red-green"/><feBlend in="red-green" in2="blue-shift" mode="screen"/>
-</filter></defs></svg><div class="chromatic-portrait"><img src="assets/ali-portrait-print-v4.webp" alt="Ali Naqvi smiling, wearing glasses and a patterned shirt" width="1122" height="1402" loading="lazy" decoding="async"></div><svg class="portrait-registration" viewBox="0 0 320 400" preserveAspectRatio="none" fill="none" aria-hidden="true">
+<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.2126 -0.7152 -0.0722 0 1" result="ink"/>
+<feGaussianBlur in="ink" stdDeviation="0.65" result="ink-soft"/>
+<feOffset in="ink-soft" dx="7" dy="0.6" data-chromatic-channel="red" result="red-shift"/>
+<feComposite in="red-shift" in2="ink-soft" operator="arithmetic" k2="1" k3="-1" result="red-edge"/>
+<feComponentTransfer in="red-edge" result="red-edge-strong"><feFuncA type="linear" slope="1.7"/></feComponentTransfer>
+<feFlood flood-color="#e13e60" flood-opacity="0.95" result="red-ink"/>
+<feComposite in="red-ink" in2="red-edge-strong" operator="in" result="red-fringe"/>
+<feOffset in="ink-soft" dx="-7" dy="-0.6" data-chromatic-channel="blue" result="blue-shift"/>
+<feComposite in="blue-shift" in2="ink-soft" operator="arithmetic" k2="1" k3="-1" result="blue-edge"/>
+<feComponentTransfer in="blue-edge" result="blue-edge-strong"><feFuncA type="linear" slope="1.7"/></feComponentTransfer>
+<feFlood flood-color="#5ab4dd" flood-opacity="0.9" result="blue-ink"/>
+<feComposite in="blue-ink" in2="blue-edge-strong" operator="in" result="blue-fringe"/>
+<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="red-fringe"/><feMergeNode in="blue-fringe"/></feMerge>
+</filter></defs></svg><div class="chromatic-portrait"><img class="portrait-base" src="assets/ali-portrait-print-v4.webp" alt="Ali Naqvi smiling, wearing glasses and a patterned shirt" width="1122" height="1402" loading="lazy" decoding="async"><img class="portrait-fringes" src="assets/ali-portrait-print-v4.webp" alt="" aria-hidden="true" width="1122" height="1402" loading="lazy" decoding="async"></div><svg class="portrait-registration" viewBox="0 0 320 400" preserveAspectRatio="none" fill="none" aria-hidden="true">
 <path d="M1 48V1H48M272 399H319V352" stroke="#af3047" stroke-width="4"/>
 <path d="M277 1H299L319 21V53M1 346V380L20 399H48" stroke="#5e3bc4" stroke-width="2"/>
 <path d="M309 76V275M305 76H315M305 96H311M305 116H311M305 136H315M305 156H311M305 176H311M305 196H315M305 216H311M305 236H311M305 256H315" stroke="#af3047" stroke-opacity=".65"/>
@@ -135,7 +142,7 @@
 <path d="M294 76V88M288 82H300" stroke="#5e3bc4" stroke-opacity=".35"/>
 </svg></div><div class="contact-links"><a href="resume.pdf" target="_blank" rel="noopener noreferrer"><span>My résumé<small class="resume-updated">Updated <time datetime="2026-10-01">Oct 1, 2026</time></small></span><span class="mono">PDF</span><b aria-hidden="true">+</b></a><a href="https://github.com/anaqvi02" target="_blank" rel="noopener noreferrer"><span>GitHub</span><span class="mono">ANAQVI02</span><b aria-hidden="true">+</b></a><a href="https://www.linkedin.com/in/ali-naqvi-355bb5412/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span class="mono">PROFILE</span><b aria-hidden="true">+</b></a></div></section>
 <footer><span class="footer-name">alinaqvi<span>/</span></span><span class="footer-note mono">Made with love by me.</span><span class="footer-copyright mono">© 2026 ALI NAQVI</span><button class="motion-button mono" type="button" aria-pressed="false">Pause motion</button><a href="#top" class="mono">Back to top <span aria-hidden="true">+</span></a></footer></div>
-<script src="eta.js?v=20261001an"></script>
-<script src="script.js?v=20261001an"></script>
+<script src="eta.js?v=20261001ao"></script>
+<script src="script.js?v=20261001ao"></script>
 </body>
 </html>
