@@ -17,3 +17,19 @@ Homepage selected work is curated separately; adding a gallery entry does not re
 ## Current status
 
 Edit `personal_status` in `status.json` to change the hero’s Current status readout (up to 80 characters). It refreshes from that file alongside mtdi progress, once per minute while the page is visible. It keeps the authored text if the file is unavailable or the value is invalid; the homepage HTML is the no-JavaScript fallback.
+
+## Offline chrome hero
+
+The hero is a deterministic, pre-rendered 3D sculpture: three irregular lens-section silver ribbons, curved tapered blades, two thin thorn cages, and a violet glass/plasma core. Rings complete opposing full turns over 16 seconds. The camera stays fixed; geometry, plasma drift, and light pulses are periodic. No 3D renderer runs in the browser.
+
+`tools/render-hero.py` creates the Blender scene and renders 384 transparent PNG frames at 768px and 24fps. Use Blender 4.5, with Metal acceleration when available:
+
+```sh
+blender --background --factory-startup --python tools/render-hero.py -- preview 768
+blender --background --factory-startup --python tools/render-hero.py -- render 768
+python3 tools/encode-hero.py work/hero-render
+```
+
+Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. A very fine fixed grain and slight optical color separation are baked into the artwork.
+
+The matching WebP still loads immediately. `hero-video.js` loads clips only when visible and motion is enabled. The hero and footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs, and blocked playback preserve the still; hidden tabs and offscreen playback are suspended. Nothing about the video changes the name or portrait interactions.

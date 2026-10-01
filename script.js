@@ -1,7 +1,7 @@
 (() => {
  'use strict';
  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
- const motion = document.querySelector('.motion-button');
+ const motionControls = [...document.querySelectorAll('.motion-button')];
  const statusUrl = new URL('status.json', document.currentScript.src);
  let syncChromaticPointer = () => {};
  let requestedPause = false;
@@ -12,17 +12,18 @@
   document.body.classList.toggle('motion-paused', effectivePause);
   if (effectivePause) document.querySelectorAll('.is-entering, .arrival-pending').forEach(node => node.classList.remove('is-entering', 'arrival-pending'));
   syncChromaticPointer();
-  if (!motion) return;
-  motion.setAttribute('aria-pressed', String(effectivePause));
-  motion.disabled = reduced.matches;
-  motion.textContent = reduced.matches ? 'Motion reduced' : effectivePause ? 'Resume motion' : 'Pause motion';
+  motionControls.forEach(motion => {
+   motion.setAttribute('aria-pressed', String(effectivePause));
+   motion.disabled = reduced.matches;
+   motion.textContent = reduced.matches ? 'Motion reduced' : effectivePause ? 'Resume motion' : 'Pause motion';
+  });
  };
  setMotion(requestedPause);
- motion?.addEventListener('click', () => {
+ motionControls.forEach(motion => motion.addEventListener('click', () => {
   requestedPause = !requestedPause;
   try { localStorage.setItem('ali-motion-paused', String(requestedPause)); } catch { /* Storage is optional. */ }
   setMotion(requestedPause);
- });
+ }));
  reduced.addEventListener('change', () => setMotion(requestedPause));
  // Automatic suspension is independent of the user's saved motion preference.
  const syncVisibility = () => {
