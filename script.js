@@ -97,7 +97,7 @@
    chromaticTargets.forEach(node => {
     ['--pointer-x', '--pointer-y', '--chroma-x', '--chroma-y'].forEach(property => node.style.removeProperty(property));
    });
-   setChannels(3.2, .4);
+   setChannels(7, .6);
   };
   const applyPointer = () => {
    pointerFrame = null;
@@ -108,11 +108,14 @@
    });
    const {x, y} = pointerPosition;
    visible.forEach(node => {
-    node.style.setProperty('--pointer-x', x.toFixed(3));
-    node.style.setProperty('--pointer-y', y.toFixed(3));
-    node.style.setProperty('--chroma-x', (x * 1.8).toFixed(2) + 'px');
-    node.style.setProperty('--chroma-y', (y * .8).toFixed(2) + 'px');
-    if (node.dataset.chromaticTarget === 'portrait') setChannels(3.2 + x * 1.4, .4 + y * .8);
+    if (node.dataset.chromaticTarget === 'portrait') {
+     setChannels(7 + x * 2.5, .6 + y * 2);
+    } else {
+     node.style.setProperty('--pointer-x', x.toFixed(3));
+     node.style.setProperty('--pointer-y', y.toFixed(3));
+     node.style.setProperty('--chroma-x', (x * 1.8).toFixed(2) + 'px');
+     node.style.setProperty('--chroma-y', (y * .8).toFixed(2) + 'px');
+    }
    });
   };
   window.addEventListener('pointermove', event => {
