@@ -38,7 +38,7 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-orbit-mobile' : 'hero-orbit';
+   const stem = mobileAsset ? 'hero-mercury-mobile' : 'hero-mercury';
    const hevc = 'video/quicktime; codecs="hvc1"';
    const hevcSupported = video.canPlayType('video/mp4; codecs="hvc1"') !== '';
    const candidates = safariLike || ios
