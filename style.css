@@ -1143,21 +1143,6 @@ footer .motion-button,footer>a:last-child{font-size:.875rem;min-height:32px}
 body{background-image:none}
 .page-shell,.project-page .page-shell{width:100%;max-width:none;margin:0;padding-inline:clamp(16px,1.5vw,28px)}
 
-/* Small polished hardware carries the hero's chrome through the rest of the page. */
-.work-section>.section-heading h2::after{content:'';display:inline-block;width:clamp(68px,7vw,108px);height:52px;margin-left:18px;vertical-align:middle;background:url('assets/chrome-fold.svg') center/contain no-repeat;pointer-events:none}
-.about-title-band::before{content:'';position:absolute;right:24px;top:50%;width:112px;height:88px;transform:translateY(-50%) rotate(-12deg);background:url('assets/chrome-link.svg') center/contain no-repeat;pointer-events:none;z-index:1}
-.contact-heading::after{content:'';position:absolute;right:4%;bottom:14px;width:104px;height:82px;transform:rotate(16deg);background:url('assets/chrome-link.svg') center/contain no-repeat;pointer-events:none}
-.catalog-intro{position:relative}
-.catalog-intro::after{content:'';position:absolute;right:2%;top:34px;width:clamp(80px,11vw,160px);height:82px;background:url('assets/chrome-fold.svg') center/contain no-repeat;pointer-events:none}
-.gallery-callout .gallery-button-arrow{color:#eeecf5;background:linear-gradient(135deg,#fff 8%,#bbb4cd 25%,#797080 40%,#fff 53%,#c9bfdd 69%,#fbf9ff 83%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 1px 0 #ffffff55)}
-@media(max-width:700px){
- .work-section>.section-heading h2::after{width:68px;height:36px;margin-left:12px}
- .about-title-band::before{right:8px;width:72px;height:58px}
- .contact-heading::after{right:2px;bottom:0;width:64px;height:50px;opacity:.88}
- .catalog-intro::after{width:72px;height:42px;top:24px;right:0}
-}
-@media(forced-colors:active){.gallery-callout .gallery-button-arrow{background:none;-webkit-text-fill-color:LinkText;filter:none}}
-
 /* Personal status shares the project's readout language, with the handwritten voice intact. */
 .hero-status{align-self:flex-start;min-width:0;max-width:95%;margin:clamp(40px,4vw,64px) 0 10px 5%;position:relative;z-index:2}
 .hero-status-label{display:flex;align-items:center;gap:8px;font-size:.75rem;line-height:1.4;color:var(--red);letter-spacing:.08em}
@@ -1165,3 +1150,18 @@ body{background-image:none}
 .hero-status .hero-script{margin:12px 0 0;align-self:auto;white-space:normal;overflow-wrap:anywhere}
 @media(max-width:1100px){.hero-status{margin-top:30px}}
 @media(max-width:700px){.hero-status{margin:28px 0 10px 3%;max-width:97%}.hero-status .hero-script{margin-top:12px}}
+
+/* Personal ink follows the layout's rules and labels rather than floating above it. */
+.work-section>.section-heading{position:relative;border-bottom:0;padding-bottom:32px}
+.work-section>.section-heading::after{content:'';position:absolute;left:0;right:0;bottom:0;height:18px;background:url('assets/personal-divider.svg') left center/100% 100% no-repeat;pointer-events:none}
+.about-title-band{border-bottom:0;padding-bottom:24px}
+.about-title-band::after{left:0;right:0;bottom:-4px;width:auto;height:18px;background:url('assets/personal-divider.svg') left center/100% 100% no-repeat}
+.work-section .mark-stamp{padding:4px 8px;color:var(--paper);background:var(--red);font-size:.75rem;line-height:1.4;letter-spacing:.035em;transform:rotate(-.7deg);transform-origin:left center}
+.work-section .mark-stamp::before{display:none}
+.work-section .project-pico .mark-stamp{color:var(--paper);background:var(--red)}
+.about-lead>span{background:url('assets/ink-underline.svg') center bottom/100% 9px no-repeat;padding-bottom:5px}
+.gallery-callout .gallery-button-title em{position:relative;padding-bottom:8px;background:url('assets/ink-underline.svg') left bottom/100% 12px no-repeat}
+.gallery-callout .gallery-button-arrow{display:block;width:1em;height:1em;background:url('assets/ink-arrow.svg') center/contain no-repeat;color:transparent;text-shadow:none}
+.hero-status-label::after{content:'';width:54px;height:1px;background:var(--red);opacity:.5;margin-left:4px}
+@media(max-width:700px){.work-section>.section-heading{padding-bottom:28px}.work-section .mark-stamp{max-width:100%}.gallery-callout .gallery-button-title em{padding-bottom:5px;background-size:100% 8px}}
+@media(forced-colors:active){.gallery-callout .gallery-button-arrow{background:none;color:LinkText}}
