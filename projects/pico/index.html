@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f3ed">
+<title>PicoEmulator — Ali Naqvi</title>
+<meta name="description" content="An RP2040 (ARM Cortex-M0+) emulator in Python with Cython tuning that reaches ~33 MHz emulated clock, with the full Thumb-1 ISA for running Pico programs on your desktop.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%2220%2020%2060%2060%22%20fill%3D%22none%22%3E%0A%20%20%3Cg%20transform%3D%22rotate%28-40%2050%2050%29%22%20stroke%3D%22%23292630%22%20stroke-width%3D%223.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M35%2029.8C34.3%2032.9%2036.1%2035.2%2035.2%2038.6C34.6%2041.1%2035.9%2044.2%2035.1%2048.7%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M60.3%2031.1C61.1%2034.5%2059.5%2036.6%2060.2%2039.3C61%2042.4%2059.9%2045.7%2060.6%2049.5%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M29%2064L37.4%2057.8L44%2065.3L52.2%2056.4L60.4%2065L69%2059.2%22%20stroke%3D%22%235e3bc4%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Antonio:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../style.css?v=20261001ac">
+<link rel="canonical" href="https://anaqvi02.github.io/projects/pico/">
+</head>
+<body class="project-page project-page-pico">
+<a class="skip" href="#summary">Skip to project summary</a><div class="page-shell"><header class="header">
+<a class="brand" href="../../" aria-label="Ali Naqvi, home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="20 20 60 60" fill="none" class="personal-mark" aria-hidden="true">
+  <g transform="rotate(-40 50 50)" stroke="#292630" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M35 29.8C34.3 32.9 36.1 35.2 35.2 38.6C34.6 41.1 35.9 44.2 35.1 48.7"/>
+    <path d="M60.3 31.1C61.1 34.5 59.5 36.6 60.2 39.3C61 42.4 59.9 45.7 60.6 49.5"/>
+    <path d="M29 64L37.4 57.8L44 65.3L52.2 56.4L60.4 65L69 59.2" stroke="#5e3bc4"/>
+  </g>
+</svg>
+
+<span class="brand-caption">ALI NAQVI</span></a>
+<nav aria-label="Main navigation"><a href="../">Selected work</a><a href="../../#about">About</a><a href="../../#contact">Connect</a></nav>
+<a class="header-note resume-nav" href="../../resume.pdf" target="_blank" rel="noopener noreferrer"><span class="resume-label">RÉSUMÉ / PDF <small>Updated <time datetime="2026-10-01">Oct 1, 2026</time></small></span><span aria-hidden="true">+</span></a>
+</header>
+<main>
+<div class="project-breadcrumb mono"><a href="../">ALL PROJECTS</a><span>/</span><span>PYTHON</span></div>
+<section class="project-header" aria-labelledby="project-title"><div class="project-headline"><span class="section-index">[ EMULATION ]</span><h1 id="project-title">PicoEmulator<span class="project-title-period">.</span></h1><p class="project-standfirst">An RP2040 emulator in Python and Cython.</p><div class="project-tags mono"><span>python</span><span>cython</span><span>emulator</span><span>arm</span></div></div>
+<div class="project project-pico dossier-project-stage"><div class="project-art"><span class="project-gradient-plane" aria-hidden="true"></span><div class="mark-frame" aria-hidden="true"><span class="mark-pico mark-thumbprint"><span class="thumbprint-word">thumb<span>print.</span></span><span class="thumbprint-sub mono">PICO EMULATOR</span></span><span class="mark-stamp mono">EMULATE PICO PROGRAMS</span><span class="mark-detail mono">33 MHz / THUMB-1</span></div></div></div></section>
+<section class="dossier-summary" id="summary" tabindex="-1" aria-label="Project summary"><div class="summary-side"><span class="section-index">[ TL;DR ]</span><p class="mono">PYTHON</p></div><div><p class="dossier-summary-text">An RP2040 (ARM Cortex-M0+) emulator in Python with Cython tuning that reaches ~33 MHz emulated clock, with the full Thumb-1 ISA for running Pico programs on your desktop.</p><div class="spec-strip"><div class="spec-cell"><span class="mono">ISA</span><p>Full ARM Thumb-1</p></div><div class="spec-cell"><span class="mono">HOT PATH</span><p>Python + Cython</p></div><div class="spec-cell"><span class="mono">CLOCK</span><p>~33 MHz emulated</p></div></div></div></section>
+<div class="dossier-body"><aside class="dossier-nav"><span class="mono">READING ORDER</span><nav aria-label="Project sections"><a href="#summary">TL;DR</a><a href="#origin">Why it exists</a><a href="#mechanism-1">The Core</a><a href="#mechanism-2">Performance &amp; Usage</a></nav><a class="dossier-nav-repo" href="https://github.com/anaqvi02/PicoEmulator6000" target="_blank" rel="noopener noreferrer">View repository <span aria-hidden="true">+</span></a></aside><div class="dossier-prose"><section class="dossier-chapter" id="origin" tabindex="-1" aria-labelledby="origin-title"><div class="chapter-label"><span class="mono">ORIGIN STORY</span></div><div><h2 id="origin-title">Why it exists<span>.</span></h2><p>Grade 12 computer engineering: my teacher taught machine code on an insanely old dev board you program with buttons, and at the same time I was messing around with a Pi Pico W. The gap between a raw chip you talk to by hand and a modern one you talk to from Python was an emulator waiting to exist, so I wrote it. In Python, which was the wrong tool, and therefore the right one.</p></div></section><section class="dossier-chapter" id="mechanism-1" tabindex="-1" aria-labelledby="mechanism-1-title"><div class="chapter-label"><span class="mono">HOW IT WORKS</span></div><div><h2 id="mechanism-1-title">The Core<span>.</span></h2><p>A fetch-decode-execute loop over the full Thumb-1 instruction set: 2-byte ops, ALU, branches, stack. The decoder and hot paths live in Cython, roughly 1000× faster than pure Python, with the semantics still expressed readably on top. Around the CPU sits an RP2040 model: memory map, CPU state, an ELF and raw-binary loader, and peripheral stubs for GPIO, UART, and USB.</p></div></section><section class="dossier-chapter" id="mechanism-2" tabindex="-1" aria-labelledby="mechanism-2-title"><div class="chapter-label"><span class="mono">HOW IT WORKS</span></div><div><h2 id="mechanism-2-title">Performance &amp; Usage<span>.</span></h2><p>It sustains about 33 MHz of emulated clock, roughly 25% of a real chip, and the benchmark suite measures that directly so the number is a measurement, not a vibe. The API is small: load_program, set_pc, set_reg, run(cycles), get_reg, and the examples run hand-assembled Thumb-1 from a counting loop to a recursive factorial.</p></div></section></div></div>
+<a class="repository-band" href="https://github.com/anaqvi02/PicoEmulator6000" target="_blank" rel="noopener noreferrer"><span class="mono">REPOSITORY</span><strong>PicoEmulator6000</strong><span class="repo-plus" aria-hidden="true">+</span></a>
+<div class="dossier-next"><a href="../">All projects</a><a href="../knucklebones/"><span class="mono">NEXT PROJECT</span><strong>Knucklebones-AI</strong><span aria-hidden="true">+</span></a></div>
+</main>
+<footer><a href="../../" class="footer-name">alinaqvi<span>/</span></a><span class="footer-copyright mono">© 2026 ALI NAQVI</span><button class="motion-button mono" type="button" aria-pressed="false">Pause motion</button><a href="#project-title" class="mono">Back to top <span aria-hidden="true">+</span></a></footer></div>
+<script src="../../eta.js?v=20261001ac"></script>
+<script src="../../script.js?v=20261001ac"></script></body></html>
