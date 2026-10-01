@@ -1166,8 +1166,8 @@ body{background-image:none}
 @media(max-width:700px){.work-section>.section-heading{padding-bottom:28px}.work-section .mark-stamp{max-width:100%}.gallery-callout .gallery-button-title em{padding-bottom:5px;background-size:100% 8px}}
 @media(forced-colors:active){.gallery-callout .gallery-button-arrow{background:none;color:LinkText}}
 
-/* Once-only arrivals: restrained opacity and three pixels of movement. */
-.is-entering{animation:content-arrival .56s cubic-bezier(.2,.6,.3,1) var(--arrival-delay,0ms) both}
-@keyframes content-arrival{from{opacity:.84;translate:0 3px}to{opacity:1;translate:0 0}}
+/* Clear, once-only entrances with a soft fade and a short upward settle. */
+.is-entering{animation:content-arrival .8s cubic-bezier(.2,.65,.25,1) var(--arrival-delay,0ms) both}
+@keyframes content-arrival{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
 .is-entering:focus-within,html.motion-paused .is-entering{animation:none!important}
 @media(prefers-reduced-motion:reduce){.is-entering{animation:none!important}}

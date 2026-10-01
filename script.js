@@ -40,7 +40,7 @@
    entries.forEach(entry => {
     if (!entry.isIntersecting) return;
     if (!document.body.classList.contains('motion-paused')) {
-     entry.target.style.setProperty('--arrival-delay', Math.min(order++ * 45, 135) + 'ms');
+     entry.target.style.setProperty('--arrival-delay', Math.min(order++ * 75, 225) + 'ms');
      entry.target.classList.add('is-entering');
     }
     arrivals.unobserve(entry.target);
