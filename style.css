@@ -1174,10 +1174,9 @@ body{background-image:none}
 @media(prefers-reduced-motion:reduce){.arrival-pending{opacity:1;animation:none!important}}
 
 /* Colored edges lock into focus, then breathe without moving the glyphs. */
-.chromatic-text,.name-line{--chroma-base:0 0 transparent;animation:chromatic-pulse 10s ease-in-out infinite}
-.name-line{--chroma-base:4px 4px 0 var(--paper),5px 5px 0 #af30476e}
+.chromatic-text{--chroma-base:0 0 transparent;animation:chromatic-pulse 10s ease-in-out infinite}
 .project-headline .chromatic-text{--chroma-base:2px 2px 0 var(--paper),3px 3px 0 #af30475c}
-.is-entering .chromatic-text,.is-entering .name-line{animation:chromatic-lock .9s ease-out var(--arrival-delay,0ms) both,chromatic-pulse 10s ease-in-out calc(var(--arrival-delay,0ms) + .9s) infinite}
+.is-entering .chromatic-text{animation:chromatic-lock .9s ease-out var(--arrival-delay,0ms) both,chromatic-pulse 10s ease-in-out calc(var(--arrival-delay,0ms) + .9s) infinite}
 .chromatic-text.is-entering{animation:content-arrival 1s ease-in-out var(--arrival-delay,0ms) both,chromatic-lock .9s ease-out var(--arrival-delay,0ms) both,chromatic-pulse 10s ease-in-out calc(var(--arrival-delay,0ms) + .9s) infinite}
 .chromatic-intro{--chroma-base:0 0 transparent}
 .is-entering .chromatic-intro{animation:chromatic-lock .9s ease-out var(--arrival-delay,0ms) both}
@@ -1194,11 +1193,23 @@ body{background-image:none}
 }
 .chromatic-filter-defs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
 .portrait-wrap img{filter:url('#portrait-chromatic')}
-html.motion-paused .chromatic-text,html.motion-paused .chromatic-intro,html.motion-paused .name-line{animation:none!important;text-shadow:var(--chroma-base)}
-html.motion-paused .portrait-wrap img{filter:none}
-@media(max-width:700px){.name-line{--chroma-base:2px 2px 0 var(--paper),3px 3px 0 #af30476e}}
+html.motion-paused .chromatic-text,html.motion-paused .chromatic-intro{animation:none!important;text-shadow:var(--chroma-base)}
 @media(prefers-reduced-motion:reduce){
- .chromatic-text,.chromatic-intro,.name-line{animation:none!important;text-shadow:var(--chroma-base)}
- .portrait-wrap img{filter:none}
+ .chromatic-text,.chromatic-intro{animation:none!important;text-shadow:var(--chroma-base)}
 }
 @media(forced-colors:active){.chromatic-text,.chromatic-intro,.name-line{animation:none!important;text-shadow:none}.portrait-wrap img{filter:none}}
+
+/* Permanent color separation; perspective responds only to mouse input. */
+[data-chromatic-target]{--pointer-x:0;--pointer-y:0;--chroma-x:0px;--chroma-y:0px}
+#hero-name{transform:perspective(1000px) rotateX(calc(var(--pointer-y) * -0.9deg)) rotateY(calc(var(--pointer-x) * 1.3deg));transform-origin:50% 50%;transition:transform .18s ease-out}
+.hero-type .name-line{--chroma-spread:clamp(3px,.4vw,7px);animation:none;text-shadow:calc(0px - var(--chroma-spread) + var(--chroma-x)) calc(.6px + var(--chroma-y)) 0 #e24c6dc4,calc(var(--chroma-spread) - var(--chroma-x)) calc(-.6px - var(--chroma-y)) 0 #538ecbb8;transition:text-shadow .18s ease-out}
+.chromatic-portrait{width:100%;height:100%;transform:perspective(700px) rotateX(calc(var(--pointer-y) * -3deg)) rotateY(calc(var(--pointer-x) * 4deg)) scale(1.045);transform-origin:center;transition:transform .18s ease-out}
+.portrait-wrap .chromatic-portrait img{filter:url('#portrait-chromatic')}
+html.motion-paused #hero-name,html.motion-paused .chromatic-portrait{transform:none;transition:none}
+html.motion-paused .hero-type .name-line{transition:none}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){
+ #hero-name{transform:none;transition:none}
+ .chromatic-portrait{transform:scale(1.045);transition:none}
+ .hero-type .name-line{transition:none}
+}
+@media(forced-colors:active){.hero-type .name-line{text-shadow:none}.portrait-wrap .chromatic-portrait img{filter:none}}

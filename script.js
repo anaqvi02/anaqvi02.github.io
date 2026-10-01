@@ -3,14 +3,7 @@
  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
  const motion = document.querySelector('.motion-button');
  const statusUrl = new URL('status.json', document.currentScript.src);
- const portraitFilter = document.querySelector('[data-chromatic-filter]');
- let portraitVisible = false;
- const syncPortraitMotion = () => {
-  if (!portraitFilter?.pauseAnimations) return;
-  const paused = !portraitVisible || document.hidden || document.body.classList.contains('motion-paused');
-  if (paused) portraitFilter.pauseAnimations();
-  else portraitFilter.unpauseAnimations();
- };
+ let syncChromaticPointer = () => {};
  let requestedPause = false;
  try { requestedPause = localStorage.getItem('ali-motion-paused') === 'true'; } catch { /* Storage is optional. */ }
  const setMotion = paused => {
@@ -18,7 +11,7 @@
   document.documentElement.classList.toggle('motion-paused', effectivePause);
   document.body.classList.toggle('motion-paused', effectivePause);
   if (effectivePause) document.querySelectorAll('.is-entering, .arrival-pending').forEach(node => node.classList.remove('is-entering', 'arrival-pending'));
-  syncPortraitMotion();
+  syncChromaticPointer();
   if (!motion) return;
   motion.setAttribute('aria-pressed', String(effectivePause));
   motion.disabled = reduced.matches;
@@ -34,7 +27,7 @@
  // Automatic suspension is independent of the user's saved motion preference.
  const syncVisibility = () => {
   document.documentElement.classList.toggle('motion-background', document.hidden);
-  syncPortraitMotion();
+  syncChromaticPointer();
  };
  document.addEventListener('visibilitychange', syncVisibility);
  syncVisibility();
@@ -80,21 +73,62 @@
    entries.forEach(entry => entry.target.classList.toggle('motion-offscreen', !entry.isIntersecting));
   });
   document.querySelectorAll('.hero-type, .hero-art, .hero-proof, .chromatic-text, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
-  if (portraitFilter) {
-   const portraitObserver = new IntersectionObserver(entries => {
-    const visible = entries.some(entry => entry.isIntersecting);
-    if (visible && !portraitVisible) portraitFilter.setCurrentTime(0);
-    portraitVisible = visible;
-    syncPortraitMotion();
-   });
-   portraitObserver.observe(portraitFilter.closest('.portrait-wrap'));
-  }
   document.addEventListener('projectsloaded', () => {
    document.querySelectorAll('[data-project-gallery] .reveal').forEach(observeArrival);
    document.querySelectorAll('[data-project-gallery] .project-art').forEach(node => ambientMotion.observe(node));
   });
  }
- else if (portraitFilter) { portraitVisible = true; syncPortraitMotion(); }
+ // No idle animation: mouse input updates only the two chromatic surfaces.
+ const chromaticTargets = [...document.querySelectorAll('[data-chromatic-target]')];
+ if (chromaticTargets.length) {
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const channels = [...document.querySelectorAll('[data-chromatic-channel]')];
+  let pointerFrame = null;
+  let pointerPosition = {x: 0, y: 0};
+  const canReact = () => finePointer.matches && !reduced.matches && !document.hidden && !document.body.classList.contains('motion-paused');
+  const setChannels = (spread, vertical) => channels.forEach(channel => {
+   const sign = channel.dataset.chromaticChannel === 'red' ? 1 : -1;
+   channel.setAttribute('dx', (sign * spread).toFixed(2));
+   channel.setAttribute('dy', (sign * vertical).toFixed(2));
+  });
+  syncChromaticPointer = () => {
+   if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
+   pointerFrame = null;
+   chromaticTargets.forEach(node => {
+    ['--pointer-x', '--pointer-y', '--chroma-x', '--chroma-y'].forEach(property => node.style.removeProperty(property));
+   });
+   setChannels(3.2, .4);
+  };
+  const applyPointer = () => {
+   pointerFrame = null;
+   if (!canReact()) return;
+   const visible = chromaticTargets.filter(node => {
+    const box = node.getBoundingClientRect();
+    return box.bottom > 0 && box.top < innerHeight;
+   });
+   const {x, y} = pointerPosition;
+   visible.forEach(node => {
+    node.style.setProperty('--pointer-x', x.toFixed(3));
+    node.style.setProperty('--pointer-y', y.toFixed(3));
+    node.style.setProperty('--chroma-x', (x * 1.8).toFixed(2) + 'px');
+    node.style.setProperty('--chroma-y', (y * .8).toFixed(2) + 'px');
+    if (node.dataset.chromaticTarget === 'portrait') setChannels(3.2 + x * 1.4, .4 + y * .8);
+   });
+  };
+  window.addEventListener('pointermove', event => {
+   if (event.pointerType !== 'mouse' || !canReact()) return;
+   pointerPosition = {
+    x: Math.max(-1, Math.min(1, event.clientX / innerWidth * 2 - 1)),
+    y: Math.max(-1, Math.min(1, event.clientY / innerHeight * 2 - 1))
+   };
+   if (pointerFrame === null) pointerFrame = requestAnimationFrame(applyPointer);
+  }, {passive: true});
+  document.documentElement.addEventListener('pointerleave', syncChromaticPointer);
+  window.addEventListener('blur', syncChromaticPointer);
+  window.addEventListener('resize', syncChromaticPointer);
+  finePointer.addEventListener('change', syncChromaticPointer);
+  syncChromaticPointer();
+ }
  // Keep the reading menu aligned with the section actually in view.
  const readingNav = document.querySelector('.dossier-nav nav');
  if (readingNav) {
