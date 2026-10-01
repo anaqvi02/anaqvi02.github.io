@@ -1138,3 +1138,7 @@ footer .motion-button,footer>a:last-child{font-size:.875rem;min-height:32px}
 
 .resume-label{display:grid;gap:4px}.resume-label small,.resume-updated{display:block;font:400 .75rem/1.4 var(--mono);letter-spacing:0;color:var(--muted)}
 .resume-updated{margin-top:6px}.resume-nav{align-items:center}
+
+/* Use the viewport instead of enclosing the site in a centered side frame. */
+body{background-image:none}
+.page-shell,.project-page .page-shell{width:100%;max-width:none;margin:0;padding-inline:clamp(16px,1.5vw,28px)}
