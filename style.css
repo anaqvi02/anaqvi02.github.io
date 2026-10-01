@@ -1142,3 +1142,18 @@ footer .motion-button,footer>a:last-child{font-size:.875rem;min-height:32px}
 /* Use the viewport instead of enclosing the site in a centered side frame. */
 body{background-image:none}
 .page-shell,.project-page .page-shell{width:100%;max-width:none;margin:0;padding-inline:clamp(16px,1.5vw,28px)}
+
+/* Small polished hardware carries the hero's chrome through the rest of the page. */
+.work-section>.section-heading h2::after{content:'';display:inline-block;width:clamp(68px,7vw,108px);height:52px;margin-left:18px;vertical-align:middle;background:url('assets/chrome-fold.svg') center/contain no-repeat;pointer-events:none}
+.about-title-band::before{content:'';position:absolute;right:24px;top:50%;width:112px;height:88px;transform:translateY(-50%) rotate(-12deg);background:url('assets/chrome-link.svg') center/contain no-repeat;pointer-events:none;z-index:1}
+.contact-heading::after{content:'';position:absolute;right:4%;bottom:14px;width:104px;height:82px;transform:rotate(16deg);background:url('assets/chrome-link.svg') center/contain no-repeat;pointer-events:none}
+.catalog-intro{position:relative}
+.catalog-intro::after{content:'';position:absolute;right:2%;top:34px;width:clamp(80px,11vw,160px);height:82px;background:url('assets/chrome-fold.svg') center/contain no-repeat;pointer-events:none}
+.gallery-callout .gallery-button-arrow{color:#eeecf5;background:linear-gradient(135deg,#fff 8%,#bbb4cd 25%,#797080 40%,#fff 53%,#c9bfdd 69%,#fbf9ff 83%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 1px 0 #ffffff55)}
+@media(max-width:700px){
+ .work-section>.section-heading h2::after{width:68px;height:36px;margin-left:12px}
+ .about-title-band::before{right:8px;width:72px;height:58px}
+ .contact-heading::after{right:2px;bottom:0;width:64px;height:50px;opacity:.88}
+ .catalog-intro::after{width:72px;height:42px;top:24px;right:0}
+}
+@media(forced-colors:active){.gallery-callout .gallery-button-arrow{background:none;-webkit-text-fill-color:LinkText;filter:none}}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 126" fill="none">
+ <defs>
+  <linearGradient id="silver" x1="31" y1="17" x2="113" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#fefeff"/><stop offset=".14" stop-color="#706877"/><stop offset=".25" stop-color="#28232f"/><stop offset=".38" stop-color="#f9f8ff"/><stop offset=".52" stop-color="#ada6b8"/><stop offset=".61" stop-color="#443b53"/><stop offset=".74" stop-color="#fff"/><stop offset=".86" stop-color="#c8bfd9"/><stop offset="1" stop-color="#514558"/></linearGradient>
+  <linearGradient id="violet" x1="75" y1="16" x2="76" y2="105" gradientUnits="userSpaceOnUse"><stop stop-color="#dcd7e9"/><stop offset=".28" stop-color="#fff"/><stop offset=".43" stop-color="#41374e"/><stop offset=".55" stop-color="#b8a7d6"/><stop offset=".7" stop-color="#f5f2fa"/><stop offset="1" stop-color="#665872"/></linearGradient>
+ </defs>
+ <path d="M24 80C13 51 75 18 111 24c40 7 20 55-23 76-34 17-53 7-64-20Z" stroke="#292630" stroke-opacity=".08" stroke-width="12" transform="translate(0 3)"/>
+ <path d="M70 16c-22 0-25 31-18 61 6 25 27 42 40 24 15-21-2-86-22-85Z" stroke="#4f465e" stroke-width="11"/>
+ <path d="M70 16c-22 0-25 31-18 61 6 25 27 42 40 24 15-21-2-86-22-85Z" stroke="url(#violet)" stroke-width="9"/>
+ <path d="M24 77C13 48 75 15 111 21c40 7 20 55-23 76-34 17-53 7-64-20Z" stroke="#645b70" stroke-width="12"/>
+ <path d="M24 77C13 48 75 15 111 21c40 7 20 55-23 76-34 17-53 7-64-20Z" stroke="url(#silver)" stroke-width="10"/>
+ <path d="M22 74C14 51 75 17 111 20c34 5 20 46-16 68" stroke="#fff" stroke-opacity=".78" stroke-width="1"/>
+ <path d="M58 86c9 19 23 29 34 15 8-12 5-36-1-57" stroke="url(#violet)" stroke-width="9"/>
+ <path d="M60 86c8 18 22 24 30 14" stroke="#fff" stroke-opacity=".65" stroke-width=".9"/>
+</svg>
