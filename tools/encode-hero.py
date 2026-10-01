@@ -51,12 +51,12 @@ def main(root):
         if any(pixels[y, x, 3] != 0 for y, x in [(0, 0), (0, -1), (-1, 0), (-1, -1)]):
             raise SystemExit(f'{frame.name} has an opaque corner. Preserve transparent film and compositor alpha.')
         Image.fromarray(apply_print_finish(pixels)).save(graded / frame.name)
-    Image.open(graded/'frame_0001.png').save(assets/'hero-mercury-poster.webp',quality=94,method=6)
+    Image.open(graded/'frame_0001.png').save(assets/'hero-rose-poster.webp',quality=94,method=6)
 
     def run(args):
         subprocess.run(args,check=True)
 
-    for stem,size,crf in [('hero-mercury',768,29),('hero-mercury-mobile',512,30)]:
+    for stem,size,crf in [('hero-rose',768,29),('hero-rose-mobile',512,30)]:
         common = [ffmpeg,'-hide_banner','-loglevel','error','-y','-framerate','24',
                   '-start_number','1','-i',str(graded/'frame_%04d.png'),'-frames:v','384',
                   '-vf',f'scale={size}:{size}:flags=lanczos','-an']

@@ -20,7 +20,7 @@ Edit `personal_status` in `status.json` to change the hero’s Current status re
 
 ## Offline chrome hero
 
-The hero is a deterministic, pre-rendered 3D sculpture: five disjoint, flowing mercury loops with 13 curved rose thorns surround a larger glass thunder orb. The loops, volumetric cloud, and branching lightning change periodically over a 16-second cycle. A procedural HDR studio shapes the chrome reflections. No 3D renderer runs in the browser.
+The hero is a deterministic, pre-rendered 3D sculpture: three fuller, rounded mercury loops carry 18 stout swept rose thorns around a lightly rippled glass thunder orb. The loops and glass ball each rotate twice per 16-second cycle; faster travelling bulges and path warping keep the chrome in motion. The storm rotates with the ball as its volume and branching lightning change periodically. A procedural HDR studio shapes the reflections. No 3D renderer runs in the browser.
 
 `tools/render-hero.py` creates the Blender scene and renders 384 transparent PNG frames at 768px and 24fps. Use Blender 4.5, with Metal acceleration when available:
 
@@ -31,6 +31,6 @@ blender --background --factory-startup --python tools/render-hero.py -- audit 76
 python3 tools/encode-hero.py work/hero-render
 ```
 
-The audit checks all 385 poses and reports the frame-385-to-frame-1 mesh delta as a loop-seam check in `geometry-audit.json`. Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. The bake includes fixed fine grain, a subtle fixed purple halftone, and slight optical color separation.
+The audit checks all 385 poses for clearance and containment, then verifies loop, thunder, cloud, and orb-rotation closure between frames 1 and 385. It writes the measurements to `geometry-audit.json`. Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. The bake includes fixed fine grain, a subtle fixed purple halftone, and slight optical color separation.
 
 The matching WebP still loads immediately. `hero-video.js` loads clips only when visible and motion is enabled. The hero and footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs, and blocked playback preserve the still; hidden tabs and offscreen playback are suspended. Nothing about the video changes the name or portrait interactions.
