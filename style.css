@@ -1172,3 +1172,33 @@ body{background-image:none}
 .motion-offscreen.is-entering,.motion-offscreen .is-entering{animation-play-state:running!important}
 .arrival-pending:focus-within,html.motion-paused .arrival-pending{opacity:1;animation:none!important}
 @media(prefers-reduced-motion:reduce){.arrival-pending{opacity:1;animation:none!important}}
+
+/* Colored edges lock into focus, then breathe without moving the glyphs. */
+.chromatic-text,.name-line{--chroma-base:0 0 transparent;animation:chromatic-pulse 10s ease-in-out infinite}
+.name-line{--chroma-base:4px 4px 0 var(--paper),5px 5px 0 #af30476e}
+.project-headline .chromatic-text{--chroma-base:2px 2px 0 var(--paper),3px 3px 0 #af30475c}
+.is-entering .chromatic-text,.is-entering .name-line{animation:chromatic-lock .9s ease-out var(--arrival-delay,0ms) both,chromatic-pulse 10s ease-in-out calc(var(--arrival-delay,0ms) + .9s) infinite}
+.chromatic-text.is-entering{animation:content-arrival 1s ease-in-out var(--arrival-delay,0ms) both,chromatic-lock .9s ease-out var(--arrival-delay,0ms) both,chromatic-pulse 10s ease-in-out calc(var(--arrival-delay,0ms) + .9s) infinite}
+.chromatic-intro{--chroma-base:0 0 transparent}
+.is-entering .chromatic-intro{animation:chromatic-lock .9s ease-out var(--arrival-delay,0ms) both}
+.chromatic-intro.is-entering{animation:content-arrival 1s ease-in-out var(--arrival-delay,0ms) both,chromatic-lock .9s ease-out var(--arrival-delay,0ms) both}
+@keyframes chromatic-lock{
+ from{text-shadow:var(--chroma-base),-4px .5px 0 #e34f7280,4px -.5px 0 #7184e878}
+ 55%{text-shadow:var(--chroma-base),-1.6px 0 0 #e34f7248,1.6px 0 0 #7184e848}
+ to{text-shadow:var(--chroma-base),0 0 transparent,0 0 transparent}
+}
+@keyframes chromatic-pulse{
+ 0%,28%,65%,100%{text-shadow:var(--chroma-base),0 0 transparent,0 0 transparent}
+ 42%{text-shadow:var(--chroma-base),-1.1px .2px 0 #e34f725c,1.1px -.2px 0 #7184e858}
+ 52%{text-shadow:var(--chroma-base),-1.7px 0 0 #e34f7268,1.7px 0 0 #7184e864}
+}
+.chromatic-filter-defs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.portrait-wrap img{filter:url('#portrait-chromatic')}
+html.motion-paused .chromatic-text,html.motion-paused .chromatic-intro,html.motion-paused .name-line{animation:none!important;text-shadow:var(--chroma-base)}
+html.motion-paused .portrait-wrap img{filter:none}
+@media(max-width:700px){.name-line{--chroma-base:2px 2px 0 var(--paper),3px 3px 0 #af30476e}}
+@media(prefers-reduced-motion:reduce){
+ .chromatic-text,.chromatic-intro,.name-line{animation:none!important;text-shadow:var(--chroma-base)}
+ .portrait-wrap img{filter:none}
+}
+@media(forced-colors:active){.chromatic-text,.chromatic-intro,.name-line{animation:none!important;text-shadow:none}.portrait-wrap img{filter:none}}

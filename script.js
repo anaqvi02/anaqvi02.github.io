@@ -3,6 +3,14 @@
  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
  const motion = document.querySelector('.motion-button');
  const statusUrl = new URL('status.json', document.currentScript.src);
+ const portraitFilter = document.querySelector('[data-chromatic-filter]');
+ let portraitVisible = false;
+ const syncPortraitMotion = () => {
+  if (!portraitFilter?.pauseAnimations) return;
+  const paused = !portraitVisible || document.hidden || document.body.classList.contains('motion-paused');
+  if (paused) portraitFilter.pauseAnimations();
+  else portraitFilter.unpauseAnimations();
+ };
  let requestedPause = false;
  try { requestedPause = localStorage.getItem('ali-motion-paused') === 'true'; } catch { /* Storage is optional. */ }
  const setMotion = paused => {
@@ -10,6 +18,7 @@
   document.documentElement.classList.toggle('motion-paused', effectivePause);
   document.body.classList.toggle('motion-paused', effectivePause);
   if (effectivePause) document.querySelectorAll('.is-entering, .arrival-pending').forEach(node => node.classList.remove('is-entering', 'arrival-pending'));
+  syncPortraitMotion();
   if (!motion) return;
   motion.setAttribute('aria-pressed', String(effectivePause));
   motion.disabled = reduced.matches;
@@ -23,7 +32,10 @@
  });
  reduced.addEventListener('change', () => setMotion(requestedPause));
  // Automatic suspension is independent of the user's saved motion preference.
- const syncVisibility = () => document.documentElement.classList.toggle('motion-background', document.hidden);
+ const syncVisibility = () => {
+  document.documentElement.classList.toggle('motion-background', document.hidden);
+  syncPortraitMotion();
+ };
  document.addEventListener('visibilitychange', syncVisibility);
  syncVisibility();
  // Clear completed/interrupted entrances so resume and blur never replay them.
@@ -67,12 +79,22 @@
   const ambientMotion = new IntersectionObserver(entries => {
    entries.forEach(entry => entry.target.classList.toggle('motion-offscreen', !entry.isIntersecting));
   });
-  document.querySelectorAll('.hero-art, .hero-proof, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
+  document.querySelectorAll('.hero-type, .hero-art, .hero-proof, .chromatic-text, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
+  if (portraitFilter) {
+   const portraitObserver = new IntersectionObserver(entries => {
+    const visible = entries.some(entry => entry.isIntersecting);
+    if (visible && !portraitVisible) portraitFilter.setCurrentTime(0);
+    portraitVisible = visible;
+    syncPortraitMotion();
+   });
+   portraitObserver.observe(portraitFilter.closest('.portrait-wrap'));
+  }
   document.addEventListener('projectsloaded', () => {
    document.querySelectorAll('[data-project-gallery] .reveal').forEach(observeArrival);
    document.querySelectorAll('[data-project-gallery] .project-art').forEach(node => ambientMotion.observe(node));
   });
  }
+ else if (portraitFilter) { portraitVisible = true; syncPortraitMotion(); }
  // Keep the reading menu aligned with the section actually in view.
  const readingNav = document.querySelector('.dossier-nav nav');
  if (readingNav) {
