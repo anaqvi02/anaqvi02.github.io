@@ -22,6 +22,8 @@
 
   video.autoplay = false;
   video.loop = true;
+  video.defaultPlaybackRate = 0.8;
+  video.playbackRate = 0.8;
   video.muted = true;
   video.playsInline = true;
   video.preload = 'none';
@@ -38,7 +40,7 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-rose-mobile' : 'hero-rose';
+   const stem = mobileAsset ? 'hero-forged-mobile' : 'hero-forged';
    const hevc = 'video/quicktime; codecs="hvc1"';
    const hevcSupported = video.canPlayType('video/mp4; codecs="hvc1"') !== '';
    const candidates = safariLike || ios
