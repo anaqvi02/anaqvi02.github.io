@@ -219,7 +219,7 @@
     {
       "engine": "chromium",
       "viewport": 390,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v12-mobile.webm",
+      "source": "https://anaqvi02.github.io/assets/hero-stella-v12-mobile.webm",
       "width": 512,
       "height": 512,
       "duration": 20,
@@ -230,7 +230,7 @@
     {
       "engine": "chromium",
       "viewport": 1440,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v12.webm",
+      "source": "https://anaqvi02.github.io/assets/hero-stella-v12.webm",
       "width": 768,
       "height": 768,
       "duration": 20,
@@ -241,7 +241,7 @@
     {
       "engine": "webkit",
       "viewport": 390,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v12-mobile.mov",
+      "source": "https://anaqvi02.github.io/assets/hero-stella-v12-mobile.mov",
       "width": 512,
       "height": 512,
       "duration": 20,
@@ -252,7 +252,7 @@
     {
       "engine": "webkit",
       "viewport": 1440,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v12.mov",
+      "source": "https://anaqvi02.github.io/assets/hero-stella-v12.mov",
       "width": 768,
       "height": 768,
       "duration": 20,

@@ -17,11 +17,15 @@ with tempfile.TemporaryDirectory(prefix='safari-',dir=root) as temp:
     subprocess.run(['swiftc','-module-cache-path',str(scratch/'swift-cache'),str(Path(__file__).with_name('encode-alpha.swift')),'-o',str(binary)],check=True)
     for stem,size,bitrate in clips:
         source=root/f'{stem}.webm';compatible=scratch/'compatible.mov'
-        subprocess.run(['ffmpeg','-v','error','-y','-c:v','libvpx-vp9','-i',str(source),'-an','-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','8','-threads','4',str(compatible)],check=True)
-        dest=root/f'{stem}.mov'
-        subprocess.run([str(binary),str(compatible),str(dest),str(size),str(bitrate)],check=True)
-        data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',str(dest)]))
-        s=data['streams'][0];assert s['width']==size and s['height']==size and s['r_frame_rate']==f'{fps}/1' and s['nb_read_frames']==str(frames)
-        data['bytes']=dest.stat().st_size;reports[stem]=data
-        compatible.unlink()
+        try:
+            subprocess.run(['ffmpeg','-v','error','-y','-c:v','libvpx-vp9','-i',str(source),'-an','-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','8','-threads','4',str(compatible)],check=True)
+            dest=root/f'{stem}.mov'
+            subprocess.run([str(binary),str(compatible),str(dest),str(size),str(bitrate)],check=True)
+            data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',str(dest)]))
+            s=data['streams'][0];assert s['width']==size and s['height']==size and s['r_frame_rate']==f'{fps}/1' and s['nb_read_frames']==str(frames)
+            data['bytes']=dest.stat().st_size;reports[stem]=data
+        finally:
+            compatible.unlink(missing_ok=True)
+            # AVFoundation can leave temporary safe-save copies beside the export.
+            for sidecar in root.glob(f"{stem}.mov.sb-*"):sidecar.unlink()
 (root/('safari-study-audit.json' if study else 'safari-audit.json')).write_text(json.dumps(reports,indent=2));print(json.dumps(reports))
