@@ -3,5 +3,17 @@
   "completion": 94,
   "updated": "2026-09-30",
   "deadline": "2026-10-14",
-  "personal_status": "slightly cooked."
+  "status_options": [
+    "Studying on ECON 101",
+    "Studying on COMMST 100",
+    "Studying on MATH 137",
+    "Studying on MATH 135",
+    "Studying on CS 135",
+    "Working on ECON 101",
+    "Working on COMMST 100",
+    "Working on MATH 137",
+    "Working on MATH 135",
+    "Working on CS 135",
+    "Working away on MTDI..."
+  ]
 }

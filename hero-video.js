@@ -40,9 +40,9 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-orb-v10-mobile' : 'hero-orb-v10';
+   const stem = mobileAsset ? 'hero-stella-v11-mobile' : 'hero-stella-v11';
   const candidates = safariLike || ios
-   ? []
+   ? [[`${stem}.mov`, 'video/quicktime; codecs="hvc1"']]
    : [[`${stem}.webm`, 'video/webm; codecs="vp9"']];
    if (!candidates.length) {
     failed = true;

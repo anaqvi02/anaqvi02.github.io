@@ -1,13 +1,11 @@
-# Hero sculpture and gemstone setting
+# Hero sculpture and Stella Octangula
 
-The hero keeps its approved three folded mercury bands around the smoked amethyst orb. The outer and middle bands carry six long, swept thorns with concave roots; the inner band stays clean around the orb so the metal does not read as random hooks crossing the center. The star, contained lightning, purple halftone finish and slow 20-second turn remain.
+Three approved folded mercury bands surround a faceted amethyst Stella Octangula. The outer and middle bands carry six long swept thorns with concave roots, backward-curving shoulders, narrow sharp tips, and continuous folded mirror faces. The inner band stays clean around the center. No fourth outer ring is present.
 
-The orb has a four-claw collet that reads like a gemstone setting: a narrow girdle rail sits against the stone, and four round, tapered claws grow from it, follow the dome, and hook over the crown. All setting parts stay fixed to the glass as it turns. The orbiting ribbons can pass in front of the stone as the sculpture turns, but the inner ribbon no longer carries inward hooks.
+Broad white studio reflections alternate with near-black troughs and violet edge light. These reflections make the folds legible and give the chrome volume. Do not turn the bands into flat wires, smooth plastic tubes, or uniformly grey metal.
 
-Inside the smoked glass, a turbulent purple photosphere is shaped as an uneven eight-point star, with a restrained corona and short flares. The whole stellar assembly spins independently twice during each 20-second loop while the orb completes one turn. Its rotation is checked at the loop seam.
+The previous glass sphere, plasma star, flares and gemstone collet are replaced by the exact Stella Octangula: the compound of two regular tetrahedra. Its eight tips rise from the eight faces of a central octahedron; the closed boundary has 14 vertices, 36 edges and 24 triangular faces. Alternating purple materials distinguish the two tetrahedra. Flat shading and hairline bevels preserve the geometry while catching reflections. The center rotates independently around a tilted axis once per 20-second loop.
 
-## Cloud render and delivery
+The three bands share a calm orbit while periodic local waves change the folded cross section. This keeps their relationship satisfying and prevents interpenetration. The preflight samples 301 poses for cross-band intersections, camera bounds, center clearance, manifold topology and exact loop closure. It also renders six poses and an isolated Stella for visual review.
 
-Render the scene on Modal, not on a local machine. L4 is the cost-efficient choice for the final 512px Cycles/OptiX source after benchmarking against L40S and H100. The source is rendered at 60fps (1,200 frames, 20 seconds). The browser gets 512px desktop and 320px mobile VP9-alpha clips at 30fps, with alpha preserved and strict size ceilings; the static WebP poster remains the Safari/iOS fallback until HEVC-alpha packaging is available.
-
-The preflight shows six loop views, a close view of the setting without the orbit bands, and a sampled collision audit across 301 poses plus the closing seam. The rail attaches at the claws’ roots and the star remains clearly visible in the glass. Review the integrated poster at thumbnail size and confirm the loop stays inside the frame and the bands do not intersect.
+Render on Modal L4 GPUs, never locally. Preserve the clean 1024px, 60fps, RGBA16 lossless master, rendered at 96 Cycles samples. Apply the fine purple screen and browser compression separately during local encoding. The browser plays compact 60fps alpha video, with a matching still for reduced motion and playback failures.

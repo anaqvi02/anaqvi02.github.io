@@ -16,31 +16,33 @@ Homepage selected work is curated separately; adding a gallery entry does not re
 
 ## Current status
 
-Edit `personal_status` in `status.json` to change the hero’s Current status readout (up to 80 characters). It refreshes from that file alongside mtdi progress, once per minute while the page is visible. It keeps the authored text if the file is unavailable or the value is invalid; the homepage HTML is the no-JavaScript fallback.
+Edit `status_options` in `status.json` to change the hero’s Current status choices. The page chooses one option at random on its first successful status-file load and keeps it for that page load; the once-per-minute refresh updates MTDI progress without rerolling the personal status. The homepage HTML contains a readable no-JavaScript fallback.
 
 ## Offline chrome hero
 
-The deterministic 3D sculpture has three asymmetric folded mirror-chrome ribbons and six long, concave-rooted thorns around smoked amethyst glass. Four tapered silver claws rise from a girdle rail and hook over the orb as a proper stone collet, fixed to the turning glass. Inside it, a textured eight-point star rotates independently twice per loop. The scene renders 1,200 native 60fps frames for a 20-second loop; compact browser delivery is 30fps. The browser plays video and never runs a 3D renderer.
+The deterministic sculpture has three folded mirror-chrome ribbons and six long, concave-rooted thorns surrounding a rotating Stella Octangula. The center is the exact compound of two regular tetrahedra: eight tips, 24 exposed triangular faces, and crisp amethyst facets. It replaces the former glass sphere, star effects, and collet. Both the ring sculpture and the center turn slowly through a seamless 20-second loop. The browser plays prerecorded media and never runs a 3D renderer.
 
-All 3D rendering runs on Modal GPUs through the authenticated CLI. The measured L4 preview was about 20% slower per frame than L40S for this Blender scene but cost about half as much; H100 performed far worse on the same Cycles/OptiX sample. `tools/render-hero.py` defines the Blender 4.5 scene; `tools/modal-hero.py` runs the preview/audit, eight bounded L4 frame workers, and a CPU export job:
+All 3D rendering runs on Modal L4 GPUs through the authenticated CLI. `tools/render-hero.py` defines the Blender 4.5 scene. `tools/modal-hero.py` produces six preflight views, an isolated center preview, and a geometry audit before rendering eight bounded frame ranges. The 1024px source contains 1,200 native 60fps RGBA16 frames at 96 Cycles samples with denoising.
 
 ```sh
 modal run tools/modal-hero.py --mode preflight
-modal run tools/modal-hero.py --mode render
-modal run tools/modal-hero.py --mode encode
+modal run --detach tools/modal-hero.py --mode render
+modal run --detach tools/modal-hero.py --mode master
 ```
 
-Inspect the six preflight views before the full render. The geometry audit samples 301 poses at 67 ms intervals and checks the closing seam for cross-band and prong intersections, shell clearance, camera bounds, and motion continuity. Concave thorn roots also receive visual inspection; the numeric collision test compares separate meshes. See [the thorn study](docs/hero-thorn-plan.md) for shape decisions.
+Detached jobs save their FunctionCall IDs in the private sibling `hero-render-v11/` directory. Poll those IDs before starting the master job. The Modal Volume `ali-hero-final-20261001` stores this version under `/stella-v11/`. The geometry audit samples 301 poses and checks the closing seam, cross-band intersections, center clearance, camera bounds, independent center rotation, and the Stella’s manifold topology. The six thorn roots also receive visual inspection; the numeric collision test compares separate meshes.
 
-The final Blender scene, source and manifest live in the Modal Volume `ali-hero-final-20261001`. Eight L4 workers render independent ranges. The CPU job verifies sequence, unique frames, transparent corners and media metadata; it applies deterministic diagonal purple halftone, fixed fine grain, and subtle red/cyan registration limited to the glass rim. Grading uses cloud-local scratch and six independent workers. The validated web exports and poster live under `/final/media/`; temporary full-resolution PNGs and previews are cleared after encoding to conserve volume storage.
+The cloud CPU job assembles an **ungraded lossless FFV1 master** at 1024px / 60fps with 16-bit color and alpha. It checks all 1,200 frames and compares decoded RGBA16 pixels with five source frames exactly. Preserve this master outside Git for future local encoding; no rerender is needed to change compression or print texture.
 
-Desktop and mobile VP9-alpha exports are 512px and 320px at 30fps. The encoder verifies all 600 delivered frames, transparency, 20-second duration, full-file decoding, and file-size ceilings of 2 MB desktop and 800 KB mobile. Safari and iOS retain the matching WebP poster until HEVC-alpha packaging runs on a compatible macOS host. Raw 60fps PNG frames are removed after the validated export; the Blender scene and generator remain available on Modal for a future rerender.
+```sh
+modal volume get ali-hero-final-20261001 /stella-v11/hero-stella-v11-lossless.mkv ../hero-render-v11/hero-stella-v11-lossless.mkv
+python3 tools/encode-stella.py ../hero-render-v11/hero-stella-v11-lossless.mkv --output-dir ../hero-render-v11/browser
+python3 tools/package-stella-safari.py ../hero-render-v11/browser
+```
 
-The optional `--mode preview` starts a token-protected L40S Jupyter sandbox with a one-hour maximum lifetime. Its authentication URL belongs only in the private local access file. Use `--mode stop-notebook` when finished to avoid idle GPU billing. The bounded preflight is sufficient for ordinary rendering without an idle notebook.
+Local encoding adds a restrained fixed purple halftone at 18% ink without random grain. The desktop and mobile browser clips use 768px and 512px at native 60fps, preserving the 20-second orbit speed. VP9-alpha serves Chromium/Firefox; HEVC-alpha serves Safari/iOS. Only compact browser files and their matching WebP poster belong in `assets/`. Temporary ProRes intermediates are deleted automatically. Keep one private lossless master, the scene, source, and audit; remove raw frame sequences after verifying the downloaded master and deployed exports.
 
-The matching WebP poster loads immediately. `hero-video.js` loads a clip only when visible and motion is enabled. Hero/footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs and blocked playback preserve the poster; hidden tabs and offscreen playback suspend the clip. Name and portrait interactions stay independent.
-
-The public `hero-studies/` page offers manual playback of the current 30fps compact finish. `tools/encode-hero.py` supports lower-rate experiments using exact frame subsampling, never interpolation. Prior local render runs and obsolete published clips are removed after final verification; keep the current cloud master, source, poster and browser exports.
+`hero-video.js` loads only the appropriate clip when visible and motion is enabled. Hero/footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs and blocked playback preserve the matching poster; hidden tabs and offscreen playback suspend the clip. Name and portrait interactions stay independent. The public `hero-studies/` page offers manual playback of the current finish.
 
 ## Design language
 

@@ -169,6 +169,25 @@
    const eta = readEta(node.dataset.deadline);
    if (eta) node.textContent = 'ETA / ' + eta;
   });
+  let personalStatusSelected = false;
+  const setPersonalStatus = value => {
+   const match = /^(Studying|Working) on (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.exec(value)
+    || /^(Working away on )(MTDI)(\.\.\.)$/.exec(value);
+   if (!match) return;
+   document.querySelectorAll('[data-personal-status]').forEach(node => {
+    node.replaceChildren();
+    if (match.length === 4 && match[3] === '...') {
+     node.append(document.createTextNode(match[1]));
+     const accent = document.createElement('span'); accent.className = 'status-accent'; accent.textContent = match[2];
+     node.append(accent, document.createTextNode(match[3]));
+    } else {
+     node.append(document.createTextNode(match[1] + ' on '));
+     const accent = document.createElement('span'); accent.className = 'status-accent'; accent.textContent = match[2];
+     node.append(accent);
+    }
+   });
+   personalStatusSelected = true;
+  };
   const updateProgress = async () => {
    if (document.hidden) return;
    updateEta();
@@ -177,10 +196,10 @@
     if (!response.ok) return;
     const status = await response.json();
     if (status.project !== 'mtdi') return;
-    // Personal copy updates independently of the project's numeric progress.
-    if (typeof status.personal_status === 'string') {
-     const personal = status.personal_status.trim();
-     if (personal && personal.length <= 80) document.querySelectorAll('[data-personal-status]').forEach(node => { node.textContent = personal; });
+    // Choose once per page load; periodic progress refreshes never reroll the status.
+    if (!personalStatusSelected && Array.isArray(status.status_options)) {
+     const options = status.status_options.filter(value => typeof value === 'string' && (/^(Studying|Working) on (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.test(value) || value === 'Working away on MTDI...'));
+     if (options.length) setPersonalStatus(options[Math.floor(Math.random() * options.length)]);
     }
     if (!Number.isFinite(status.completion) || status.completion < 0 || status.completion > 100) return;
     document.querySelectorAll('[data-progress-value]').forEach(node => {

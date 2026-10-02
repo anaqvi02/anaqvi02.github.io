@@ -28,7 +28,7 @@ let firstBytes = CVPixelBufferGetBaseAddress(firstImage)!.assumingMemoryBound(to
 let cornerAlpha = firstBytes[3]
 CVPixelBufferUnlockBaseAddress(firstImage, .readOnly)
 guard cornerAlpha <= 2 else {
-    throw NSError(domain: "hero-alpha", code: 4, userInfo: [NSLocalizedDescriptionKey: "ProRes alpha decoded as opaque. Normalize the cloud master with package-safari.py first."])
+    throw NSError(domain: "hero-alpha", code: 4, userInfo: [NSLocalizedDescriptionKey: "ProRes alpha decoded as opaque. Repack the input with 8-bit ProRes alpha before HEVC encoding."])
 }
 var pendingFirstSample: CMSampleBuffer? = firstSample
 let destination = URL(fileURLWithPath: args[2])

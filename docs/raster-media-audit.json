@@ -1,53 +1,160 @@
 {
-  "source_frames": 1200,
-  "source_fps": 60,
-  "source_size": 512,
-  "delivery_fps": 30,
-  "duration_seconds": 20,
-  "unique_frames": 1200,
-  "alpha_corners": 0,
-  "bounds": [
-    92,
-    58,
-    484,
-    459
-  ],
-  "clips": {
-    "hero-orb-v10": {
+  "version": 11,
+  "vp9": {
+    "source": "hero-stella-v11-lossless.mkv",
+    "source_sha256": "4aa3a0daeeeec5bb05803f867b0bacbddf02b4056c5c6235007ecd8e4911e229",
+    "finish": "fine halftone on violet surfaces at 18% ink; no grain",
+    "clips": {
+      "hero-stella-v11": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 768,
+            "height": 768,
+            "r_frame_rate": "60/1",
+            "nb_read_frames": "1200",
+            "tags": {
+              "alpha_mode": "1"
+            }
+          }
+        ],
+        "format": {
+          "duration": "20.000000"
+        },
+        "bytes": 4467236,
+        "crf": 34,
+        "target_bitrate": 1100000
+      },
+      "hero-stella-v11-mobile": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 512,
+            "height": 512,
+            "r_frame_rate": "60/1",
+            "nb_read_frames": "1200",
+            "tags": {
+              "alpha_mode": "1"
+            }
+          }
+        ],
+        "format": {
+          "duration": "20.000000"
+        },
+        "bytes": 2015496,
+        "crf": 36,
+        "target_bitrate": 450000
+      }
+    }
+  },
+  "hevc_alpha": {
+    "hero-stella-v11": {
       "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 768,
+          "height": 768,
+          "r_frame_rate": "60/1",
+          "nb_read_frames": "1200"
+        }
+      ],
+      "format": {
+        "duration": "20.000000"
+      },
+      "bytes": 5092701
+    },
+    "hero-stella-v11-mobile": {
+      "programs": [],
+      "stream_groups": [],
       "streams": [
         {
           "width": 512,
           "height": 512,
-          "r_frame_rate": "30/1",
-          "nb_read_frames": "600",
-          "tags": {
-            "alpha_mode": "1"
-          }
+          "r_frame_rate": "60/1",
+          "nb_read_frames": "1200"
         }
       ],
       "format": {
         "duration": "20.000000"
       },
-      "bytes": 1823216
-    },
-    "hero-orb-v10-mobile": {
-      "programs": [],
-      "streams": [
-        {
-          "width": 320,
-          "height": 320,
-          "r_frame_rate": "30/1",
-          "nb_read_frames": "600",
-          "tags": {
-            "alpha_mode": "1"
-          }
-        }
-      ],
-      "format": {
-        "duration": "20.000000"
-      },
-      "bytes": 793843
+      "bytes": 2766625
     }
-  }
+  },
+  "first_frame_compression": {
+    "rgb_mae_on_opaque_pixels": 3.900582173331248,
+    "rgb_p95_on_opaque_pixels": 12.0,
+    "corner_alpha": 0
+  },
+  "temporal_compression": [
+    {
+      "frame": 301,
+      "rgb_mae": 9.437267058027468,
+      "rgb_p95": 34.0,
+      "corner_alpha": 0,
+      "previous_encoder_rgb_mae": 9.773819059636802
+    },
+    {
+      "frame": 601,
+      "rgb_mae": 8.25112955575573,
+      "rgb_p95": 29.0,
+      "corner_alpha": 0,
+      "previous_encoder_rgb_mae": 8.567948497976808
+    },
+    {
+      "frame": 901,
+      "rgb_mae": 8.086340906318952,
+      "rgb_p95": 29.0,
+      "corner_alpha": 0,
+      "previous_encoder_rgb_mae": 8.388314169872897
+    }
+  ],
+  "browser_playback": [
+    {
+      "engine": "chromium",
+      "viewport": 390,
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v11-mobile.webm",
+      "width": 512,
+      "height": 512,
+      "duration": 20,
+      "rate": 1,
+      "alpha": 0,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": 1440,
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v11.webm",
+      "width": 768,
+      "height": 768,
+      "duration": 20,
+      "rate": 1,
+      "alpha": 0,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": 390,
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v11-mobile.mov",
+      "width": 512,
+      "height": 512,
+      "duration": 20,
+      "rate": 1,
+      "alpha": 0,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": 1440,
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v11.mov",
+      "width": 768,
+      "height": 768,
+      "duration": 20,
+      "rate": 1,
+      "alpha": 0,
+      "overflow": false
+    }
+  ]
 }

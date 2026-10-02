@@ -1,0 +1,37 @@
+{
+  "frames_checked": 301,
+  "frame_stride": 4,
+  "stella_vertices": 14,
+  "stella_faces": 24,
+  "stella_tips": 8,
+  "stella_closed_manifold": true,
+  "stella_radius": 1.02,
+  "stellar_spin_loop_delta": 1.932543938210074e-07,
+  "actual_stella_rotation": 0.967587411403656,
+  "stellar_turns_per_loop": 1,
+  "min_core_clearance": 0.47768767367208986,
+  "triangle_collision_pairs_checked": 903,
+  "radial_lanes": {
+    "Outer folded chrome blade": [
+      3.0084230205627014,
+      4.872988330876335
+    ],
+    "Middle swept mirror blade": [
+      2.23408419388093,
+      3.3106418252339775
+    ],
+    "Inner folded mercury blade": [
+      1.55768767367209,
+      2.003826653392751
+    ]
+  },
+  "projection_half_extent": 0.44427290327340097,
+  "loop_mesh_delta": 0.0,
+  "actual_mesh_deformation": 0.4264819622039795,
+  "shared_turns_per_loop": 1,
+  "profile_half_depths": [
+    0.115,
+    0.1,
+    0.08
+  ]
+}

@@ -1143,10 +1143,11 @@ body{background-image:none}
 .page-shell,.project-page .page-shell{width:100%;max-width:none;margin:0;padding-inline:0}
 
 /* Personal status shares the project's readout language, with the handwritten voice intact. */
+.hero-status .status-accent{color:var(--red);white-space:nowrap}
 .hero-status{align-self:flex-start;min-width:0;max-width:95%;margin:clamp(40px,4vw,64px) 0 10px 5%;position:relative;z-index:2}
 .hero-status-label{display:flex;align-items:center;gap:8px;font-size:.75rem;line-height:1.4;color:var(--red);letter-spacing:.08em}
 .hero-status-dot{display:inline-block;width:6px;height:6px;background:var(--red);box-shadow:0 0 0 3px #af304711;flex-shrink:0}
-.hero-status .hero-script{margin:12px 0 0;align-self:auto;white-space:normal;overflow-wrap:anywhere}
+.hero-status .hero-script{margin:12px 0 0;align-self:auto;white-space:normal;overflow-wrap:anywhere;text-wrap:balance}
 @media(max-width:1100px){.hero-status{margin-top:30px}}
 @media(max-width:700px){.hero-status{margin:28px 0 10px 3%;max-width:97%}.hero-status .hero-script{margin-top:12px}}
 
@@ -1259,3 +1260,13 @@ html.motion-paused .hero-type .name-line{transition:none}
 .contact-links a:hover .contact-link-trace,.contact-links a:focus-visible .contact-link-trace{opacity:.9}
 @media(prefers-reduced-motion:reduce){.circuit-pulse,.about-current{animation:none!important;opacity:0!important}.contact-link-trace .trace-bed{opacity:.65}}
 @media(max-width:700px){.cyber-schematic>path.circuit-pulse:nth-child(-n+6){display:initial}}
+
+/* Keep the current-project readout compact and legible on phone screens. */
+@media(max-width:700px){
+ .hero-proof{width:100%;max-width:100%;padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center}
+ .hero-proof>.mono:first-child{grid-column:1;grid-row:1;min-width:0;overflow-wrap:anywhere;font-size:.6875rem}
+ .hero-proof .proof-measure{grid-column:2;grid-row:1/4;font-size:2rem;align-self:center;margin:0}
+ .hero-proof .proof-measure>span{font-size:.95rem}
+ .hero-proof .status-meter{grid-column:1;grid-row:2;width:100%;margin:0}
+ .hero-proof .progress-eta{grid-column:1;grid-row:3;font-size:.6875rem;margin:0}
+}

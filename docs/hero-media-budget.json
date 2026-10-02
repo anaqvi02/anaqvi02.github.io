@@ -1,27 +1,42 @@
 {
-  "sculpture_version": 10,
+  "sculpture_version": 11,
   "duration_seconds": 20,
+  "source_size": 1024,
   "source_fps": 60,
   "source_frames": 1200,
-  "delivery_fps": 30,
-  "delivered_frames": 600,
+  "source_bit_depth": 16,
+  "source_samples": 96,
+  "delivery_fps": 60,
+  "delivered_frames": 1200,
   "alpha": true,
-  "orb_setting": "Four silver claws on a narrow girdle rail, all attached to the orb",
-  "stellar_core": "Uneven eight-point photosphere; two independent rotations per loop",
+  "center": "Exact rotating Stella Octangula replacing the sphere/star/collet",
+  "finish": "fine halftone on violet surfaces at 18% ink; no grain",
+  "master_outside_git": true,
+  "safari_hevc_alpha_ready": true,
   "clips": {
-    "hero-orb-v10.webm": {
+    "hero-stella-v11.webm": {
+      "width": 768,
+      "height": 768,
+      "bytes": 4467236,
+      "budget_bytes": 5000000
+    },
+    "hero-stella-v11-mobile.webm": {
       "width": 512,
       "height": 512,
-      "bytes": 1823216,
-      "budget_bytes": 2000000
+      "bytes": 2015496,
+      "budget_bytes": 2300000
     },
-    "hero-orb-v10-mobile.webm": {
-      "width": 320,
-      "height": 320,
-      "bytes": 793843,
-      "budget_bytes": 800000
+    "hero-stella-v11.mov": {
+      "width": 768,
+      "height": 768,
+      "bytes": 5092701,
+      "budget_bytes": 5500000
+    },
+    "hero-stella-v11-mobile.mov": {
+      "width": 512,
+      "height": 512,
+      "bytes": 2766625,
+      "budget_bytes": 3000000
     }
-  },
-  "safari_hevc_alpha_ready": false,
-  "safari_note": "The matching WebP poster is used until HEVC-alpha packaging runs on a compatible macOS host."
+  }
 }

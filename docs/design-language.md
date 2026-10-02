@@ -6,7 +6,7 @@ This guide records the intended direction and the current foundation; it does no
 
 ## The visual idea
 
-The portfolio has two registers. **Fieldnotes** organize information through editorial spacing, rules, captions, project labels, and human handwriting. **Chrome** appears as a singular sculptural event: thick, folded thorn-like ribbons with swept ends and deep black-to-mirror contrast, rotating around a smoked purple orb. A turbulent star stays contained inside the shell. The object should feel weighty and reflective, not like a thin wire logo or pasted-on sticker.
+The portfolio has two registers. **Fieldnotes** organize information through editorial spacing, rules, captions, project labels, and human handwriting. **Chrome** appears as a singular sculptural event: thick, folded thorn-like ribbons with swept ends and deep black-to-mirror contrast, rotating around a faceted purple Stella Octangula. Its exact eight-point geometry supplies the quiet center. The object should feel weighty and reflective, not like a thin wire logo or pasted-on sticker.
 
 Circuit paths and screen-print marks behave like annotations: they point, register, measure, and frame. Keep the paper calm enough that the sculpture reads immediately and the work remains easy to scan.
 
@@ -17,12 +17,12 @@ Circuit paths and screen-print marks behave like annotations: they point, regist
 | Paper | `#f5f3ed` | Main page ground; the largest color area and the source of warmth. |
 | Surface | `#faf8f3` | Quiet raised reading areas, if a surface is needed. |
 | Ink | `#292630` | Primary text, dark artwork contrast, and occasional dark field. |
-| Violet | `#5e3bc4` | Structural anchor: section headings, circuit paths, project identity, and the orb’s surrounding atmosphere. |
+| Violet | `#5e3bc4` | Structural anchor: section headings, circuit paths, project identity, and the sculpture’s surrounding atmosphere. |
 | Signal red | `#af3047` | A recurring second signal: status, action, selected traces, registration marks, active rules, and small emphasis. |
 | Muted | `#6c6572` | Secondary prose and annotations. |
 | Rule | `#d3cfd5` | Quiet dividers and technical baselines. |
 
-Red should recur throughout the page as a deliberate system. Give each major section at least one role—status marker, rule segment, active circuit path, label, or registration corner—while varying size and placement. Keep most marks small and precise. Violet remains the chromatic anchor and cream the readable base. In the sculpture, near-black reflections make the chrome legible against the pale page and purple shell.
+Red should recur throughout the page as a deliberate system. Give each major section at least one role—status marker, rule segment, active circuit path, label, or registration corner—while varying size and placement. Keep most marks small and precise. Violet remains the chromatic anchor and cream the readable base. In the sculpture, near-black reflections make the chrome legible against the pale page and amethyst center.
 
 ## Typography hierarchy
 
@@ -54,14 +54,14 @@ Chromatic aberration is a purposeful registration error. Use restrained magenta/
 
 ## Page-specific expression
 
-- **Hero:** Establish name first, then the status/readout, then the sculpture. Keep the sculpture’s folded thorn chrome substantial, black-contrasted, and cleanly silhouetted; preserve the smoked purple orb and fully contained star. Give the name a restrained dark-purple halftone in the lower third of each glyph, clipped to the text so its violet fill, depth shadow, and registration fringes remain legible. Set the glass like a gemstone, with four tapered silver claws growing from a narrow girdle rail and curling over the crown. The setting turns with the orb. Inside, the eight-point star spins twice through the 20-second loop. Place local violet atmosphere and halftone behind the sculpture’s transparent edges. Circuit detail should sit toward the stage perimeter. Keep the motion control clear and close to the artwork.
+- **Hero:** Establish name first, then the status/readout, then the sculpture. Keep folded thorn chrome substantial, black-contrasted, and cleanly silhouetted around the exact purple Stella Octangula. Let its flat facets and eight tips read clearly; do not add cloudy star effects over the geometry. Give the name restrained dark-purple halftone in the lower third of each glyph, clipped to the text so its violet fill, depth shadow, and registration fringes remain legible. Place local violet atmosphere and halftone behind the sculpture’s transparent edges. Circuit detail should sit toward the stage perimeter. Keep the motion control clear and close to the artwork.
 - **Selected work:** Let each project have a distinct mark and one or two graphic cues that relate to its subject. Apply red consistently to labels, active traces, or selection cues across the set. Keep card backgrounds related to the project rather than forcing a chrome treatment onto them. Use a quiet grid and aligned metadata to make the gallery feel curated.
 - **About:** Pair portrait registration and sparse circuit notation with genuinely open space for the story. One strong heading, one image treatment, selective red markers, and a readable text column are enough. Avoid stacking clipped boxes around the lead, story, and every interest list.
 - **Connect:** Treat contact choices like clear links in the same information system. Use a red active edge or signal line and a small violet schematic if useful; keep text and interaction state primary.
 
 ## Motion and interaction
 
-Motion should explain arrival, state, or physical form. The offline, alpha-preserving hero loop turns once per 20 seconds; the 60 fps cloud master is reduced to a compact 30 fps browser delivery (600 unique frames) without changing the 20-second orbit speed. The stellar core spins twice inside the orb. Preserve the still poster and keep the star inside the glass. Prefer a clear page-arrival fade to jitter, flashing, or cascades. A signal path can travel slowly; a link underline can appear on hover or focus. Do not animate every element at once.
+Motion should explain arrival, state, or physical form. The offline, alpha-preserving hero loop turns once per 20 seconds; the lossless 60 fps cloud master becomes compact 60 fps browser delivery without changing the 20-second orbit speed. The Stella turns independently around a tilted axis. Preserve a matching still poster. Prefer a clear page-arrival fade to jitter, flashing, or cascades. A signal path can travel slowly; a link underline can appear on hover or focus. Do not animate every element at once.
 
 Respect pause controls and `prefers-reduced-motion`. Reduced motion should leave a composed still, not hide useful information. Pointer response should be limited to a gentle registration shift on the portrait or other explicit target, never page-wide movement or image rotation. Keyboard focus remains visible and functional.
 

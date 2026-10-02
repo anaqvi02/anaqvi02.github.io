@@ -1,0 +1,28 @@
+{
+  "master": "hero-stella-v11-lossless.mkv",
+  "bytes": 926093646,
+  "source_pixel_matches": [
+    1,
+    301,
+    601,
+    901,
+    1200
+  ],
+  "sha256": "4aa3a0daeeeec5bb05803f867b0bacbddf02b4056c5c6235007ecd8e4911e229",
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "ffv1",
+        "width": 1024,
+        "height": 1024,
+        "pix_fmt": "gbrap16le",
+        "r_frame_rate": "60/1",
+        "nb_read_frames": "1200"
+      }
+    ],
+    "format": {
+      "duration": "20.000000"
+    }
+  }
+}
