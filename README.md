@@ -20,17 +20,20 @@ Edit `personal_status` in `status.json` to change the hero’s Current status re
 
 ## Offline chrome hero
 
-The hero is a deterministic, pre-rendered 3D sculpture: three asymmetric folded chrome ribbons carry nine long swept needles around a violet glass thunder orb. Broad mirror faces, narrow return edges and pinched folds catch silver highlights against black and saturated violet reflections. The sculpture makes one shared turn per encoded 16-second cycle; gentle local waves keep the bands flowing without the previous rapid independent spinning. Browser playback runs at 0.8 speed (a 20-second visual loop). The rotating storm retains periodically evolving clouds and branching lightning. No 3D renderer runs in the browser.
+The hero is a deterministic, pre-rendered 3D sculpture: three asymmetric folded chrome ribbons carry nine long swept needles around a smoked amethyst orb. The approved ribbon shape, camera and studio reflections stay intact. Inside the darker glass, a compact star has a continuously changing molten photosphere, curved coronal flares, a faint plasma atmosphere and small orbiting embers. Every energy feature stays inside the shell; star bloom is masked to the visible glass silhouette. The sculpture completes one calm turn per 20 seconds at 12fps with a diagonal halftone print finish and gentle local ribbon flow. No 3D renderer runs in the browser.
 
-`tools/render-hero.py` creates the Blender scene and renders 384 transparent PNG frames at 768px and 24fps. Use Blender 4.5, with Metal acceleration when available:
+`tools/render-hero.py` creates the Blender scene and renders 1,200 transparent PNG frames at 768px and 60fps. Use Blender 4.5, with Metal acceleration when available:
 
 ```sh
 blender --background --factory-startup --python tools/render-hero.py -- preview 768
 blender --background --factory-startup --python tools/render-hero.py -- render 768
 blender --background --factory-startup --python tools/render-hero.py -- audit 768
-python3 tools/encode-hero.py work/hero-render
+python3 tools/encode-hero.py work/hero-render screenprint
+python3 tools/compare-hero-print.py work/hero-render
 ```
 
-The audit checks all 385 poses for actual triangle intersections between ribbons, core containment and camera clearance, then verifies loop, thunder, cloud, and orb-rotation closure between frames 1 and 385. It writes the measurements to `geometry-audit.json`. Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. The bake includes fixed fine grain, a subtle fixed purple halftone, and slight optical color separation.
+The audit checks all 1,201 poses for actual triangle intersections between ribbons, core containment and camera clearance, then verifies loop, thunder, cloud, and orb-rotation closure between frames 1 and 1,201. It writes the measurements to `geometry-audit.json`. Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. The published finish samples every fifth native frame for 240 frames across the same 20-second orbit. Shadow-dependent diagonal purple halftone dots and fixed fine grain are baked into the transparent media. The optional smooth encoding preserves all 1,200 frames at 60fps.
 
 The matching WebP still loads immediately. `hero-video.js` loads clips only when visible and motion is enabled. The hero and footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs, and blocked playback preserve the still; hidden tabs and offscreen playback are suspended. Nothing about the video changes the name or portrait interactions.
+
+After also encoding with `smooth`, the optional comparison exporter writes a private 12fps diagonal screen-print study beside the native 60fps clip in the render directory’s `comparison/` folder. Its Play/Pause page supports both WebM and Safari HEVC-alpha. It does not change published assets.

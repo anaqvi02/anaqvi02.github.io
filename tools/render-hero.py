@@ -9,9 +9,10 @@ ROOT=Path(os.environ.get('ALI_HERO_RENDER_DIR',str(Path(__file__).resolve().pare
 (ROOT/'frames').mkdir(parents=True,exist_ok=True)
 args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 MODE=args[0] if args else 'preview'; SIZE=int(args[1]) if len(args)>1 else 768
-TAU,FRAMES=math.tau,384
+TAU,FPS,SECONDS=math.tau,60,20
+FRAMES=FPS*SECONDS
 CORE_RADIUS=1.08
-STORM_ORIGIN=Vector((.12,-.18,.07))
+STORM_ORIGIN=Vector((0,0,0))
 def clock(frame):return TAU*(frame-1)/FRAMES
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 scene=bpy.context.scene;scene.render.engine='CYCLES'
@@ -23,7 +24,7 @@ try:
     if any(d.type=='METAL' for d in prefs.devices):scene.cycles.device='GPU'
 except Exception as error:print('CPU fallback',error)
 scene.render.resolution_x=SIZE;scene.render.resolution_y=SIZE;scene.render.resolution_percentage=100
-scene.render.fps=24;scene.frame_start=1;scene.frame_end=FRAMES;scene.render.film_transparent=True
+scene.render.fps=FPS;scene.frame_start=1;scene.frame_end=FRAMES;scene.render.film_transparent=True
 scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGBA';scene.render.image_settings.color_depth='8'
 scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast';scene.view_settings.exposure=.10
 scene.world.use_nodes=True;world=scene.world.node_tree.nodes.get('Background')
@@ -49,9 +50,9 @@ mercury,metal=material('Polished liquid mirror silver',(.94,.95,.98),1,.028)
 metal.inputs['Coat Weight'].default_value=.16;metal.inputs['Coat Roughness'].default_value=.045
 glass=bpy.data.materials.new('Clear amethyst crystal');glass.use_nodes=True
 gn,gl=glass.node_tree.nodes,glass.node_tree.links;gn.clear();surface=gn.new('ShaderNodeBsdfGlass')
-surface.inputs['Color'].default_value=(.88,.36,1,1);surface.inputs['Roughness'].default_value=.025;surface.inputs['IOR'].default_value=1.40
+surface.inputs['Color'].default_value=(.56,.12,.82,1);surface.inputs['Roughness'].default_value=.025;surface.inputs['IOR'].default_value=1.28
 gout=gn.new('ShaderNodeOutputMaterial');gl.new(surface.outputs[0],gout.inputs['Surface'])
-absorb=gn.new('ShaderNodeVolumeAbsorption');absorb.inputs['Color'].default_value=(.52,.01,.92,1);absorb.inputs['Density'].default_value=1.8
+absorb=gn.new('ShaderNodeVolumeAbsorption');absorb.inputs['Color'].default_value=(.24,.008,.46,1);absorb.inputs['Density'].default_value=1.25
 gl.new(absorb.outputs[0],gout.inputs['Volume'])
 # A rotating, lightly rippled glass skin makes the sphere's turn readable.
 glass_coords=gn.new('ShaderNodeTexCoord');glass_noise=gn.new('ShaderNodeTexNoise')
@@ -139,7 +140,7 @@ def sphere(name,radius,mat,location=(0,0,0)):
     for p in obj.data.polygons:p.use_smooth=True
     return obj
 orb_axis=bpy.data.objects.new('Rotating glass ball and storm',None);scene.collection.objects.link(orb_axis)
-sphere('Rotating rippled glass thunder orb',CORE_RADIUS,glass).parent=orb_axis
+orb_shell=sphere('Rotating rippled glass thunder orb',CORE_RADIUS,glass);orb_shell.parent=orb_axis;orb_shell.pass_index=1
 # Evolving translucent cloud depth, not a static texture rotating on a sphere.
 cloud=bpy.data.materials.new('Evolving violet cloud volume');cloud.use_nodes=True
 nodes,links=cloud.node_tree.nodes,cloud.node_tree.links;nodes.clear()
@@ -147,27 +148,58 @@ coords=nodes.new('ShaderNodeTexCoord');mapping=nodes.new('ShaderNodeMapping');li
 mapping.inputs['Scale'].default_value=(1.4,.7,1.7)
 noise=nodes.new('ShaderNodeTexNoise');noise.noise_dimensions='4D';noise.inputs['Scale'].default_value=3.1;noise.inputs['Detail'].default_value=3
 links.new(mapping.outputs['Vector'],noise.inputs['Vector'])
-density=nodes.new('ShaderNodeMath');density.operation='MULTIPLY';density.inputs[1].default_value=1.25;links.new(noise.outputs['Fac'],density.inputs[0])
-volume=nodes.new('ShaderNodeVolumePrincipled');volume.inputs['Color'].default_value=(.29,.045,.53,1);links.new(density.outputs[0],volume.inputs['Density'])
+density=nodes.new('ShaderNodeMath');density.operation='MULTIPLY';density.inputs[1].default_value=.60;links.new(noise.outputs['Fac'],density.inputs[0])
+volume=nodes.new('ShaderNodeVolumePrincipled');volume.inputs['Color'].default_value=(.055,.002,.13,1);links.new(density.outputs[0],volume.inputs['Density'])
 plasma=nodes.new('ShaderNodeValToRGB');plasma.color_ramp.elements[0].position=.35;plasma.color_ramp.elements[0].color=(.025,.002,.10,1)
 plasma.color_ramp.elements[1].position=.65;plasma.color_ramp.elements[1].color=(.50,.016,1,1)
-links.new(noise.outputs['Fac'],plasma.inputs['Fac']);links.new(plasma.outputs['Color'],volume.inputs['Emission Color']);volume.inputs['Emission Strength'].default_value=.35
+links.new(noise.outputs['Fac'],plasma.inputs['Fac']);links.new(plasma.outputs['Color'],volume.inputs['Emission Color']);volume.inputs['Emission Strength'].default_value=.025
 out=nodes.new('ShaderNodeOutputMaterial');links.new(volume.outputs[0],out.inputs['Volume']);sphere('Rotating cloud depth inside crystal',1.00,cloud).parent=orb_axis
 def curve(name,points,thickness,mat):
     data=bpy.data.curves.new(name,'CURVE');data.dimensions='3D';data.bevel_depth=thickness;data.bevel_resolution=2
     spline=data.splines.new('POLY');spline.points.add(len(points)-1)
     for point,v in zip(spline.points,points):point.co=(*v,1)
     obj=bpy.data.objects.new(name,data);scene.collection.objects.link(obj);data.materials.append(mat);return obj
+# A textured stellar photosphere replaces the old white point and radial spokes.
+star=bpy.data.materials.new('Turbulent confined violet star');star.use_nodes=True
+sn,sl=star.node_tree.nodes,star.node_tree.links;sn.clear()
+scoords=sn.new('ShaderNodeTexCoord');star_mapping=sn.new('ShaderNodeMapping');sl.new(scoords.outputs['Generated'],star_mapping.inputs['Vector'])
+star_noise=sn.new('ShaderNodeTexNoise');star_noise.noise_dimensions='4D';star_noise.inputs['Scale'].default_value=5.4;star_noise.inputs['Detail'].default_value=5;star_noise.inputs['Roughness'].default_value=.72
+sl.new(star_mapping.outputs['Vector'],star_noise.inputs['Vector'])
+star_ramp=sn.new('ShaderNodeValToRGB');ramp=star_ramp.color_ramp
+for e in list(ramp.elements)[1:]:ramp.elements.remove(e)
+ramp.elements[0].position=.26;ramp.elements[0].color=(.008,.0005,.025,1)
+for position,color in [(.43,(.025,.0006,.09,1)),(.54,(.30,.008,.80,1)),(.60,(.90,.40,1,1)),(.67,(1,.90,.98,1))]:ramp.elements.new(position).color=color
+sl.new(star_noise.outputs['Fac'],star_ramp.inputs['Fac'])
+star_emit=sn.new('ShaderNodeEmission');star_emit.inputs['Strength'].default_value=32;sl.new(star_ramp.outputs['Color'],star_emit.inputs['Color'])
+star_out=sn.new('ShaderNodeOutputMaterial');sl.new(star_emit.outputs[0],star_out.inputs['Surface'])
+star_obj=sphere('Roiling star photosphere',.31,star);star_obj.parent=orb_axis
+star_base=[v.co.copy() for v in star_obj.data.vertices]
+# A dim plasma atmosphere gives the compact star a soft, irregular corona.
+corona=bpy.data.materials.new('Confined stellar atmosphere');corona.use_nodes=True
+cn,cl=corona.node_tree.nodes,corona.node_tree.links;cn.clear()
+cc=cn.new('ShaderNodeTexCoord');cnoise=cn.new('ShaderNodeTexNoise');cnoise.inputs['Scale'].default_value=5;cnoise.inputs['Detail'].default_value=3
+cl.new(cc.outputs['Generated'],cnoise.inputs['Vector'])
+cdensity=cn.new('ShaderNodeMath');cdensity.operation='MULTIPLY';cdensity.inputs[1].default_value=.20;cl.new(cnoise.outputs['Fac'],cdensity.inputs[0])
+cv=cn.new('ShaderNodeVolumePrincipled');cv.inputs['Color'].default_value=(.28,.01,.66,1);cl.new(cdensity.outputs[0],cv.inputs['Density'])
+cv.inputs['Emission Color'].default_value=(.55,.012,1,1);cv.inputs['Emission Strength'].default_value=1.1
+co=cn.new('ShaderNodeOutputMaterial');cl.new(cv.outputs[0],co.inputs['Volume'])
+sphere('Small plasma atmosphere around star',.44,corona).parent=orb_axis
 random.seed(62);arcs=[]
-for k in range(12):
-    end=Vector((random.uniform(-1,1),random.uniform(-1,1),random.uniform(-1,1))).normalized()*.89
-    jitter=[Vector((random.uniform(-1,1),random.uniform(-1,1),random.uniform(-1,1))) for _ in range(24)]
-    mat,node=emission(f'Lightning channel {k}',(.58,.025,1) if k%4 else (.88,.5,1),10)
-    obj=curve(f'Internal forked thunder {k}',[(0,0,0)]*24,.009 if k%4 else .013,mat)
-    branches=[curve(f'Thunder branch {k}-{j}',[(0,0,0)]*12,.0045,mat) for j in range(2)]
-    for child in [obj,*branches]:child.parent=orb_axis
-    arcs.append((obj,branches,end,jitter,node,k*.83))
-sphere('Orbiting lightning heart',.065,hot_material,STORM_ORIGIN).parent=orb_axis
+for k in range(7):
+    direction=Vector((random.uniform(-1,1),random.uniform(-1,1),random.uniform(-1,1))).normalized()
+    reference=Vector((0,0,1)) if abs(direction.z)<.8 else Vector((1,0,0))
+    tangent=direction.cross(reference).normalized();side=direction.cross(tangent).normalized()
+    mat,node=emission(f'Coronal prominence {k}',(.47,.018,1) if k%3 else (.90,.36,1),8)
+    obj=curve(f'Curved confined stellar flare {k}',[(0,0,0)]*64,.0055 if k%3 else .008,mat)
+    obj.parent=orb_axis
+    arcs.append((obj,[],direction,tangent,side,k*.87))
+particles=[]
+for k in range(24):
+    direction=Vector((random.uniform(-1,1),random.uniform(-1,1),random.uniform(-1,1))).normalized()
+    radius=random.uniform(.39,.80);mat,node=emission(f'Contained ember {k}',(.64,.065,1),3)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=.0045 if k%3 else .007)
+    obj=bpy.context.object;obj.name=f'Confined stellar ember {k}';obj.data.materials.append(mat);obj.parent=orb_axis
+    particles.append((obj,node,direction,radius,k*.91))
 def aim(obj):obj.rotation_euler=(-obj.location).to_track_quat('-Z','Y').to_euler()
 def area(name,location,color,power,sx,sy):
     data=bpy.data.lights.new(name,'AREA');data.energy=power;data.color=color;data.shape='RECTANGLE';data.size=sx;data.size_y=sy
@@ -183,12 +215,24 @@ core_light=bpy.data.objects.new('Thunder lights the crystal',data);scene.collect
 core_light.parent=orb_axis;core_light.location=STORM_ORIGIN
 bpy.ops.object.camera_add(location=(0,-15,8.7));camera=bpy.context.object;aim(camera)
 camera.data.type='ORTHO';camera.data.ortho_scale=10.6;scene.camera=camera
+scene.view_layers[0].use_pass_object_index=True
 scene.use_nodes=True;nodes,links=scene.node_tree.nodes,scene.node_tree.links;nodes.clear()
 layer=nodes.new('CompositorNodeRLayers');glare=nodes.new('CompositorNodeGlare');glare.glare_type='FOG_GLOW';glare.quality='HIGH';glare.threshold=4;glare.size=7;glare.mix=-.96
 dispersion=nodes.new('CompositorNodeLensdist');dispersion.inputs['Dispersion'].default_value=.002;dispersion.use_fit=True
 alpha=nodes.new('CompositorNodeSetAlpha');out=nodes.new('CompositorNodeComposite')
-links.new(layer.outputs['Image'],glare.inputs['Image']);links.new(glare.outputs['Image'],dispersion.inputs['Image']);links.new(dispersion.outputs['Image'],alpha.inputs['Image'])
+links.new(layer.outputs['Image'],glare.inputs['Image']);links.new(dispersion.outputs['Image'],alpha.inputs['Image'])
 links.new(layer.outputs['Alpha'],alpha.inputs['Alpha']);links.new(alpha.outputs['Image'],out.inputs['Image'])
+# Bloom is masked twice to keep the star's radiance inside the glass silhouette.
+orb_mask=nodes.new('CompositorNodeIDMask');orb_mask.index=1;orb_mask.use_antialiasing=True;links.new(layer.outputs['IndexOB'],orb_mask.inputs['ID value'])
+orb_image=nodes.new('CompositorNodeMixRGB');orb_image.blend_type='MULTIPLY';orb_image.inputs[0].default_value=1
+links.new(layer.outputs['Image'],orb_image.inputs[1]);links.new(orb_mask.outputs['Alpha'],orb_image.inputs[2])
+orb_glow=nodes.new('CompositorNodeGlare');orb_glow.glare_type='FOG_GLOW';orb_glow.quality='HIGH';orb_glow.threshold=.8;orb_glow.size=7;orb_glow.mix=1
+links.new(orb_image.outputs[0],orb_glow.inputs['Image'])
+confined=nodes.new('CompositorNodeMixRGB');confined.blend_type='MULTIPLY';confined.inputs[0].default_value=1
+links.new(orb_glow.outputs['Image'],confined.inputs[1]);links.new(orb_mask.outputs['Alpha'],confined.inputs[2])
+combine=nodes.new('CompositorNodeMixRGB');combine.blend_type='ADD';combine.inputs[0].default_value=.60
+links.new(glare.outputs['Image'],combine.inputs[1]);links.new(confined.outputs[0],combine.inputs[2]);links.new(combine.outputs[0],dispersion.inputs['Image'])
+
 def update(s,graph=None):
     t=clock(s.frame_current)
     sculpture.matrix_world=CAMERA_BASIS@Euler((.035*math.sin(t),t,math.radians(28)+.04*math.sin(t))).to_matrix().to_4x4()
@@ -196,17 +240,25 @@ def update(s,graph=None):
     orb_axis.rotation_euler=(.12*math.sin(t),t,.10*math.cos(t))
     mapping.inputs['Location'].default_value=(.38*math.cos(t),.38*math.sin(t),.20*math.sin(2*t))
     mapping.inputs['Rotation'].default_value=(.10*math.sin(t),.12*math.cos(t),.3*math.sin(t));noise.inputs['W'].default_value=.7*math.sin(2*t)
-    for obj,branches,end,jitter,node,p in arcs:
-        endpoint=Euler((.22*math.sin(2*t+p),.25*math.cos(2*t+p),.27*math.sin(4*t+p))).to_matrix()@end;points=[]
-        for j in range(24):
-            u=j/23;q=STORM_ORIGIN*(1-u)+endpoint*u+jitter[j]*.032*math.sin(4*t+p+j*.74)*math.sin(math.pi*u);points.append(q)
-        for point,v in zip(obj.data.splines[0].points,points):point.co=(*v,1)
-        for index,branch in enumerate(branches):
-            origin=points[10+index*4];target=endpoint*.67+Vector((.14*math.cos(2*t+p+index),.14*math.sin(2*t+p+index),.14*math.cos(4*t+p)))
-            for j,point in enumerate(branch.data.splines[0].points):
-                u=j/11;v=origin*(1-u)+target*u+jitter[j]*.032*math.sin(4*t+p+j)*math.sin(math.pi*u);point.co=(*v,1)
-        node.inputs['Strength'].default_value=1.0+12*max(0,math.sin(3*t+p))**10
-    hot_emission.inputs['Strength'].default_value=11+3*math.sin(2*t);core_light.data.energy=24+8*math.sin(2*t)
+    star_mapping.inputs['Location'].default_value=(.20*math.cos(2*t),.20*math.sin(2*t),.14*math.sin(3*t))
+    star_mapping.inputs['Rotation'].default_value=(.12*math.sin(t),.18*math.cos(t),t)
+    star_noise.inputs['W'].default_value=.65*math.sin(3*t)
+    star_emit.inputs['Strength'].default_value=30+5*math.sin(4*t)
+    star_obj.data.vertices.foreach_set('co',[component for base in star_base for component in base*(1+.075*math.sin(base.x*19+base.y*13+2*t)*math.cos(base.z*17-3*t))]);star_obj.data.update()
+    for obj,branches,direction,tangent,side,p in arcs:
+        turn=.22*math.sin(2*t+p);rotation=Euler((.14*math.sin(t+p),.16*math.cos(t+p),turn)).to_matrix()
+        for j,point in enumerate(obj.data.splines[0].points):
+            u=j/63;arch=math.sin(math.pi*u)
+            radial=.24+(.39+.075*math.sin(2*t+p))*arch
+            q=direction*radial+tangent*(.15*math.cos(math.pi*u))              +side*(.09*math.sin(TAU*u+2*t+p)*arch)
+            point.co=(*(rotation@q),1)
+        node=obj.data.materials[0].node_tree.nodes.get('Emission')
+        node.inputs['Strength'].default_value=4+18*(.5+.5*math.sin(2*t+p))**3
+    for obj,node,direction,radius,p in particles:
+        obj.location=Euler((.08*math.sin(2*t+p),.16*math.cos(t+p),t)).to_matrix()@direction*(radius+.02*math.sin(3*t+p))
+        node.inputs['Strength'].default_value=.5+3*(.5+.5*math.sin(3*t+p))**4
+    core_light.data.energy=7+2*math.sin(4*t)
+
 bpy.app.handlers.frame_change_pre.append(update)
 scene.frame_set(1);update(scene);bpy.context.view_layer.update();scene.render.filepath=str(ROOT/'frames'/'frame_')
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'chrome-orbit.blend'))
@@ -215,7 +267,7 @@ def audit():
     collision_pairs=0
     faces={b.name:[tuple(p.vertices) for p in b.obj.data.polygons] for b in bands}
     ranges={b.name:[float('inf'),0] for b in bands};min_gap=float('inf');max_projection=0
-    camera_inv=np.array(camera.matrix_world.inverted());shape_samples={};thunder_samples={};texture_samples={};orb_samples={};max_thunder_radius=0
+    camera_inv=np.array(camera.matrix_world.inverted());shape_samples={};thunder_samples={};texture_samples={};orb_samples={};max_thunder_radius=0;star_samples={};star_texture_samples={};ember_samples={}
     for frame in range(1,FRAMES+2):
         scene.frame_set(frame);bpy.context.view_layer.update();this=[];trees=[]
         for band in bands:
@@ -241,28 +293,37 @@ def audit():
                 matrix=np.array(curve_obj.matrix_world);points=points@matrix[:3,:3].T+matrix[:3,3]
                 max_thunder_radius=max(max_thunder_radius,float(np.linalg.norm(points,axis=1).max())+curve_obj.data.bevel_depth)
                 thunder.extend(points.tolist())
+        for ember,*_ in particles:
+            if ember.location.length+.008>=CORE_RADIUS:raise RuntimeError(f'Ember escapes the shell at frame {frame}')
+        if max(v.co.length for v in star_obj.data.vertices)>=.40:raise RuntimeError(f'Star escapes its corona at frame {frame}')
         if max_thunder_radius>=CORE_RADIUS:raise RuntimeError(f'Lightning escapes the glass at frame {frame}')
-        if frame in (1,97,193,289,385):
+        if frame in (1,FRAMES//4+1,FRAMES//2+1,3*FRAMES//4+1,FRAMES+1):
             shape_samples[str(frame)]=[tuple(v.co) for v in bands[0].obj.data.vertices]
             thunder_samples[str(frame)]=thunder
             texture_samples[str(frame)]=[*mapping.inputs['Location'].default_value,*mapping.inputs['Rotation'].default_value,noise.inputs['W'].default_value]
             orb_samples[str(frame)]=np.array(orb_axis.matrix_world).tolist()
+            star_samples[str(frame)]=[tuple(v.co) for v in star_obj.data.vertices]
+            star_texture_samples[str(frame)]=[*star_mapping.inputs['Location'].default_value,star_noise.inputs['W'].default_value,*np.array(Euler(star_mapping.inputs['Rotation'].default_value).to_matrix()).ravel()]
+            ember_samples[str(frame)]=[tuple(obj.location) for obj,*_ in particles]
     if max_projection>.485:raise RuntimeError(f'Camera clipping: {max_projection}')
-    seam=float(np.abs(np.array(shape_samples['1'])-np.array(shape_samples['385'])).max())
-    deformation=float(np.abs(np.array(shape_samples['1'])-np.array(shape_samples['97'])).max())
-    thunder_seam=float(np.abs(np.array(thunder_samples['1'])-np.array(thunder_samples['385'])).max())
-    thunder_change=float(np.abs(np.array(thunder_samples['1'])-np.array(thunder_samples['97'])).max())
-    texture_seam=float(np.abs(np.array(texture_samples['1'])-np.array(texture_samples['385'])).max())
-    texture_change=float(np.abs(np.array(texture_samples['1'])-np.array(texture_samples['97'])).max())
-    orb_seam=float(np.abs(np.array(orb_samples['1'])-np.array(orb_samples['385'])).max())
-    orb_change=float(np.abs(np.array(orb_samples['1'])-np.array(orb_samples['97'])).max())
-    if max(seam,thunder_seam,texture_seam,orb_seam)>.00001:raise RuntimeError('Loop geometry, orb or cloud does not close')
-    report={'frames_checked':FRAMES+1,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'max_thunder_radius':max_thunder_radius,'thunder_loop_delta':thunder_seam,'actual_thunder_deformation':thunder_change,'cloud_loop_delta':texture_seam,'actual_cloud_change':texture_change,'orb_rotation_loop_delta':orb_seam,'actual_orb_rotation':orb_change,'shared_turns_per_loop':1,'independent_ring_turns_per_loop':[b.speed for b in bands],'profile_half_depths':[b.d for b in bands]}
+    seam=float(np.abs(np.array(shape_samples['1'])-np.array(shape_samples[str(FRAMES+1)])).max())
+    deformation=float(np.abs(np.array(shape_samples['1'])-np.array(shape_samples[str(FRAMES//4+1)])).max())
+    thunder_seam=float(np.abs(np.array(thunder_samples['1'])-np.array(thunder_samples[str(FRAMES+1)])).max())
+    thunder_change=float(np.abs(np.array(thunder_samples['1'])-np.array(thunder_samples[str(FRAMES//4+1)])).max())
+    texture_seam=float(np.abs(np.array(texture_samples['1'])-np.array(texture_samples[str(FRAMES+1)])).max())
+    texture_change=float(np.abs(np.array(texture_samples['1'])-np.array(texture_samples[str(FRAMES//4+1)])).max())
+    orb_seam=float(np.abs(np.array(orb_samples['1'])-np.array(orb_samples[str(FRAMES+1)])).max())
+    orb_change=float(np.abs(np.array(orb_samples['1'])-np.array(orb_samples[str(FRAMES//4+1)])).max())
+    star_seam=float(np.abs(np.array(star_samples['1'])-np.array(star_samples[str(FRAMES+1)] )).max())
+    star_texture_seam=float(np.abs(np.array(star_texture_samples['1'])-np.array(star_texture_samples[str(FRAMES+1)])).max())
+    ember_seam=float(np.abs(np.array(ember_samples['1'])-np.array(ember_samples[str(FRAMES+1)])).max())
+    if max(seam,thunder_seam,texture_seam,orb_seam,star_seam,star_texture_seam,ember_seam)>.00001:raise RuntimeError('Loop geometry, orb or cloud does not close')
+    report={'frames_checked':FRAMES+1,'star_surface_loop_delta':star_seam,'star_texture_loop_delta':star_texture_seam,'ember_loop_delta':ember_seam,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'max_thunder_radius':max_thunder_radius,'thunder_loop_delta':thunder_seam,'actual_thunder_deformation':thunder_change,'cloud_loop_delta':texture_seam,'actual_cloud_change':texture_change,'orb_rotation_loop_delta':orb_seam,'actual_orb_rotation':orb_change,'shared_turns_per_loop':1,'independent_ring_turns_per_loop':[b.speed for b in bands],'profile_half_depths':[b.d for b in bands]}
     (ROOT/'geometry-audit.json').write_text(json.dumps(report,indent=2)+'\n');print('GEOMETRY_AUDIT',json.dumps(report),flush=True)
-manifest={'frames':FRAMES,'fps':24,'seconds':16,'playback_rate':.8,'visual_loop_seconds':20,'size':SIZE,'version':4,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots','rotating rippled glass ball and internal storm','changing volume and forked internal lightning'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
+manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':5,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers','true native 60fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
 (ROOT/'render-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 if MODE=='audit':audit()
 elif MODE=='preview':
-    for frame in (1,49,97,193,289,385):
+    for frame in (1,FRAMES//8+1,FRAMES//4+1,FRAMES//2+1,3*FRAMES//4+1,FRAMES+1):
         scene.frame_set(frame);scene.render.filepath=str(ROOT/f'preview-{frame:03d}.png');bpy.ops.render.render(write_still=True)
 elif MODE=='render':bpy.ops.render.render(animation=True)

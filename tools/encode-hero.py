@@ -1,10 +1,11 @@
-"""Encode the offline Blender frames; FFmpeg, Pillow, NumPy and macOS avconvert.
+"""Encode the offline Blender frames; FFmpeg, Pillow, NumPy and macOS AVFoundation.
 
-Usage: python3 tools/encode-hero.py /absolute/path/to/render-output
+Usage: python3 tools/encode-hero.py /absolute/path/to/render-output [screenprint|smooth]
+Default: 12fps diagonal screen-print; smooth preserves the native frame rate.
 The still and four browser/size variants are written to assets/.
 """
 from pathlib import Path
-import subprocess, sys, shutil
+import subprocess, sys, shutil, json
 from PIL import Image
 import numpy as np
 
@@ -34,31 +35,60 @@ def apply_print_finish(pixels):
     return result
 
 
-def main(root):
+def screenprint(pixels):
+    rgb=pixels[:,:,:3].astype(np.float32);height,width=rgb.shape[:2]
+    luminance=rgb[:,:,0]*.2126+rgb[:,:,1]*.7152+rgb[:,:,2]*.0722
+    period=max(3,round(min(width,height)/128))
+    y,x=np.indices((height,width));u=(x+y)/np.sqrt(2);v=(y-x)/np.sqrt(2)
+    dx=u%period-period/2;dy=v%period-period/2
+    shade=np.clip((240-luminance)/170,0,1)
+    radius=period*(.12+.28*shade)
+    dots=((dx*dx+dy*dy)<radius*radius).astype(np.float32)
+    ink=dots*shade*.42
+    rgb=rgb*(1-ink[:,:,None])+dots[:,:,None]*shade[:,:,None]*np.array([2,0,5])
+    grain=np.random.default_rng(48).normal(0,.65,(height,width,1))
+    result=pixels.copy();result[:,:,:3]=np.clip(rgb+grain,0,255).astype(np.uint8)
+    result[result[:,:,3]==0,:3]=0
+    return result
+
+def main(root, finish="screenprint"):
+    if finish not in ("smooth", "screenprint"):
+        raise SystemExit("Finish must be smooth or screenprint.")
     assets = Path(__file__).resolve().parent.parent / 'assets'
+    manifest=json.loads((root/'render-manifest.json').read_text())
+    expected,fps=int(manifest['frames']),int(manifest['fps'])
     frames = sorted((root / 'frames').glob('frame_*.png'))
-    if len(frames) != 384:
-        raise SystemExit(f'Expected 384 frames, found {len(frames)}. Do not encode an incomplete loop.')
+    if len(frames) != expected:
+        raise SystemExit(f'Expected {expected} frames, found {len(frames)}. Do not encode an incomplete loop.')
     if any(frame.name != f'frame_{number:04d}.png' for number, frame in enumerate(frames, 1)):
-        raise SystemExit('Frames must form the uninterrupted sequence frame_0001.png to frame_0384.png.')
+        raise SystemExit(f'Frames must form the uninterrupted sequence frame_0001.png to frame_{expected:04d}.png.')
     ffmpeg = shutil.which('ffmpeg')
     if not ffmpeg:
         raise SystemExit('FFmpeg is required.')
-    graded = root / 'graded'
+    source_fps = fps
+    if finish == 'screenprint':
+        if source_fps % 12:
+            raise SystemExit('Native fps must be divisible by 12 for exact decimation.')
+        frames = frames[::source_fps // 12]
+        fps = 12
+    expected = len(frames)
+    stem_base = 'hero-print' if finish == 'screenprint' else 'hero-star'
+    graded = root / ('screenprint-frames' if finish == 'screenprint' else 'graded')
     graded.mkdir(exist_ok=True)
-    for frame in frames:
+    for number, frame in enumerate(frames, 1):
         pixels = np.array(Image.open(frame).convert('RGBA'))
         if any(pixels[y, x, 3] != 0 for y, x in [(0, 0), (0, -1), (-1, 0), (-1, -1)]):
             raise SystemExit(f'{frame.name} has an opaque corner. Preserve transparent film and compositor alpha.')
-        Image.fromarray(apply_print_finish(pixels)).save(graded / frame.name)
-    Image.open(graded/'frame_0001.png').save(assets/'hero-forged-poster.webp',quality=94,method=6)
+        finish_pixels = screenprint(pixels) if finish == 'screenprint' else apply_print_finish(pixels)
+        Image.fromarray(finish_pixels).save(graded / f'frame_{number:04d}.png')
+    Image.open(graded/'frame_0001.png').save(assets/f'{stem_base}-poster.webp',quality=94,method=6)
 
     def run(args):
         subprocess.run(args,check=True)
 
-    for stem,size,crf in [('hero-forged',768,29),('hero-forged-mobile',512,30)]:
-        common = [ffmpeg,'-hide_banner','-loglevel','error','-y','-framerate','24',
-                  '-start_number','1','-i',str(graded/'frame_%04d.png'),'-frames:v','384',
+    for stem,size,crf in [(stem_base,768,29),(stem_base+'-mobile',512,30)]:
+        common = [ffmpeg,'-hide_banner','-loglevel','error','-y','-framerate',str(fps),
+                  '-start_number','1','-i',str(graded/'frame_%04d.png'),'-frames:v',str(expected),
                   '-vf',f'scale={size}:{size}:flags=lanczos','-an']
         run(common+['-c:v','libvpx-vp9','-pix_fmt','yuva420p','-b:v','0','-crf',str(crf),
                     '-auto-alt-ref','0','-row-mt','1','-threads','4','-cpu-used','4',
@@ -69,7 +99,7 @@ def main(root):
                         '-alpha_bits','16',str(intermediate)])
             if shutil.which('swift'):
                 run(['swift',str(Path(__file__).with_name('encode-alpha.swift')),str(intermediate),
-                     str(assets/f'{stem}.mov'),str(size),str(1800000 if size==768 else 850000)])
+                     str(assets/f'{stem}.mov'),str(size),str(2400000 if size==768 else 1000000)])
             else:
                 run(['avconvert','--source',str(intermediate),'--preset',
                      'PresetHEVCHighestQualityWithAlpha','--output',str(assets/f'{stem}.mov'),'--replace'])
@@ -81,4 +111,4 @@ def main(root):
 
 
 if __name__ == '__main__':
-    main(Path(sys.argv[1]).resolve())
+    main(Path(sys.argv[1]).resolve(), sys.argv[2] if len(sys.argv) > 2 else 'screenprint')

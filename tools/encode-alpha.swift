@@ -28,7 +28,8 @@ let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
     AVVideoHeightKey: size,
     AVVideoCompressionPropertiesKey: [
         AVVideoAverageBitRateKey: bitrate,
-        AVVideoMaxKeyFrameIntervalKey: 96,
+        AVVideoMaxKeyFrameIntervalKey: max(1, Int(track.nominalFrameRate * 4)),
+        AVVideoExpectedSourceFrameRateKey: track.nominalFrameRate,
         kVTCompressionPropertyKey_TargetQualityForAlpha as String: 0.75
     ]
 ])
