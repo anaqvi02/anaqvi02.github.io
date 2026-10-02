@@ -16,6 +16,17 @@ let output = AVAssetReaderTrackOutput(track: track, outputSettings: [
 ])
 output.alwaysCopiesSampleData = false
 reader.add(output)
+guard reader.startReading(), let firstSample = output.copyNextSampleBuffer(), let firstImage = CMSampleBufferGetImageBuffer(firstSample) else {
+    throw reader.error ?? NSError(domain: "hero-alpha", code: 3)
+}
+CVPixelBufferLockBaseAddress(firstImage, .readOnly)
+let firstBytes = CVPixelBufferGetBaseAddress(firstImage)!.assumingMemoryBound(to: UInt8.self)
+let cornerAlpha = firstBytes[3]
+CVPixelBufferUnlockBaseAddress(firstImage, .readOnly)
+guard cornerAlpha <= 2 else {
+    throw NSError(domain: "hero-alpha", code: 4, userInfo: [NSLocalizedDescriptionKey: "ProRes alpha decoded as opaque. Normalize the cloud master with package-safari.py first."])
+}
+var pendingFirstSample: CMSampleBuffer? = firstSample
 let destination = URL(fileURLWithPath: args[2])
 if FileManager.default.fileExists(atPath: destination.path) {
     try FileManager.default.removeItem(at: destination)
@@ -40,12 +51,12 @@ guard writer.canAdd(input) else {
 writer.add(input)
 guard writer.startWriting() else { throw writer.error! }
 writer.startSession(atSourceTime: .zero)
-guard reader.startReading() else { throw reader.error! }
 let complete = DispatchSemaphore(value: 0)
 let queue = DispatchQueue(label: "hero-alpha-encode")
 input.requestMediaDataWhenReady(on: queue) {
     while input.isReadyForMoreMediaData {
-        if let sample = output.copyNextSampleBuffer() {
+        if let sample = pendingFirstSample ?? output.copyNextSampleBuffer() {
+            pendingFirstSample = nil
             if !input.append(sample) {
                 reader.cancelReading()
                 input.markAsFinished()

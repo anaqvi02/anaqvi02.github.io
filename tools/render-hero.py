@@ -17,13 +17,19 @@ STORM_ORIGIN=Vector((0,0,0))
 def clock(frame):return TAU*(frame-1)/FRAMES
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 scene=bpy.context.scene;scene.render.engine='CYCLES'
-scene.cycles.samples=40 if MODE=='preview' else 24
+scene.cycles.samples=int(os.environ.get('ALI_HERO_SAMPLES','48' if MODE=='preview' else '32'))
 scene.cycles.use_denoising=True;scene.cycles.max_bounces=8;scene.cycles.transmission_bounces=6
-try:
-    prefs=bpy.context.preferences.addons['cycles'].preferences;prefs.compute_device_type='METAL';prefs.get_devices()
-    for d in prefs.devices:d.use=d.type=='METAL'
-    if any(d.type=='METAL' for d in prefs.devices):scene.cycles.device='GPU'
-except Exception as error:print('CPU fallback',error)
+gpu_enabled=False
+prefs=bpy.context.preferences.addons['cycles'].preferences
+for backend in ([os.environ['ALI_HERO_DEVICE']] if os.environ.get('ALI_HERO_DEVICE') else (['METAL'] if sys.platform=='darwin' else ['OPTIX','CUDA'])):
+    try:
+        prefs.compute_device_type=backend;prefs.get_devices()
+        for device in prefs.devices:device.use=device.type!='CPU'
+        if any(device.type!='CPU' for device in prefs.devices):
+            scene.cycles.device='GPU';gpu_enabled=True
+            print('GPU_BACKEND',backend,[(d.name,d.type,d.use) for d in prefs.devices],flush=True);break
+    except Exception as error:print('GPU backend unavailable',backend,error,flush=True)
+if not gpu_enabled and os.environ.get('ALI_HERO_REQUIRE_GPU')=='1':raise RuntimeError('Cloud GPU is required; refusing CPU render.')
 scene.render.resolution_x=SIZE;scene.render.resolution_y=SIZE;scene.render.resolution_percentage=100
 scene.render.fps=FPS;scene.frame_start=1;scene.frame_end=FRAMES;scene.render.film_transparent=True
 scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGBA';scene.render.image_settings.color_depth='8'
@@ -81,10 +87,10 @@ class Stream:
     A common orbit retains the interweave; small local waves flow along each band.
     Actual triangle intersections are checked for every frame.
     """
-    def __init__(self,name,radius,width,thickness,angles,speed,phase,hooks):
+    def __init__(self,name,radius,width,thickness,angles,speed,phase,hooks,claws=()):
         self.name,self.r,self.w,self.d=name,radius,width,thickness
-        self.angles,self.speed,self.phase=angles,speed,phase;self.n,self.m=480+15*len(hooks),40
-        self.thorns=hooks
+        self.angles,self.speed,self.phase=angles,speed,phase;self.n,self.m=480+15*(len(hooks)+len(claws)),40
+        self.thorns=hooks;self.claws=claws
         self.axis=bpy.data.objects.new(name+' orbit',None);scene.collection.objects.link(self.axis);self.axis.parent=sculpture
         self.obj=make_mesh(name,[(0,0,0)]*(self.n*self.m),swept_faces(self.n,self.m),mercury);self.obj.parent=self.axis
         self.hooks=[];bands.append(self)
@@ -106,6 +112,8 @@ class Stream:
         span=self.w/self.r*.85
         offsets=(-1,-.8,-.6,-.4,-.3,-.2,-.1,0,.1,.2,.3,.4,.6,.8,1)
         sections=sorted([TAU*i/480 for i in range(480)]+[(angle+offset*span)%TAU for angle,_,_ in thorns for offset in offsets])
+        claws=[(angle+.008*math.sin(time+p),length*(1+.018*math.sin(time+p+angle))) for angle,length in self.claws]
+        sections=sorted(sections+[(angle+offset*span)%TAU for angle,_ in claws for offset in offsets])
         vertices=[]
         for t in sections:
             center,radial,tangent,cross=self.basis(t,time)
@@ -128,13 +136,26 @@ class Stream:
                     if prickle:
                         extra=length*prickle
                         # Long swept thorn: concave base, backward hook, hairline apex.
-                        point+=cross*side*extra+radial*(extra*.28)-tangent*(extra*.65+extra*prickle*.22)
+                        point+=cross*side*extra+radial*(extra*(.36-.18*prickle))-tangent*(extra*(.38+.49*prickle))
+                for angle,length in claws:
+                    delta=math.atan2(math.sin(t-angle),math.cos(t-angle))
+                    if abs(delta)>=span:continue
+                    along=max(0,1-abs(delta)/span)**1.45
+                    around=abs(math.atan2(math.sin(a-3*math.pi/2),math.cos(a-3*math.pi/2)))
+                    claw=along*max(0,1-around/.85)**1.6
+                    if claw:
+                        # Grow from the orb-facing lip, then curl tangent to the
+                        # shell. The root is concave and the apex bends back.
+                        inward=length*(.92*claw-.25*claw*claw)
+                        curl=length*(.28*claw+.70*claw*claw)
+                        point-=radial*inward+tangent*curl
+                        point+=cross*(length*.18*claw*(1-claw))
                 vertices.append(tuple(point))
         self.obj.data.vertices.foreach_set('co',[x for v in vertices for x in v]);self.obj.data.update()
 
 Stream('Outer folded chrome blade',3.25,.54,.115,(54,-18,-32),0,.3,[(.55,1.70,1),(2.65,1.40,-1),(4.70,1.55,1)])
 Stream('Middle swept mirror blade',2.42,.29,.10,(-59,26,21),0,1.7,[(1.05,1.15,1),(3.45,1.35,-1),(5.40,.95,1)])
-Stream('Inner folded mercury blade',1.73,.30,.08,(66,9,-26),0,3.0,[(.15,.57,-1),(2.30,.64,1),(4.70,.60,-1)])
+Stream('Inner folded mercury blade',1.73,.30,.08,(66,9,-26),0,3.0,[(.15,.57,-1),(2.30,.64,1),(4.70,.60,-1)],claws=[(.92,.70),(3.06,.74),(5.50,.68)])
 def sphere(name,radius,mat,location=(0,0,0)):
     bpy.ops.mesh.primitive_uv_sphere_add(segments=96,ring_count=64,radius=radius,location=location)
     obj=bpy.context.object;obj.name=name;obj.data.materials.append(mat)
@@ -219,12 +240,17 @@ camera.data.type='ORTHO';camera.data.ortho_scale=10.6;scene.camera=camera
 scene.view_layers[0].use_pass_object_index=True
 scene.use_nodes=True;nodes,links=scene.node_tree.nodes,scene.node_tree.links;nodes.clear()
 layer=nodes.new('CompositorNodeRLayers');glare=nodes.new('CompositorNodeGlare');glare.glare_type='FOG_GLOW';glare.quality='HIGH';glare.threshold=4;glare.size=7;glare.mix=-.96
-dispersion=nodes.new('CompositorNodeLensdist');dispersion.inputs['Dispersion'].default_value=.002;dispersion.use_fit=True
+dispersion=nodes.new('CompositorNodeLensdist');dispersion.inputs['Dispersion'].default_value=0;dispersion.use_fit=True
 alpha=nodes.new('CompositorNodeSetAlpha');out=nodes.new('CompositorNodeComposite')
 links.new(layer.outputs['Image'],glare.inputs['Image']);links.new(dispersion.outputs['Image'],alpha.inputs['Image'])
 links.new(layer.outputs['Alpha'],alpha.inputs['Alpha']);links.new(alpha.outputs['Image'],out.inputs['Image'])
 # Bloom is masked twice to keep the star's radiance inside the glass silhouette.
 orb_mask=nodes.new('CompositorNodeIDMask');orb_mask.index=1;orb_mask.use_antialiasing=True;links.new(layer.outputs['IndexOB'],orb_mask.inputs['ID value'])
+# Sidecar mask lets the export split only the visible glass rim, keeping
+# the confined star and chrome mirror faces crisp.
+mask_file=nodes.new('CompositorNodeOutputFile');mask_file.base_path=str(ROOT/'orb-mask')
+mask_file.format.file_format='PNG';mask_file.format.color_mode='BW';mask_file.format.color_depth='8'
+mask_file.file_slots[0].path='mask_';links.new(orb_mask.outputs['Alpha'],mask_file.inputs[0])
 orb_image=nodes.new('CompositorNodeMixRGB');orb_image.blend_type='MULTIPLY';orb_image.inputs[0].default_value=1
 links.new(layer.outputs['Image'],orb_image.inputs[1]);links.new(orb_mask.outputs['Alpha'],orb_image.inputs[2])
 orb_glow=nodes.new('CompositorNodeGlare');orb_glow.glare_type='FOG_GLOW';orb_glow.quality='HIGH';orb_glow.threshold=.8;orb_glow.size=7;orb_glow.mix=1
@@ -286,7 +312,7 @@ def audit():
                 collision_pairs+=1
                 if tree.overlap(second):raise RuntimeError(f'Frame {frame}: intersecting blades {name} / {other}')
         min_gap=min(min_gap,this[0][0]-CORE_RADIUS)
-        if this[0][0]<=CORE_RADIUS+.01:raise RuntimeError(f'Core intersection {frame}')
+        if this[0][0]<=CORE_RADIUS+.14:raise RuntimeError(f'Core intersection {frame}')
         thunder=[]
         for obj,branches,*_ in arcs:
             for curve_obj in [obj,*branches]:
@@ -299,7 +325,7 @@ def audit():
         if max(v.co.length for v in star_obj.data.vertices)>=.40:raise RuntimeError(f'Star escapes its corona at frame {frame}')
         if max_thunder_radius>=CORE_RADIUS:raise RuntimeError(f'Lightning escapes the glass at frame {frame}')
         if frame in (1,FRAMES//4+1,FRAMES//2+1,3*FRAMES//4+1,FRAMES+1):
-            shape_samples[str(frame)]=[tuple(v.co) for v in bands[0].obj.data.vertices]
+            shape_samples[str(frame)]=[tuple(v.co) for band in bands for v in band.obj.data.vertices]
             thunder_samples[str(frame)]=thunder
             texture_samples[str(frame)]=[*mapping.inputs['Location'].default_value,*mapping.inputs['Rotation'].default_value,noise.inputs['W'].default_value]
             orb_samples[str(frame)]=np.array(orb_axis.matrix_world).tolist()
@@ -321,10 +347,20 @@ def audit():
     if max(seam,thunder_seam,texture_seam,orb_seam,star_seam,star_texture_seam,ember_seam)>.00001:raise RuntimeError('Loop geometry, orb or cloud does not close')
     report={'frames_checked':FRAMES+1,'star_surface_loop_delta':star_seam,'star_texture_loop_delta':star_texture_seam,'ember_loop_delta':ember_seam,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'max_thunder_radius':max_thunder_radius,'thunder_loop_delta':thunder_seam,'actual_thunder_deformation':thunder_change,'cloud_loop_delta':texture_seam,'actual_cloud_change':texture_change,'orb_rotation_loop_delta':orb_seam,'actual_orb_rotation':orb_change,'shared_turns_per_loop':1,'independent_ring_turns_per_loop':[b.speed for b in bands],'profile_half_depths':[b.d for b in bands]}
     (ROOT/'geometry-audit.json').write_text(json.dumps(report,indent=2)+'\n');print('GEOMETRY_AUDIT',json.dumps(report),flush=True)
-manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':5,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
+manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':7,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots and 3 integrated orb-facing hooked claws','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
 (ROOT/'render-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 if MODE=='audit':audit()
 elif MODE=='preview':
     for frame in (1,FRAMES//8+1,FRAMES//4+1,FRAMES//2+1,3*FRAMES//4+1,FRAMES+1):
         scene.frame_set(frame);scene.render.filepath=str(ROOT/f'preview-{frame:03d}.png');bpy.ops.render.render(write_still=True)
-elif MODE=='render':bpy.ops.render.render(animation=True)
+elif MODE in ('render','chunk'):
+    scene.frame_start=int(os.environ.get('ALI_HERO_START','1'))
+    scene.frame_end=int(os.environ.get('ALI_HERO_END',str(FRAMES)))
+    if not 1<=scene.frame_start<=scene.frame_end<=FRAMES:raise RuntimeError('Invalid render chunk')
+    bpy.ops.render.render(animation=True)
+
+
+# bpy wheel shutdown can retain driver teardown threads in a notebook worker.
+# All images/scene/audit files have been synchronously saved before this point.
+if os.environ.get("ALI_HERO_FAST_EXIT")=="1":
+    sys.stdout.flush();sys.stderr.flush();os._exit(0)

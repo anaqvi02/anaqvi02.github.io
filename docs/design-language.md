@@ -61,7 +61,7 @@ Chromatic aberration is a purposeful registration error. Use restrained magenta/
 
 ## Motion and interaction
 
-Motion should explain arrival, state, or physical form. The offline, alpha-preserving hero loop turns once per 20 seconds; its master and selected published finish are 24 fps. Keep it slow, preserve the still poster, and keep the star inside the orb. Prefer a clear page-arrival fade to jitter, flashing, or cascades. A signal path can travel slowly; a link underline can appear on hover or focus. Do not animate every element at once.
+Motion should explain arrival, state, or physical form. The offline, alpha-preserving hero loop turns once per 20 seconds; its final cloud master and selected published finish are native 60 fps (1,200 unique frames). Higher frame rate smooths the motion without changing the orbit speed. Keep it slow, preserve the still poster, and keep the star inside the orb. Prefer a clear page-arrival fade to jitter, flashing, or cascades. A signal path can travel slowly; a link underline can appear on hover or focus. Do not animate every element at once.
 
 Respect pause controls and `prefers-reduced-motion`. Reduced motion should leave a composed still, not hide useful information. Pointer response should be limited to a gentle registration shift on the portrait or other explicit target, never page-wide movement or image rotation. Keyboard focus remains visible and functional.
 
