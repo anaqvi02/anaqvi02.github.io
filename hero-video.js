@@ -40,7 +40,7 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-print-mobile' : 'hero-print';
+   const stem = mobileAsset ? 'hero-halftone-12-mobile' : 'hero-halftone-12';
    const hevc = 'video/quicktime; codecs="hvc1"';
    const hevcSupported = video.canPlayType('video/mp4; codecs="hvc1"') !== '';
    const candidates = safariLike || ios

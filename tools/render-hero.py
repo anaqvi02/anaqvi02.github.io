@@ -9,7 +9,8 @@ ROOT=Path(os.environ.get('ALI_HERO_RENDER_DIR',str(Path(__file__).resolve().pare
 (ROOT/'frames').mkdir(parents=True,exist_ok=True)
 args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 MODE=args[0] if args else 'preview'; SIZE=int(args[1]) if len(args)>1 else 768
-TAU,FPS,SECONDS=math.tau,60,20
+TAU,FPS,SECONDS=math.tau,int(os.environ.get('ALI_HERO_FPS','60')),20
+if FPS not in (12,24,60):raise SystemExit('ALI_HERO_FPS must be 12, 24 or 60.')
 FRAMES=FPS*SECONDS
 CORE_RADIUS=1.08
 STORM_ORIGIN=Vector((0,0,0))
@@ -320,7 +321,7 @@ def audit():
     if max(seam,thunder_seam,texture_seam,orb_seam,star_seam,star_texture_seam,ember_seam)>.00001:raise RuntimeError('Loop geometry, orb or cloud does not close')
     report={'frames_checked':FRAMES+1,'star_surface_loop_delta':star_seam,'star_texture_loop_delta':star_texture_seam,'ember_loop_delta':ember_seam,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'max_thunder_radius':max_thunder_radius,'thunder_loop_delta':thunder_seam,'actual_thunder_deformation':thunder_change,'cloud_loop_delta':texture_seam,'actual_cloud_change':texture_change,'orb_rotation_loop_delta':orb_seam,'actual_orb_rotation':orb_change,'shared_turns_per_loop':1,'independent_ring_turns_per_loop':[b.speed for b in bands],'profile_half_depths':[b.d for b in bands]}
     (ROOT/'geometry-audit.json').write_text(json.dumps(report,indent=2)+'\n');print('GEOMETRY_AUDIT',json.dumps(report),flush=True)
-manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':5,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers','true native 60fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
+manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':5,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
 (ROOT/'render-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 if MODE=='audit':audit()
 elif MODE=='preview':

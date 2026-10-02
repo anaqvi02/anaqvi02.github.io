@@ -1,11 +1,11 @@
 """Encode the offline Blender frames; FFmpeg, Pillow, NumPy and macOS AVFoundation.
 
-Usage: python3 tools/encode-hero.py /absolute/path/to/render-output [screenprint|smooth]
+Usage: python3 tools/encode-hero.py render-output [screenprint|smooth] --fps 12|24
 Default: 12fps diagonal screen-print; smooth preserves the native frame rate.
 The still and four browser/size variants are written to assets/.
 """
 from pathlib import Path
-import subprocess, sys, shutil, json
+import subprocess, shutil, json, argparse
 from PIL import Image
 import numpy as np
 
@@ -51,10 +51,11 @@ def screenprint(pixels):
     result[result[:,:,3]==0,:3]=0
     return result
 
-def main(root, finish="screenprint"):
+def main(root, finish="screenprint", target_fps=None, output_dir=None, stem_base=None):
     if finish not in ("smooth", "screenprint"):
         raise SystemExit("Finish must be smooth or screenprint.")
-    assets = Path(__file__).resolve().parent.parent / 'assets'
+    assets = output_dir or Path(__file__).resolve().parent.parent / 'assets'
+    assets.mkdir(parents=True, exist_ok=True)
     manifest=json.loads((root/'render-manifest.json').read_text())
     expected,fps=int(manifest['frames']),int(manifest['fps'])
     frames = sorted((root / 'frames').glob('frame_*.png'))
@@ -66,14 +67,14 @@ def main(root, finish="screenprint"):
     if not ffmpeg:
         raise SystemExit('FFmpeg is required.')
     source_fps = fps
-    if finish == 'screenprint':
-        if source_fps % 12:
-            raise SystemExit('Native fps must be divisible by 12 for exact decimation.')
-        frames = frames[::source_fps // 12]
-        fps = 12
+    target_fps = target_fps or (12 if finish == 'screenprint' else source_fps)
+    if target_fps < 1 or source_fps % target_fps:
+        raise SystemExit('Output fps must divide native fps exactly; render a matching source instead of duplicating/interpolating frames.')
+    frames = frames[::source_fps // target_fps]
+    fps = target_fps
     expected = len(frames)
-    stem_base = 'hero-print' if finish == 'screenprint' else 'hero-star'
-    graded = root / ('screenprint-frames' if finish == 'screenprint' else 'graded')
+    stem_base = stem_base or ('hero-print' if finish == 'screenprint' and fps == 12 else f'hero-print-{fps}' if finish == 'screenprint' else 'hero-star')
+    graded = root / (f'screenprint-{fps}-frames' if finish == 'screenprint' else f'graded-{fps}')
     graded.mkdir(exist_ok=True)
     for number, frame in enumerate(frames, 1):
         pixels = np.array(Image.open(frame).convert('RGBA'))
@@ -98,7 +99,7 @@ def main(root, finish="screenprint"):
             run(common+['-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le',
                         '-alpha_bits','16',str(intermediate)])
             if shutil.which('swift'):
-                run(['swift',str(Path(__file__).with_name('encode-alpha.swift')),str(intermediate),
+                run(['swift','-module-cache-path',str(root/'swift-cache'),str(Path(__file__).with_name('encode-alpha.swift')),str(intermediate),
                      str(assets/f'{stem}.mov'),str(size),str(2400000 if size==768 else 1000000)])
             else:
                 run(['avconvert','--source',str(intermediate),'--preset',
@@ -111,4 +112,11 @@ def main(root, finish="screenprint"):
 
 
 if __name__ == '__main__':
-    main(Path(sys.argv[1]).resolve(), sys.argv[2] if len(sys.argv) > 2 else 'screenprint')
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('root',type=Path)
+    parser.add_argument('finish',choices=['screenprint','smooth'],nargs='?',default='screenprint')
+    parser.add_argument('--fps',type=int)
+    parser.add_argument('--output-dir',type=Path)
+    parser.add_argument('--stem')
+    args=parser.parse_args()
+    main(args.root.resolve(),args.finish,args.fps,args.output_dir.resolve() if args.output_dir else None,args.stem)
