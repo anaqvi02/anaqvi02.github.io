@@ -19,7 +19,7 @@ with tempfile.TemporaryDirectory(prefix='safari-package-',dir=root) as scratch:
         # FFmpeg decodes the cloud alpha correctly. Normalize its ProRes bitstream
         # to the 8-bit alpha that was verified against macOS AVFoundation.
         subprocess.run(['ffmpeg','-v','error','-y','-i',str(source),'-an','-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','8','-threads','4',str(compatible)],check=True)
-        output=assets/f"{stem.replace('hero-final','hero-lean')}.mov"
+        output=assets/f"hero-orb-v8{'-mobile' if size==512 else ''}.mov"
         subprocess.run([str(binary),str(compatible),str(output),str(size),str(bitrate)],check=True)
         report=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',str(output)]))
         stream=report['streams'][0]

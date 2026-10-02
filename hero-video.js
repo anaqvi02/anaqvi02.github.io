@@ -40,12 +40,10 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-lean-mobile' : 'hero-lean';
-   const hevc = 'video/quicktime; codecs="hvc1"';
-   const hevcSupported = video.canPlayType('video/mp4; codecs="hvc1"') !== '';
-   const candidates = safariLike || ios
-    ? (hevcSupported ? [[`${stem}.mov`, hevc]] : [])
-    : [[`${stem}.webm`, 'video/webm; codecs="vp9"']];
+   const stem = mobileAsset ? 'hero-orb-v8-mobile' : 'hero-orb-v8';
+  const candidates = safariLike || ios
+   ? []
+   : [[`${stem}.webm`, 'video/webm; codecs="vp9"']];
    if (!candidates.length) {
     failed = true;
     return false;

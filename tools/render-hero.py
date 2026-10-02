@@ -163,6 +163,38 @@ def sphere(name,radius,mat,location=(0,0,0)):
     return obj
 orb_axis=bpy.data.objects.new('Rotating glass ball and storm',None);scene.collection.objects.link(orb_axis)
 orb_shell=sphere('Rotating rippled glass thunder orb',CORE_RADIUS,glass);orb_shell.parent=orb_axis;orb_shell.pass_index=1
+# Four separate polished hooks are anchored into the rotating shell. Their
+# position never changes independently of the orb: the broad roots disappear
+# into the glass, while each curved, tapered tip rises from its surface.
+orb_hooks=[]
+hook_count,hook_sides=128,20
+for hook_index,azimuth in enumerate((0,math.pi/2,math.pi,3*math.pi/2)):
+    centers=[];radii=[]
+    for step in range(hook_count):
+        u=step/(hook_count-1);ease=max(0,min(1,(u-.68)/.32));ease=ease*ease*(3-2*ease)
+        theta=.96-.47*math.sin(math.pi*u/2)+.20*ease
+        phi=azimuth+.27*math.sin(math.pi*u)+.06*math.sin(2*math.pi*u)
+        # The sculpture's local +Z aims at the camera through CAMERA_BASIS.
+        # Keep these surface hooks on that visible hemisphere, outside the star.
+        direction=Vector((math.sin(theta)*math.cos(phi),math.sin(theta)*math.sin(phi),math.cos(theta)))
+        lift=math.sin(math.pi*u)**.72
+        centers.append(direction*(CORE_RADIUS-.04+.11*lift))
+        radial_depth=.008+.048*lift*(.86+.14*math.sin(math.pi*u/2))
+        side_width=.012+.095*lift*(.86+.14*math.sin(math.pi*u/2))
+        radii.append((radial_depth,side_width))
+    vertices=[]
+    for step,(center,(depth,width)) in enumerate(zip(centers,radii)):
+        radial=center.normalized();tangent=(centers[min(step+1,hook_count-1)]-centers[max(step-1,0)]).normalized()
+        side=tangent.cross(radial).normalized()
+        for side_index in range(hook_sides):
+            angle=TAU*side_index/hook_sides
+            vertices.append(tuple(center+radial*depth*math.cos(angle)+side*width*math.sin(angle)))
+    hook=make_mesh(f'Orb-attached silver hook {hook_index+1}',vertices,swept_faces(hook_count,hook_sides,False),mercury)
+    hook.parent=orb_axis;orb_hooks.append(hook)
+    for polygon in hook.data.polygons:polygon.use_smooth=True
+    for label,theta,phi in [('root',.96,azimuth),('tip',.69,azimuth+.06)]:
+        direction=Vector((math.sin(theta)*math.cos(phi),math.sin(theta)*math.sin(phi),math.cos(theta)))
+        seat=sphere(f'Silver hook {hook_index+1} {label} seat',.060,mercury,direction*(CORE_RADIUS-.022));seat.parent=orb_axis
 # Evolving translucent cloud depth, not a static texture rotating on a sphere.
 cloud=bpy.data.materials.new('Evolving violet cloud volume');cloud.use_nodes=True
 nodes,links=cloud.node_tree.nodes,cloud.node_tree.links;nodes.clear()
@@ -291,8 +323,9 @@ scene.frame_set(1);update(scene);bpy.context.view_layer.update();scene.render.fi
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'chrome-orbit.blend'))
 def audit():
     from mathutils.bvhtree import BVHTree
-    collision_pairs=0
+    collision_pairs=0;hook_collision_pairs=0;hook_self_pairs=0
     faces={b.name:[tuple(p.vertices) for p in b.obj.data.polygons] for b in bands}
+    hook_faces={obj.name:[tuple(p.vertices) for p in obj.data.polygons] for obj in orb_hooks}
     ranges={b.name:[float('inf'),0] for b in bands};min_gap=float('inf');max_projection=0
     camera_inv=np.array(camera.matrix_world.inverted());shape_samples={};thunder_samples={};texture_samples={};orb_samples={};max_thunder_radius=0;star_samples={};star_texture_samples={};ember_samples={}
     for frame in range(1,FRAMES+2):
@@ -306,11 +339,20 @@ def audit():
                 radius=np.linalg.norm(world,axis=1);low=min(low,float(radius.min()));high=max(high,float(radius.max()))
                 view=world@camera_inv[:3,:3].T+camera_inv[:3,3];max_projection=max(max_projection,float(np.abs(view[:,:2]).max())/camera.data.ortho_scale)
             this.append((low,high,band.name));ranges[band.name][0]=min(ranges[band.name][0],low);ranges[band.name][1]=max(ranges[band.name][1],high)
+        for obj in orb_hooks:
+            flat=np.empty(len(obj.data.vertices)*3,dtype=np.float32);obj.data.vertices.foreach_get('co',flat)
+            points=flat.reshape(-1,3);matrix=np.array(obj.matrix_world);world=points@matrix[:3,:3].T+matrix[:3,3]
+            trees.append((obj.name,BVHTree.FromPolygons(world.tolist(),hook_faces[obj.name],all_triangles=False,epsilon=.002)))
         this.sort()
         for index,(name,tree) in enumerate(trees):
             for other,second in trees[index+1:]:
                 collision_pairs+=1
-                if tree.overlap(second):raise RuntimeError(f'Frame {frame}: intersecting blades {name} / {other}')
+                in_hook=name in hook_faces;other_hook=other in hook_faces
+                if in_hook != other_hook:hook_collision_pairs+=1
+                elif in_hook:hook_self_pairs+=1
+                if tree.overlap(second):
+                    if in_hook or other_hook:raise RuntimeError(f'Frame {frame}: orb hook intersects sculpture {name} / {other}')
+                    raise RuntimeError(f'Frame {frame}: intersecting blades {name} / {other}')
         min_gap=min(min_gap,this[0][0]-CORE_RADIUS)
         if this[0][0]<=CORE_RADIUS+.14:raise RuntimeError(f'Core intersection {frame}')
         thunder=[]
@@ -345,9 +387,9 @@ def audit():
     star_texture_seam=float(np.abs(np.array(star_texture_samples['1'])-np.array(star_texture_samples[str(FRAMES+1)])).max())
     ember_seam=float(np.abs(np.array(ember_samples['1'])-np.array(ember_samples[str(FRAMES+1)])).max())
     if max(seam,thunder_seam,texture_seam,orb_seam,star_seam,star_texture_seam,ember_seam)>.00001:raise RuntimeError('Loop geometry, orb or cloud does not close')
-    report={'frames_checked':FRAMES+1,'star_surface_loop_delta':star_seam,'star_texture_loop_delta':star_texture_seam,'ember_loop_delta':ember_seam,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'max_thunder_radius':max_thunder_radius,'thunder_loop_delta':thunder_seam,'actual_thunder_deformation':thunder_change,'cloud_loop_delta':texture_seam,'actual_cloud_change':texture_change,'orb_rotation_loop_delta':orb_seam,'actual_orb_rotation':orb_change,'shared_turns_per_loop':1,'independent_ring_turns_per_loop':[b.speed for b in bands],'profile_half_depths':[b.d for b in bands]}
+    report={'frames_checked':FRAMES+1,'star_surface_loop_delta':star_seam,'star_texture_loop_delta':star_texture_seam,'ember_loop_delta':ember_seam,'orb_attached_hooks':len(orb_hooks),'hook_parents':[obj.parent.name for obj in orb_hooks],'hook_radius_bounds':[min(v.co.length for obj in orb_hooks for v in obj.data.vertices),max(v.co.length for obj in orb_hooks for v in obj.data.vertices)],'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'hook_band_collision_pairs_checked':hook_collision_pairs,'hook_hook_collision_pairs_checked':hook_self_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'max_thunder_radius':max_thunder_radius,'thunder_loop_delta':thunder_seam,'actual_thunder_deformation':thunder_change,'cloud_loop_delta':texture_seam,'actual_cloud_change':texture_change,'orb_rotation_loop_delta':orb_seam,'actual_orb_rotation':orb_change,'shared_turns_per_loop':1,'independent_ring_turns_per_loop':[b.speed for b in bands],'profile_half_depths':[b.d for b in bands]}
     (ROOT/'geometry-audit.json').write_text(json.dumps(report,indent=2)+'\n');print('GEOMETRY_AUDIT',json.dumps(report),flush=True)
-manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':7,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots and 3 integrated orb-facing hooked claws','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
+manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':8,'features':['3 folded sculptural chrome blades','slow common orbit and gentle liquid flow','9 long swept needles with concave roots','4 separate polished silver hooks anchored to and fixed on the rotating orb','smoked amethyst glass containing a turbulent star','curved confined coronal flares and stellar embers',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples}
 (ROOT/'render-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 if MODE=='audit':audit()
 elif MODE=='preview':

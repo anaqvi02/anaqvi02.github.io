@@ -5,10 +5,10 @@
   "desktop_px": 768,
   "mobile_px": 512,
   "clips": {
-    "hero-lean.webm": {
-      "before_bytes": 24857613,
-      "after_bytes": 4816147,
-      "reduction_percent": 80.6,
+    "hero-orb-v8.webm": {
+      "bytes": 4944288,
+      "budget_bytes": 7000000,
+      "under_budget_percent": 29.4,
       "media": {
         "programs": [],
         "stream_groups": [],
@@ -19,19 +19,20 @@
             "r_frame_rate": "60/1",
             "nb_read_frames": "1200",
             "tags": {
-              "ALPHA_MODE": "1"
+              "alpha_mode": "1"
             }
           }
         ],
         "format": {
-          "duration": "20.000000"
+          "duration": "20.000000",
+          "size": "4944288"
         }
       }
     },
-    "hero-lean-mobile.webm": {
-      "before_bytes": 10687779,
-      "after_bytes": 2617866,
-      "reduction_percent": 75.5,
+    "hero-orb-v8-mobile.webm": {
+      "bytes": 2639085,
+      "budget_bytes": 3500000,
+      "under_budget_percent": 24.6,
       "media": {
         "programs": [],
         "stream_groups": [],
@@ -42,56 +43,19 @@
             "r_frame_rate": "60/1",
             "nb_read_frames": "1200",
             "tags": {
-              "ALPHA_MODE": "1"
+              "alpha_mode": "1"
             }
           }
         ],
         "format": {
-          "duration": "20.000000"
-        }
-      }
-    },
-    "hero-lean.mov": {
-      "before_bytes": 14062393,
-      "after_bytes": 5611495,
-      "reduction_percent": 60.1,
-      "media": {
-        "programs": [],
-        "stream_groups": [],
-        "streams": [
-          {
-            "width": 768,
-            "height": 768,
-            "r_frame_rate": "60/1",
-            "nb_read_frames": "1200",
-            "tags": {}
-          }
-        ],
-        "format": {
-          "duration": "20.000000"
-        }
-      }
-    },
-    "hero-lean-mobile.mov": {
-      "before_bytes": 6582502,
-      "after_bytes": 2460124,
-      "reduction_percent": 62.6,
-      "media": {
-        "programs": [],
-        "stream_groups": [],
-        "streams": [
-          {
-            "width": 512,
-            "height": 512,
-            "r_frame_rate": "60/1",
-            "nb_read_frames": "1200",
-            "tags": {}
-          }
-        ],
-        "format": {
-          "duration": "20.000000"
+          "duration": "20.000000",
+          "size": "2639085"
         }
       }
     }
-  }
+  },
+  "sculpture_version": 8,
+  "orb_attached_silver_hooks": 4,
+  "safari_hevc_alpha_ready": false,
+  "safari_note": "Matching WebP poster is used until HEVC-alpha packaging runs on a compatible macOS host."
 }

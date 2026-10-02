@@ -1237,6 +1237,11 @@ html.motion-paused .hero-type .name-line{transition:none}
 @media(max-width:700px){#hero-name .name-first{margin-right:.12em}}
 @media(prefers-reduced-motion:reduce){.hero-video{display:none}.hero-video-frame.video-ready .hero-video-poster{opacity:1}}
 
+/* Dark violet ink halftone fades up through the lower third of the name. */
+.hero-type .name-line[data-name]{position:relative;display:inline-block}
+.hero-type .name-line[data-name]::after{content:attr(data-name);position:absolute;inset:0;color:transparent;background-image:radial-gradient(circle,#35116f 0 1.2px,transparent 1.35px);background-size:7px 7px;background-position:1px 2px;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-mask-image:linear-gradient(to top,#000 0%,#000 24%,transparent 54%);mask-image:linear-gradient(to top,#000 0%,#000 24%,transparent 54%);pointer-events:none;text-shadow:none}
+@media(forced-colors:active){.hero-type .name-line[data-name]::after{display:none}}
+
 /* Short current pulses reuse the site's existing circuit paths. */
 .circuit-pulse{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:8 92;animation:circuit-current 5.8s linear infinite;vector-effect:non-scaling-stroke;opacity:.82;pointer-events:none}
 .circuit-pulse-violet{stroke:var(--violet)}
