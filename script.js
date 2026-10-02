@@ -171,7 +171,7 @@
   });
   let personalStatusSelected = false;
   const setPersonalStatus = value => {
-   const match = /^(Studying|Working) on (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.exec(value)
+   const match = /^(Studying|Working on) (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.exec(value)
     || /^(Working away on )(MTDI)(\.\.\.)$/.exec(value);
    if (!match) return;
    document.querySelectorAll('[data-personal-status]').forEach(node => {
@@ -181,7 +181,7 @@
      const accent = document.createElement('span'); accent.className = 'status-accent'; accent.textContent = match[2];
      node.append(accent, document.createTextNode(match[3]));
     } else {
-     node.append(document.createTextNode(match[1] + ' on '));
+     node.append(document.createTextNode(match[1] + ' '));
      const accent = document.createElement('span'); accent.className = 'status-accent'; accent.textContent = match[2];
      node.append(accent);
     }
@@ -198,7 +198,7 @@
     if (status.project !== 'mtdi') return;
     // Choose once per page load; periodic progress refreshes never reroll the status.
     if (!personalStatusSelected && Array.isArray(status.status_options)) {
-     const options = status.status_options.filter(value => typeof value === 'string' && (/^(Studying|Working) on (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.test(value) || value === 'Working away on MTDI...'));
+     const options = status.status_options.filter(value => typeof value === 'string' && (/^(Studying|Working on) (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.test(value) || value === 'Working away on MTDI...'));
      if (options.length) setPersonalStatus(options[Math.floor(Math.random() * options.length)]);
     }
     if (!Number.isFinite(status.completion) || status.completion < 0 || status.completion > 100) return;

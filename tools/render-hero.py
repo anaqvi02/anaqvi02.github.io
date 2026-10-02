@@ -172,6 +172,39 @@ for polygon,material_index in zip(stella.data.polygons,face_materials):
 # Tiny bevels catch studio highlights without rounding off the eight points.
 bevel=stella.modifiers.new('Hairline facet highlights','BEVEL');bevel.width=.003;bevel.segments=2
 stella.rotation_euler=Euler(tuple(math.radians(v) for v in (18,22,12)))
+# Opt-in material study; the shipped plain Stella remains the default.
+GLASS_STELLA=os.environ.get('ALI_HERO_CORE_STYLE')=='glass'
+inner_axis=None
+if GLASS_STELLA:
+    scene.cycles.max_bounces=12;scene.cycles.transmission_bounces=10
+    glass=bpy.data.materials.new('Smoked dark amethyst Stella glass');glass.use_nodes=True
+    gn,gl=glass.node_tree.nodes,glass.node_tree.links;gn.clear()
+    surface=gn.new('ShaderNodeBsdfGlass')
+    surface.inputs['Color'].default_value=(.56,.12,.82,1)
+    surface.inputs['Roughness'].default_value=.025;surface.inputs['IOR'].default_value=1.28
+    absorb=gn.new('ShaderNodeVolumeAbsorption')
+    absorb.inputs['Color'].default_value=(.24,.008,.46,1);absorb.inputs['Density'].default_value=1.25
+    gout=gn.new('ShaderNodeOutputMaterial');gl.new(surface.outputs[0],gout.inputs['Surface']);gl.new(absorb.outputs[0],gout.inputs['Volume'])
+    stella.data.materials.clear();stella.data.materials.append(glass)
+    for polygon in stella.data.polygons:polygon.material_index=0
+    inner_axis=bpy.data.objects.new('Independent white Stella inside amethyst glass',None)
+    scene.collection.objects.link(inner_axis);inner_axis.parent=stellar_axis
+    white_materials=[]
+    for label,strength in [('White-hot tetrahedron',18),('Soft white tetrahedron',7)]:
+        mat,node=material(label,(1,.97,1),0,.18)
+        node.inputs['Emission Color'].default_value=(1,.97,1,1)
+        node.inputs['Emission Strength'].default_value=strength
+        white_materials.append(mat)
+    INNER_RADIUS=.28
+    inner=make_mesh('Luminous inner Stella Octangula',[(Vector(v)*(INNER_RADIUS/1.02))[:] for v in stella_vertices],stella_faces,white_materials[0])
+    inner.data.materials.append(white_materials[1]);inner.parent=inner_axis
+    inner.rotation_euler=Euler(tuple(math.radians(v) for v in (-12,35,8)))
+    for polygon,index in zip(inner.data.polygons,face_materials):polygon.use_smooth=False;polygon.material_index=index
+    inner_bevel=inner.modifiers.new('Fine inner facet highlights','BEVEL');inner_bevel.width=.001;inner_bevel.segments=2
+    # The central octahedron's insphere is radius 1.02/3. The entire
+    # inner compound stays within it at every orientation, with no crossings.
+    assert INNER_RADIUS<1.02/3-.04
+
 def aim(obj):obj.rotation_euler=(-obj.location).to_track_quat('-Z','Y').to_euler()
 def area(name,location,color,power,sx,sy):
     data=bpy.data.lights.new(name,'AREA');data.energy=power;data.color=color;data.shape='RECTANGLE';data.size=sx;data.size_y=sy
@@ -197,7 +230,15 @@ links.new(layer.outputs['IndexOB'],center_mask.inputs['ID value'])
 mask_file=nodes.new('CompositorNodeOutputFile');mask_file.base_path=str(ROOT/'orb-mask')
 mask_file.format.file_format='PNG';mask_file.format.color_mode='BW';mask_file.format.color_depth='8'
 mask_file.file_slots[0].path='mask_';links.new(center_mask.outputs['Alpha'],mask_file.inputs[0])
-links.new(glare.outputs['Image'],dispersion.inputs['Image'])
+if GLASS_STELLA:
+    # Mask a restrained bloom back to the glass: points and facets stay crisp.
+    glow=nodes.new('CompositorNodeGlare');glow.glare_type='FOG_GLOW';glow.quality='HIGH';glow.threshold=2;glow.size=6;glow.mix=1
+    links.new(layer.outputs['Image'],glow.inputs['Image'])
+    confined=nodes.new('CompositorNodeMixRGB');confined.blend_type='MULTIPLY';confined.inputs[0].default_value=1
+    links.new(glow.outputs['Image'],confined.inputs[1]);links.new(center_mask.outputs['Alpha'],confined.inputs[2])
+    combine=nodes.new('CompositorNodeMixRGB');combine.blend_type='ADD';combine.inputs[0].default_value=.18
+    links.new(glare.outputs['Image'],combine.inputs[1]);links.new(confined.outputs[0],combine.inputs[2]);links.new(combine.outputs[0],dispersion.inputs['Image'])
+else:links.new(glare.outputs['Image'],dispersion.inputs['Image'])
 
 def update(s,graph=None):
     t=clock(s.frame_current)
@@ -205,6 +246,9 @@ def update(s,graph=None):
     for stream in bands:stream.update(t)
     stellar_axis.rotation_mode='QUATERNION'
     stellar_axis.rotation_quaternion=Quaternion(Vector((.32,.81,.49)).normalized(),t)
+    if inner_axis is not None:
+        inner_axis.rotation_mode='QUATERNION'
+        inner_axis.rotation_quaternion=Quaternion(Vector((-.48,.35,.80)).normalized(),2*t)
 
 bpy.app.handlers.frame_change_pre.append(update)
 scene.frame_set(1);update(scene);bpy.context.view_layer.update();scene.render.filepath=str(ROOT/'frames'/'frame_')
@@ -266,6 +310,7 @@ def audit():
     report={'frames_checked':len(checked_frames),'frame_stride':4,'stella_vertices':14,'stella_faces':24,'stella_tips':8,'stella_closed_manifold':True,'stella_radius':1.02,'stellar_spin_loop_delta':star_axis_seam,'actual_stella_rotation':star_axis_change,'stellar_turns_per_loop':1,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'shared_turns_per_loop':1,'profile_half_depths':[b.d for b in bands]}
     (ROOT/'geometry-audit.json').write_text(json.dumps(report,indent=2)+'\n');print('GEOMETRY_AUDIT',json.dumps(report),flush=True)
 manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':11,'features':['3 layered chrome-mercury rings','slow common orbit and gentle liquid flow','6 long rose-like thorns with concave roots','exact eight-point Stella Octangula with flat amethyst facets','independent calm 3D Stella rotation',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples,'bit_depth':16,'finish':'clean ungraded master'}
+if GLASS_STELLA:manifest.update(version=12,core_style='dark amethyst glass with luminous independently rotating inner Stella',inner_radius=INNER_RADIUS,inner_containment_clearance=1.02/3-INNER_RADIUS)
 (ROOT/'render-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 if MODE=='audit':audit()
 elif MODE=='preview':

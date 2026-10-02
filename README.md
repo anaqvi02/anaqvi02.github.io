@@ -16,7 +16,7 @@ Homepage selected work is curated separately; adding a gallery entry does not re
 
 ## Current status
 
-Edit `status_options` in `status.json` to change the hero’s Current status choices. The page chooses one option at random on its first successful status-file load and keeps it for that page load; the once-per-minute refresh updates MTDI progress without rerolling the personal status. The homepage HTML contains a readable no-JavaScript fallback.
+Edit `status_options` in `status.json` to change the hero’s Current status choices. Course choices use “Studying COURSE” or “Working on COURSE” for ECON 101, COMMST 100, MATH 137, MATH 135, and CS 135; “Working away on MTDI...” remains available. The page chooses one option at random on its first successful status-file load and keeps it for that page load; the once-per-minute refresh updates MTDI progress without rerolling the personal status. The homepage HTML contains a readable no-JavaScript fallback.
 
 ## Offline chrome hero
 
@@ -43,6 +43,12 @@ python3 tools/package-stella-safari.py ../hero-render-v11/browser
 Local encoding adds a restrained fixed purple halftone at 18% ink without random grain. The desktop and mobile browser clips use 768px and 512px at native 60fps, preserving the 20-second orbit speed. VP9-alpha serves Chromium/Firefox; HEVC-alpha serves Safari/iOS. Only compact browser files and their matching WebP poster belong in `assets/`. Temporary ProRes intermediates are deleted automatically. Keep one private lossless master, the scene, source, and audit; remove raw frame sequences after verifying the downloaded master and deployed exports.
 
 `hero-video.js` loads only the appropriate clip when visible and motion is enabled. Hero/footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs and blocked playback preserve the matching poster; hidden tabs and offscreen playback suspend the clip. Name and portrait interactions stay independent. The public `hero-studies/` page offers manual playback of the current finish.
+
+### Nested glass Stella study
+
+`hero-studies/glass-stella.html` previews an opt-in material variant without replacing the homepage. Set `ALI_HERO_CORE_STYLE=glass` to create a dark amethyst glass outer Stella with a luminous white inner Stella. The inner shape makes two relative turns per 20 seconds around a different axis. Its 0.28-unit circumsphere fits inside the outer compound’s 0.34-unit insphere at every orientation. Facets remain sharp; bloom is restrained and masked to the glass.
+
+`tools/modal-stella-study.py` renders 1024px stills and a bounded 512px / 12 fps material loop at 128 samples on four L4 workers. Its `stills`, `motion`, and `encode` modes store results under `/stella-glass-study-v12/` in the existing Modal Volume. The public study loads one compact alpha clip only after Play is clicked. The homepage remains the verified v11 60 fps animation.
 
 ## Design language
 
