@@ -1,6 +1,6 @@
 """Encode compact browser clips locally from the ungraded FFV1 master.
 No Blender rendering; the 16-bit 60fps source is never modified.
-python3 tools/encode-stella.py /path/hero-stella-v11-lossless.mkv --output-dir assets
+python3 tools/encode-stella.py /path/hero-stella-v12-lossless.mkv --output-dir assets
 """
 from pathlib import Path
 import argparse,subprocess,json,hashlib
@@ -21,13 +21,18 @@ def finish(pixels):
     pixels[pixels[:,:,3]==0,:3]=0
     return pixels
 
-def main(master,output,crf):
+def main(master,output,crf,mobile_only=False):
     output.mkdir(parents=True,exist_ok=True)
     probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','stream=width,height,r_frame_rate,pix_fmt:format=duration','-of','json',str(master)]))
     s=probe['streams'][0];assert s['width']==1024 and s['height']==1024 and s['r_frame_rate']=='60/1' and s['pix_fmt']=='gbrap16le'
     report={'source':master.name,'source_sha256':hashlib.file_digest(master.open('rb'),'sha256').hexdigest(),'finish':'fine halftone on violet surfaces at 18% ink; no grain','clips':{}}
-    for size,quality,bitrate in [(768,crf,1100000),(512,crf+2,450000)]:
-        stem='hero-stella-v11'+('-mobile' if size==512 else '')
+    if mobile_only:
+        previous=json.loads((output/'hero-stella-v12-encode-report.json').read_text())
+        assert previous['source_sha256']==report['source_sha256']
+        report['clips']=previous['clips']
+    configurations=[(512,crf,500000)] if mobile_only else [(768,crf,1100000),(512,crf,500000)]
+    for size,quality,bitrate in configurations:
+        stem='hero-stella-v12'+('-mobile' if size==512 else '')
         dest=output/f'{stem}.webm'
         decoder=subprocess.Popen(['ffmpeg','-v','error','-i',str(master),'-vf',f'scale={size}:{size}:flags=lanczos','-pix_fmt','rgba','-f','rawvideo','-'],stdout=subprocess.PIPE)
         encoder=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgba','-s',f'{size}x{size}','-r','60','-i','-','-an','-c:v','libvpx-vp9','-pix_fmt','yuva420p','-b:v',str(bitrate),'-maxrate',str(bitrate*2),'-crf',str(quality),'-auto-alt-ref','0','-row-mt','1','-threads','6','-cpu-used','2',str(dest)],stdin=subprocess.PIPE)
@@ -40,8 +45,8 @@ def main(master,output,crf):
                 pixels=finish(np.frombuffer(raw,dtype=np.uint8).reshape(size,size,4).copy())
                 assert all(pixels[y,x,3]==0 for y,x in [(0,0),(0,-1),(-1,0),(-1,-1)])
                 if count==0 and size==768:
-                    Image.fromarray(pixels).save(output/'hero-stella-v11-poster.webp',quality=95,method=6)
-                    Image.fromarray(pixels).save(output/'hero-stella-v11-encoding-reference.png')
+                    Image.fromarray(pixels).save(output/'hero-stella-v12-poster.webp',quality=95,method=6)
+                    Image.fromarray(pixels).save(output/'hero-stella-v12-encoding-reference.png')
                 encoder.stdin.write(pixels.tobytes());count+=1
             encoder.stdin.close();assert encoder.wait()==0 and decoder.wait()==0 and count==1200
         finally:
@@ -51,8 +56,9 @@ def main(master,output,crf):
         stream=data['streams'][0];assert stream['nb_read_frames']=='1200' and stream['r_frame_rate']=='60/1' and stream['tags'].get('alpha_mode')=='1'
         data['bytes']=dest.stat().st_size;data['crf']=quality;data['target_bitrate']=bitrate;report['clips'][stem]=data
         print('Encoded',stem,dest.stat().st_size,'bytes',flush=True)
-    (output/'hero-stella-v11-encode-report.json').write_text(json.dumps(report,indent=2))
+    (output/'hero-stella-v12-encode-report.json').write_text(json.dumps(report,indent=2))
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('master',type=Path);parser.add_argument('--output-dir',type=Path,required=True);parser.add_argument('--crf',type=int,default=34)
-    args=parser.parse_args();main(args.master,args.output_dir,args.crf)
+    parser.add_argument('--mobile-only',action='store_true')
+    args=parser.parse_args();main(args.master,args.output_dir,args.crf,args.mobile_only)

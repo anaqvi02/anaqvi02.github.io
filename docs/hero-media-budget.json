@@ -1,41 +1,41 @@
 {
-  "sculpture_version": 11,
+  "sculpture_version": 12,
   "duration_seconds": 20,
   "source_size": 1024,
   "source_fps": 60,
   "source_frames": 1200,
   "source_bit_depth": 16,
-  "source_samples": 96,
+  "source_samples": 128,
   "delivery_fps": 60,
   "delivered_frames": 1200,
   "alpha": true,
-  "center": "Exact rotating Stella Octangula replacing the sphere/star/collet",
+  "center": "Dark amethyst glass Stella enclosing an independently rotating luminous white Stella",
   "finish": "fine halftone on violet surfaces at 18% ink; no grain",
   "master_outside_git": true,
   "safari_hevc_alpha_ready": true,
   "clips": {
-    "hero-stella-v11.webm": {
+    "hero-stella-v12.webm": {
       "width": 768,
       "height": 768,
-      "bytes": 4467236,
+      "bytes": 4470963,
       "budget_bytes": 5000000
     },
-    "hero-stella-v11-mobile.webm": {
+    "hero-stella-v12-mobile.webm": {
       "width": 512,
       "height": 512,
-      "bytes": 2015496,
+      "bytes": 2212153,
       "budget_bytes": 2300000
     },
-    "hero-stella-v11.mov": {
+    "hero-stella-v12.mov": {
       "width": 768,
       "height": 768,
-      "bytes": 5092701,
+      "bytes": 5089895,
       "budget_bytes": 5500000
     },
-    "hero-stella-v11-mobile.mov": {
+    "hero-stella-v12-mobile.mov": {
       "width": 512,
       "height": 512,
-      "bytes": 2766625,
+      "bytes": 2766557,
       "budget_bytes": 3000000
     }
   }

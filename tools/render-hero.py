@@ -172,7 +172,7 @@ for polygon,material_index in zip(stella.data.polygons,face_materials):
 # Tiny bevels catch studio highlights without rounding off the eight points.
 bevel=stella.modifiers.new('Hairline facet highlights','BEVEL');bevel.width=.003;bevel.segments=2
 stella.rotation_euler=Euler(tuple(math.radians(v) for v in (18,22,12)))
-# Opt-in material study; the shipped plain Stella remains the default.
+# Glass is enabled explicitly by the production Modal pipeline.
 GLASS_STELLA=os.environ.get('ALI_HERO_CORE_STYLE')=='glass'
 inner_axis=None
 if GLASS_STELLA:
@@ -268,7 +268,7 @@ def audit():
     # the many-pose broad collision audit so Modal can complete the preflight.
     faces={b.name:proxy_faces(b.n,b.m) for b in bands}
     ranges={b.name:[float('inf'),0] for b in bands};min_gap=float('inf');max_projection=0
-    camera_inv=np.array(camera.matrix_world.inverted());shape_samples={};star_axis_samples={}
+    camera_inv=np.array(camera.matrix_world.inverted());shape_samples={};star_axis_samples={};inner_axis_samples={}
     # The sculpt deforms continuously and slowly. A 67 ms sample plus the
     # exact loop seam catches crossings throughout the motion efficiently.
     checked_frames=sorted(set(range(1,FRAMES+2,4))|{FRAMES+1})
@@ -294,6 +294,7 @@ def audit():
         if frame in (1,FRAMES//4+1,FRAMES//2+1,3*FRAMES//4+1,FRAMES+1):
             shape_samples[str(frame)]=[tuple(v.co) for band in bands for v in band.obj.data.vertices]
             star_axis_samples[str(frame)]=np.array(stellar_axis.matrix_world).tolist()
+            if inner_axis is not None:inner_axis_samples[str(frame)]=np.array(inner_axis.matrix_world).tolist()
     if max_projection>.485:raise RuntimeError(f'Camera clipping: {max_projection}')
     seam=float(np.abs(np.array(shape_samples['1'])-np.array(shape_samples[str(FRAMES+1)])).max())
     deformation=float(np.abs(np.array(shape_samples['1'])-np.array(shape_samples[str(FRAMES//4+1)])).max())
@@ -308,6 +309,12 @@ def audit():
     assert len(edges)==36 and all(count==2 for count in edges.values()),'Stella is not a closed manifold'
     assert sum(abs(v.co.length-1.02)<.00001 for v in stella.data.vertices)==8
     report={'frames_checked':len(checked_frames),'frame_stride':4,'stella_vertices':14,'stella_faces':24,'stella_tips':8,'stella_closed_manifold':True,'stella_radius':1.02,'stellar_spin_loop_delta':star_axis_seam,'actual_stella_rotation':star_axis_change,'stellar_turns_per_loop':1,'min_core_clearance':min_gap,'triangle_collision_pairs_checked':collision_pairs,'radial_lanes':ranges,'projection_half_extent':max_projection,'loop_mesh_delta':seam,'actual_mesh_deformation':deformation,'shared_turns_per_loop':1,'profile_half_depths':[b.d for b in bands]}
+    if GLASS_STELLA:
+        inner_seam=float(np.abs(np.array(inner_axis_samples['1'])-np.array(inner_axis_samples[str(FRAMES+1)])).max())
+        inner_rotation=float(np.abs(np.array(inner_axis_samples['1'])-np.array(inner_axis_samples[str(FRAMES//4+1)])).max())
+        assert inner_seam<.00001 and inner_rotation>.1
+        assert max(v.co.length for v in inner.data.vertices)<1.02/3-.04
+        report.update(inner_spin_loop_delta=inner_seam,actual_inner_rotation=inner_rotation,inner_turns_relative_to_outer=2,inner_radius=INNER_RADIUS,inner_containment_clearance=1.02/3-INNER_RADIUS,core_style='amethyst glass / luminous inner Stella')
     (ROOT/'geometry-audit.json').write_text(json.dumps(report,indent=2)+'\n');print('GEOMETRY_AUDIT',json.dumps(report),flush=True)
 manifest={'frames':FRAMES,'fps':FPS,'seconds':SECONDS,'playback_rate':1,'visual_loop_seconds':SECONDS,'size':SIZE,'version':11,'features':['3 layered chrome-mercury rings','slow common orbit and gentle liquid flow','6 long rose-like thorns with concave roots','exact eight-point Stella Octangula with flat amethyst facets','independent calm 3D Stella rotation',f'true native {FPS}fps temporal sampling'],'film':'transparent','engine':'cycles','samples':scene.cycles.samples,'bit_depth':16,'finish':'clean ungraded master'}
 if GLASS_STELLA:manifest.update(version=12,core_style='dark amethyst glass with luminous independently rotating inner Stella',inner_radius=INNER_RADIUS,inner_containment_clearance=1.02/3-INNER_RADIUS)

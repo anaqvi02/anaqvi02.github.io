@@ -1,11 +1,11 @@
 {
-  "version": 11,
+  "version": 12,
   "vp9": {
-    "source": "hero-stella-v11-lossless.mkv",
-    "source_sha256": "4aa3a0daeeeec5bb05803f867b0bacbddf02b4056c5c6235007ecd8e4911e229",
+    "source": "hero-stella-v12-lossless.mkv",
+    "source_sha256": "3da1817c81482f6549347399687e36ee5f333544f67338ab8fcbafc909d0ab79",
     "finish": "fine halftone on violet surfaces at 18% ink; no grain",
     "clips": {
-      "hero-stella-v11": {
+      "hero-stella-v12": {
         "programs": [],
         "stream_groups": [],
         "streams": [
@@ -22,11 +22,11 @@
         "format": {
           "duration": "20.000000"
         },
-        "bytes": 4467236,
+        "bytes": 4470963,
         "crf": 34,
         "target_bitrate": 1100000
       },
-      "hero-stella-v11-mobile": {
+      "hero-stella-v12-mobile": {
         "programs": [],
         "stream_groups": [],
         "streams": [
@@ -43,14 +43,14 @@
         "format": {
           "duration": "20.000000"
         },
-        "bytes": 2015496,
-        "crf": 36,
-        "target_bitrate": 450000
+        "bytes": 2212153,
+        "crf": 34,
+        "target_bitrate": 500000
       }
     }
   },
   "hevc_alpha": {
-    "hero-stella-v11": {
+    "hero-stella-v12": {
       "programs": [],
       "stream_groups": [],
       "streams": [
@@ -64,9 +64,9 @@
       "format": {
         "duration": "20.000000"
       },
-      "bytes": 5092701
+      "bytes": 5089895
     },
-    "hero-stella-v11-mobile": {
+    "hero-stella-v12-mobile": {
       "programs": [],
       "stream_groups": [],
       "streams": [
@@ -80,42 +80,146 @@
       "format": {
         "duration": "20.000000"
       },
-      "bytes": 2766625
+      "bytes": 2766557
     }
   },
-  "first_frame_compression": {
-    "rgb_mae_on_opaque_pixels": 3.900582173331248,
-    "rgb_p95_on_opaque_pixels": 12.0,
-    "corner_alpha": 0
-  },
-  "temporal_compression": [
+  "compression_samples": [
     {
+      "size": 768,
+      "frame": 1,
+      "rgb_mae_on_opaque_pixels": 4.151311056664755,
+      "core_rgb_mae": 6.169029644632665,
+      "rgb_p95": 13.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 768,
       "frame": 301,
-      "rgb_mae": 9.437267058027468,
-      "rgb_p95": 34.0,
-      "corner_alpha": 0,
-      "previous_encoder_rgb_mae": 9.773819059636802
+      "rgb_mae_on_opaque_pixels": 9.752255119285385,
+      "core_rgb_mae": 10.495441580485414,
+      "rgb_p95": 35.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
+      "size": 768,
       "frame": 601,
-      "rgb_mae": 8.25112955575573,
-      "rgb_p95": 29.0,
-      "corner_alpha": 0,
-      "previous_encoder_rgb_mae": 8.567948497976808
+      "rgb_mae_on_opaque_pixels": 8.90223532564996,
+      "core_rgb_mae": 11.501339177014852,
+      "rgb_p95": 32.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
+      "size": 768,
       "frame": 901,
-      "rgb_mae": 8.086340906318952,
-      "rgb_p95": 29.0,
-      "corner_alpha": 0,
-      "previous_encoder_rgb_mae": 8.388314169872897
+      "rgb_mae_on_opaque_pixels": 8.541776614852429,
+      "core_rgb_mae": 10.82222096231621,
+      "rgb_p95": 31.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 768,
+      "frame": 1200,
+      "rgb_mae_on_opaque_pixels": 10.201459116868644,
+      "core_rgb_mae": 15.041193210900232,
+      "rgb_p95": 36.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 512,
+      "frame": 1,
+      "rgb_mae_on_opaque_pixels": 4.518034884823206,
+      "core_rgb_mae": 6.622391069837249,
+      "rgb_p95": 14.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 512,
+      "frame": 301,
+      "rgb_mae_on_opaque_pixels": 12.276388300127172,
+      "core_rgb_mae": 13.281766857506362,
+      "rgb_p95": 41.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 512,
+      "frame": 601,
+      "rgb_mae_on_opaque_pixels": 10.865947499147714,
+      "core_rgb_mae": 14.194383988392438,
+      "rgb_p95": 37.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 512,
+      "frame": 901,
+      "rgb_mae_on_opaque_pixels": 10.316492889403785,
+      "core_rgb_mae": 12.848355716253444,
+      "rgb_p95": 35.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "size": 512,
+      "frame": 1200,
+      "rgb_mae_on_opaque_pixels": 12.813935639059668,
+      "core_rgb_mae": 17.680610328638497,
+      "rgb_p95": 44.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
     }
   ],
   "browser_playback": [
     {
       "engine": "chromium",
       "viewport": 390,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v11-mobile.webm",
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v12-mobile.webm",
       "width": 512,
       "height": 512,
       "duration": 20,
@@ -126,7 +230,7 @@
     {
       "engine": "chromium",
       "viewport": 1440,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v11.webm",
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v12.webm",
       "width": 768,
       "height": 768,
       "duration": 20,
@@ -137,7 +241,7 @@
     {
       "engine": "webkit",
       "viewport": 390,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v11-mobile.mov",
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v12-mobile.mov",
       "width": 512,
       "height": 512,
       "duration": 20,
@@ -148,7 +252,7 @@
     {
       "engine": "webkit",
       "viewport": 1440,
-      "source": "http://127.0.0.1:4174/assets/hero-stella-v11.mov",
+      "source": "http://127.0.0.1:4174/assets/hero-stella-v12.mov",
       "width": 768,
       "height": 768,
       "duration": 20,

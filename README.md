@@ -20,9 +20,9 @@ Edit `status_options` in `status.json` to change the hero’s Current status cho
 
 ## Offline chrome hero
 
-The deterministic sculpture has three folded mirror-chrome ribbons and six long, concave-rooted thorns surrounding a rotating Stella Octangula. The center is the exact compound of two regular tetrahedra: eight tips, 24 exposed triangular faces, and crisp amethyst facets. It replaces the former glass sphere, star effects, and collet. Both the ring sculpture and the center turn slowly through a seamless 20-second loop. The browser plays prerecorded media and never runs a 3D renderer.
+The deterministic sculpture has three folded mirror-chrome ribbons and six long, concave-rooted thorns surrounding a rotating Stella Octangula. The outer center is the exact compound of two regular tetrahedra: eight tips and 24 exposed triangular faces in dark amethyst glass. A smaller white emissive Stella Octangula rotates independently inside, refracting through the glass. The rings and outer center complete one calm 20-second orbit; the inner shape makes two relative turns around a different axis. The browser plays prerecorded media and never runs a 3D renderer.
 
-All 3D rendering runs on Modal L4 GPUs through the authenticated CLI. `tools/render-hero.py` defines the Blender 4.5 scene. `tools/modal-hero.py` produces six preflight views, an isolated center preview, and a geometry audit before rendering eight bounded frame ranges. The 1024px source contains 1,200 native 60fps RGBA16 frames at 96 Cycles samples with denoising.
+All 3D rendering runs on Modal L4 GPUs through the authenticated CLI. `tools/render-hero.py` defines the Blender 4.5 scene. `tools/modal-hero.py` produces six preflight views, an isolated center preview, and a geometry audit before rendering eight bounded frame ranges. The 1024px source contains 1,200 native 60fps RGBA16 frames at 128 Cycles samples with denoising.
 
 ```sh
 modal run tools/modal-hero.py --mode preflight
@@ -30,25 +30,23 @@ modal run --detach tools/modal-hero.py --mode render
 modal run --detach tools/modal-hero.py --mode master
 ```
 
-Detached jobs save their FunctionCall IDs in the private sibling `hero-render-v11/` directory. Poll those IDs before starting the master job. The Modal Volume `ali-hero-final-20261001` stores this version under `/stella-v11/`. The geometry audit samples 301 poses and checks the closing seam, cross-band intersections, center clearance, camera bounds, independent center rotation, and the Stella’s manifold topology. The six thorn roots also receive visual inspection; the numeric collision test compares separate meshes.
+Detached jobs save their FunctionCall IDs in the private sibling `hero-render-v12/` directory. Poll those IDs before starting the master job. The Modal Volume `ali-hero-final-20261001` stores this version under `/stella-v12/`. The geometry audit samples 301 poses and checks the closing seam, cross-band intersections, center clearance, camera bounds, both independent center rotations, nested-core containment, and the Stella’s manifold topology. The six thorn roots also receive visual inspection; the numeric collision test compares separate meshes.
 
 The cloud CPU job assembles an **ungraded lossless FFV1 master** at 1024px / 60fps with 16-bit color and alpha. It checks all 1,200 frames and compares decoded RGBA16 pixels with five source frames exactly. Preserve this master outside Git for future local encoding; no rerender is needed to change compression or print texture.
 
 ```sh
-modal volume get ali-hero-final-20261001 /stella-v11/hero-stella-v11-lossless.mkv ../hero-render-v11/hero-stella-v11-lossless.mkv
-python3 tools/encode-stella.py ../hero-render-v11/hero-stella-v11-lossless.mkv --output-dir ../hero-render-v11/browser
-python3 tools/package-stella-safari.py ../hero-render-v11/browser
+modal volume get ali-hero-final-20261001 /stella-v12/hero-stella-v12-lossless.mkv ../hero-render-v12/hero-stella-v12-lossless.mkv
+python3 tools/encode-stella.py ../hero-render-v12/hero-stella-v12-lossless.mkv --output-dir ../hero-render-v12/browser
+python3 tools/package-stella-safari.py ../hero-render-v12/browser
 ```
 
 Local encoding adds a restrained fixed purple halftone at 18% ink without random grain. The desktop and mobile browser clips use 768px and 512px at native 60fps, preserving the 20-second orbit speed. VP9-alpha serves Chromium/Firefox; HEVC-alpha serves Safari/iOS. Only compact browser files and their matching WebP poster belong in `assets/`. Temporary ProRes intermediates are deleted automatically. Keep one private lossless master, the scene, source, and audit; remove raw frame sequences after verifying the downloaded master and deployed exports.
 
 `hero-video.js` loads only the appropriate clip when visible and motion is enabled. Hero/footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs and blocked playback preserve the matching poster; hidden tabs and offscreen playback suspend the clip. Name and portrait interactions stay independent. The public `hero-studies/` page offers manual playback of the current finish.
 
-### Nested glass Stella study
+### Glass Stella close-up
 
-`hero-studies/glass-stella.html` previews an opt-in material variant without replacing the homepage. Set `ALI_HERO_CORE_STYLE=glass` to create a dark amethyst glass outer Stella with a luminous white inner Stella. The inner shape makes two relative turns per 20 seconds around a different axis. Its 0.28-unit circumsphere fits inside the outer compound’s 0.34-unit insphere at every orientation. Facets remain sharp; bloom is restrained and masked to the glass.
-
-`tools/modal-stella-study.py` renders 1024px stills and a bounded 512px / 12 fps material loop at 128 samples on four L4 workers. Its `stills`, `motion`, and `encode` modes store results under `/stella-glass-study-v12/` in the existing Modal Volume. The public study loads one compact alpha clip only after Play is clicked. The homepage remains the verified v11 60 fps animation.
+`hero-studies/glass-stella.html` offers manual playback of the current 60 fps sculpture alongside a high-resolution close-up. The white inner compound’s 0.28-unit circumsphere fits inside the outer glass compound’s 0.34-unit insphere at every orientation. Facets remain sharp; bloom is restrained and masked to the glass. The production Modal pipeline explicitly selects `ALI_HERO_CORE_STYLE=glass`. `tools/modal-stella-study.py` can still produce inexpensive 12 fps material studies for future experiments; completed study frames are removed after packaging.
 
 ## Design language
 

@@ -1,6 +1,6 @@
 {
-  "master": "hero-stella-v11-lossless.mkv",
-  "bytes": 926093646,
+  "master": "hero-stella-v12-lossless.mkv",
+  "bytes": 937594149,
   "source_pixel_matches": [
     1,
     301,
@@ -8,7 +8,7 @@
     901,
     1200
   ],
-  "sha256": "4aa3a0daeeeec5bb05803f867b0bacbddf02b4056c5c6235007ecd8e4911e229",
+  "sha256": "3da1817c81482f6549347399687e36ee5f333544f67338ab8fcbafc909d0ab79",
   "probe": {
     "programs": [],
     "streams": [

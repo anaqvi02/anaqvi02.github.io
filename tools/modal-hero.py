@@ -7,16 +7,16 @@ The lossless master stays outside Git; browser encoding happens locally.
 from pathlib import Path
 import json,os,modal
 HERE=Path(__file__).resolve().parent
-app=modal.App('ali-hero-stella-v11')
+app=modal.App('ali-hero-glass-stella-v12')
 volume=modal.Volume.from_name('ali-hero-final-20261001',create_if_missing=True)
 image=(modal.Image.debian_slim(python_version='3.11')
        .apt_install('xorg','libxkbcommon0','libegl1','ffmpeg')
        .uv_pip_install('bpy==4.5.0','numpy','pillow')
        .add_local_file(HERE/'render-hero.py','/opt/hero/render-hero.py',copy=True))
-LOCAL=HERE.parent.parent/'hero-render-v11'
-CLOUD=Path('/data/stella-v11')
+LOCAL=HERE.parent.parent/'hero-render-v12'
+CLOUD=Path('/data/stella-v12')
 SIZE=1024
-ENV={'ALI_HERO_FPS':'60','ALI_HERO_REQUIRE_GPU':'1','ALI_HERO_DEVICE':'OPTIX','ALI_HERO_SAMPLES':'96','ALI_HERO_FAST_EXIT':'1'}
+ENV={'ALI_HERO_FPS':'60','ALI_HERO_REQUIRE_GPU':'1','ALI_HERO_DEVICE':'OPTIX','ALI_HERO_SAMPLES':'128','ALI_HERO_CORE_STYLE':'glass','ALI_HERO_FAST_EXIT':'1'}
 
 @app.function(image=image,gpu='L4',cpu=4,memory=12288,timeout=1200,volumes={'/data':volume},env=ENV)
 def preflight():
@@ -57,7 +57,7 @@ def master():
     import subprocess,hashlib
     volume.reload();frames=sorted((CLOUD/'frames').glob('frame_*.png'))
     assert len(frames)==1200 and all(p.name==f'frame_{i:04d}.png' for i,p in enumerate(frames,1))
-    dest=CLOUD/'hero-stella-v11-lossless.mkv'
+    dest=CLOUD/'hero-stella-v12-lossless.mkv'
     subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-framerate','60','-i',str(CLOUD/'frames/frame_%04d.png'),'-frames:v','1200','-an','-c:v','ffv1','-level','3','-coder','1','-context','1','-slicecrc','1','-pix_fmt','gbrap16le','-threads','8',str(dest)],check=True)
     probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-show_entries','stream=codec_name,width,height,pix_fmt,r_frame_rate,nb_read_frames:format=duration','-of','json',str(dest)]))
     s=probe['streams'][0];assert s['codec_name']=='ffv1' and s['pix_fmt']=='gbrap16le' and s['width']==SIZE and s['height']==SIZE and s['r_frame_rate']=='60/1' and s['nb_read_frames']=='1200'

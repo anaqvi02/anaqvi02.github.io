@@ -33,5 +33,11 @@
     0.115,
     0.1,
     0.08
-  ]
+  ],
+  "inner_spin_loop_delta": 1.9119678995593858e-07,
+  "actual_inner_rotation": 1.7252779603004456,
+  "inner_turns_relative_to_outer": 2,
+  "inner_radius": 0.28,
+  "inner_containment_clearance": 0.06,
+  "core_style": "amethyst glass / luminous inner Stella"
 }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#f5f3ed">
-<title>Glass Stella study — Ali Naqvi</title>
+<title>Glass Stella close-up — Ali Naqvi</title>
 <link rel="icon" href="../assets/personal-mark.svg">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=IBM+Plex+Mono&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <style>
@@ -13,22 +13,22 @@
 </style>
 </head>
 <body><main>
-<header><a href="../">← Back to the site</a><span>Material study / 02</span></header>
+<header><a href="../">← Back to the site</a><span>Glass & light / current</span></header>
 <h1>Dark glass. <em>White fire.</em></h1>
 <p>A smoky amethyst Stella Octangula enclosing a smaller, luminous white Stella. The two turn independently; the light splits and refracts through the outer facets.</p>
 <div class="study">
 <section aria-label="Animated sculpture preview">
-<div class="stage"><video muted loop playsinline preload="none" poster="../assets/glass-stella-study-poster.webp" aria-label="Chrome thorned rings orbiting a dark purple glass Stella with a smaller glowing white Stella inside"></video></div>
-<div class="controls"><button type="button" aria-pressed="false">Play preview</button><span class="label">12 fps material preview / 20-second loop</span></div>
+<div class="stage"><video muted loop playsinline preload="none" poster="../assets/hero-stella-v12-poster.webp" aria-label="Chrome thorned rings orbiting a dark purple glass Stella with a smaller glowing white Stella inside"></video></div>
+<div class="controls"><button type="button" aria-pressed="false">Play preview</button><span class="label">60 fps / 20-second loop</span></div>
 </section>
 <figure><div class="closeup"><img src="../assets/glass-stella-study-closeup.webp" width="1024" height="1024" alt="Close view of the dark violet glass facets refracting the bright white inner Stella"></div><figcaption>High-resolution still / light inside the glass.</figcaption></figure>
 </div>
-<p class="note">The homepage still uses the current 60 fps hero. This preview keeps the same chrome rings and calm orbit while testing the new center. <a href="./">Compare the current hero ↗</a></p>
+<p class="note">The same glass sculpture now appears on the homepage, with a fine violet halftone in the shadows. <a href="./">View the full loop ↗</a></p>
 </main>
 <script>
 (()=>{'use strict';const video=document.querySelector('video'),button=document.querySelector('button');const reduced=matchMedia('(prefers-reduced-motion: reduce)');const safari=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||(navigator.vendor==='Apple Computer, Inc.'&&!/Chrome|Chromium|CriOS|Firefox|FxiOS|Edg|Opera|OPR/.test(navigator.userAgent));let loaded=false;
 function pause(){video.pause();button.textContent='Play preview';button.setAttribute('aria-pressed','false')}
-button.addEventListener('click',async()=>{if(!video.paused){pause();return}if(!loaded){video.src=`../assets/glass-stella-study.${safari?'mov':'webm'}`;loaded=true}try{await video.play();button.textContent='Pause preview';button.setAttribute('aria-pressed','true')}catch{button.textContent='Retry preview'}});
+button.addEventListener('click',async()=>{if(!video.paused){pause();return}if(!loaded){video.src=`../assets/hero-stella-v12${innerWidth<=700?'-mobile':''}.${safari?'mov':'webm'}`;loaded=true}try{await video.play();button.textContent='Pause preview';button.setAttribute('aria-pressed','true')}catch{button.textContent='Retry preview'}});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});reduced.addEventListener('change',e=>{if(e.matches)pause()});new IntersectionObserver(entries=>{if(!entries[0].isIntersecting)pause()},{threshold:.05}).observe(video);video.addEventListener('error',()=>{pause();button.textContent='Retry preview';loaded=false});
 })();
 </script>
