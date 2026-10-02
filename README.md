@@ -20,7 +20,7 @@ Edit `personal_status` in `status.json` to change the hero’s Current status re
 
 ## Offline chrome hero
 
-The hero is a deterministic, pre-rendered 3D sculpture: three asymmetric folded chrome ribbons carry nine long swept needles around a smoked amethyst orb. The approved ribbon shape, camera and studio reflections stay intact. Inside the darker glass, a compact star has a continuously changing molten photosphere, curved coronal flares, a faint plasma atmosphere and small orbiting embers. Every energy feature stays inside the shell; star bloom is masked to the visible glass silhouette. The sculpture completes one calm turn per 20 seconds at 12fps with a diagonal halftone print finish and gentle local ribbon flow. No 3D renderer runs in the browser.
+The hero is a deterministic, pre-rendered 3D sculpture: three asymmetric folded chrome ribbons carry nine long swept needles around a smoked amethyst orb. The approved ribbon shape, camera and studio reflections stay intact. Inside the darker glass, a compact star has a continuously changing molten photosphere, curved coronal flares, a faint plasma atmosphere and small orbiting embers. Every energy feature stays inside the shell; star bloom is masked to the visible glass silhouette. The sculpture completes one calm turn per 20 seconds at 24fps with a diagonal halftone print finish and gentle local ribbon flow. No 3D renderer runs in the browser.
 
 `tools/render-hero.py` creates the Blender scene. The current master has 480 transparent PNG frames at 768px and native 24fps; `ALI_HERO_FPS` also supports 12 or 60. Use Blender 4.5, with Metal acceleration when available:
 
@@ -28,16 +28,17 @@ The hero is a deterministic, pre-rendered 3D sculpture: three asymmetric folded 
 blender --background --factory-startup --python tools/render-hero.py -- preview 768
 ALI_HERO_FPS=24 blender --background --factory-startup --python tools/render-hero.py -- render 768
 ALI_HERO_FPS=24 blender --background --factory-startup --python tools/render-hero.py -- audit 768
-python3 tools/encode-hero.py work/hero-render screenprint --fps 12 --stem hero-halftone-12
 python3 tools/encode-hero.py work/hero-render screenprint --fps 24 --stem hero-halftone-24
 ```
 
-The audit checks all 481 poses at 24fps for actual triangle intersections between ribbons, core containment and camera clearance, then verifies loop, thunder, cloud, and orb-rotation closure between frames 1 and 481. It writes the measurements to `geometry-audit.json`. Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. The published finish samples every second native 24fps frame for 240 frames across the same 20-second orbit. Shadow-dependent diagonal purple halftone dots and fixed fine grain are baked into the transparent media. The optional smooth encoding preserves the native source frame rate.
+The audit checks all 481 poses at 24fps for actual triangle intersections between ribbons, core containment and camera clearance, then verifies loop, thunder, cloud, and orb-rotation closure between frames 1 and 481. It writes the measurements to `geometry-audit.json`. Render intermediates default to the ignored `work/hero-render/` directory. Set `ALI_HERO_RENDER_DIR` to use another output directory. Encoding needs FFmpeg, Pillow and NumPy; macOS produces the HEVC-alpha MOV variants for Safari/iOS. The included Swift encoder bounds bitrate; `avconvert` is the fallback when Swift is unavailable. The other browsers use VP9-alpha WebM. Desktop is 768px; mobile is 512px. Both remain transparent so the page’s circuit frame and gradients show through. The published finish uses all 480 native 24fps frames across the same 20-second orbit. Shadow-dependent diagonal purple halftone dots and fixed fine grain are baked into the transparent media. The optional smooth encoding preserves the native source frame rate.
 
 The matching WebP still loads immediately. `hero-video.js` loads clips only when visible and motion is enabled. The hero and footer Pause motion buttons share the saved preference. Reduced motion, no JavaScript, unavailable codecs, and blocked playback preserve the still; hidden tabs and offscreen playback are suspended. Nothing about the video changes the name or portrait interactions.
 
-After running `python3 tools/encode-hero.py work/hero-render smooth`, the optional `tools/compare-hero-print.py` exporter writes a private 12fps diagonal screen-print study beside a native smooth clip (the historical comparison expects a 60fps source) in the render directory’s `comparison/` folder. Its Play/Pause page supports both WebM and Safari HEVC-alpha. It does not change published assets.
-
 For matching native 24fps and 12fps halftone exports, render once with `ALI_HERO_FPS=24` and encode with `screenprint --fps 24` and `screenprint --fps 12`. The lower rate uses every second rendered frame; neither variant duplicates or interpolates frames, and both retain the same 20-second orbit. `--stem` and `--output-dir` can keep studies separate from published media.
 
-The public `hero-studies/` page compares both halftone rhythms. Its media use explicit `--stem hero-halftone-24` and `--stem hero-halftone-12`; the selected homepage clip remains 12fps. Playback starts only with the comparison button and pauses on hidden tabs.
+The public `hero-studies/` page is a manual-play preview of the current 24fps master. The homepage also uses 24fps. Prior render runs and the old 12fps study media were removed to save disk space. The encoder still supports lower-rate sampling for future experiments.
+
+## Design language
+
+The visual system is documented in [Chrome Fieldnotes](docs/design-language.md), with a visual guide at [design-guide/](design-guide/). Use these as the common reference for future changes.
