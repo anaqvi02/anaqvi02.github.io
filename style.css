@@ -1236,3 +1236,21 @@ html.motion-paused .hero-type .name-line{transition:none}
 .hero-motion-button:disabled{cursor:default}
 @media(max-width:700px){#hero-name .name-first{margin-right:.12em}}
 @media(prefers-reduced-motion:reduce){.hero-video{display:none}.hero-video-frame.video-ready .hero-video-poster{opacity:1}}
+
+/* Short current pulses reuse the site's existing circuit paths. */
+.circuit-pulse{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:8 92;animation:circuit-current 5.8s linear infinite;vector-effect:non-scaling-stroke;opacity:.82;pointer-events:none}
+.circuit-pulse-violet{stroke:var(--violet)}
+.circuit-pulse-red{stroke:var(--red);animation-delay:-2.9s}
+@keyframes circuit-current{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.cyber-schematic .circuit-pulse{stroke-width:2;opacity:.72}
+.about-current{stroke-dasharray:8 92;animation:about-flow 6.5s linear infinite}
+.about-header-traces .circuit-pulse{stroke-width:2.2;opacity:.78}
+.about-portrait-traces .circuit-pulse{stroke-width:2.3;opacity:.85}
+.connect-schematic .circuit-pulse{stroke-width:2.4;opacity:.8}
+.contact-links a{isolation:isolate;overflow:hidden}
+.contact-link-trace{position:absolute;z-index:-1;inset:0;width:100%;height:100%;pointer-events:none;opacity:.58}
+.contact-link-trace .trace-bed{fill:none;stroke:#5e3bc426;stroke-width:1;vector-effect:non-scaling-stroke}
+.contact-link-trace .circuit-pulse{stroke-width:1.8}
+.contact-links a:hover .contact-link-trace,.contact-links a:focus-visible .contact-link-trace{opacity:.9}
+@media(prefers-reduced-motion:reduce){.circuit-pulse,.about-current{animation:none!important;opacity:0!important}.contact-link-trace .trace-bed{opacity:.65}}
+@media(max-width:700px){.cyber-schematic>path.circuit-pulse:nth-child(-n+6){display:initial}}

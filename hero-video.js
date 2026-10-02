@@ -40,7 +40,7 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-final-mobile' : 'hero-final';
+   const stem = mobileAsset ? 'hero-lean-mobile' : 'hero-lean';
    const hevc = 'video/quicktime; codecs="hvc1"';
    const hevcSupported = video.canPlayType('video/mp4; codecs="hvc1"') !== '';
    const candidates = safariLike || ios

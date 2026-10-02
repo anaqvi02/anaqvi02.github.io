@@ -34,7 +34,7 @@ Inspect the six preflight views before the full render. The geometry audit check
 
 The final master and scene live in the Modal Volume `ali-hero-final-20261001`. Unique frame paths allow four workers to commit independent ranges. The CPU job verifies sequence, unique frames, transparent corners and media metadata; it applies deterministic diagonal purple halftone, fixed fine grain, and subtle red/cyan registration limited to the glass rim. Grading uses cloud-local scratch and six independent workers. Final media is written under `/final/media/`; source and reproducible scene remain alongside the raw frames.
 
-Desktop exports are 768px and mobile exports 512px. Chrome/Firefox use VP9-alpha WebM. Safari/iOS use HEVC-alpha MOV, packaged on macOS from the already-rendered cloud ProRes master with `tools/encode-alpha.swift`; this is video encoding, not local 3D rendering. Run `python3 tools/package-safari.py path/to/downloaded/media` with FFmpeg 8 or newer. The helper normalizes the cloud ProRes alpha to a macOS-compatible bitstream, checks decoded transparency before writing, and verifies 60fps/1,200 frames/20 seconds afterward. Its temporary repacks and compiler cache are removed automatically.
+Desktop exports are 768px and mobile exports 512px. Published `hero-lean` clips preserve all 1,200 native frames and transparency: desktop/mobile WebM are 4.82/2.62 MB, and Safari MOV are 5.61/2.46 MB. Only the appropriate codec and viewport size is requested. The cloud WebM exporter now uses constrained VBR (1.2 Mbps desktop, 0.6 Mbps mobile, CRF 38); Safari uses 1.1/0.55 Mbps with an alpha quality target of 0.6. Both exporters reject clips exceeding their download budgets. Full quality source frames remain on Modal, outside the site. Chrome/Firefox use VP9-alpha WebM. Safari/iOS use HEVC-alpha MOV, packaged on macOS from the already-rendered cloud ProRes master with `tools/encode-alpha.swift`; this is video encoding, not local 3D rendering. Run `python3 tools/package-safari.py path/to/downloaded/media` with FFmpeg 8 or newer. The helper normalizes the cloud ProRes alpha to a macOS-compatible bitstream, checks decoded transparency before writing, and verifies 60fps/1,200 frames/20 seconds afterward. Its temporary repacks and compiler cache are removed automatically.
 
 The optional `--mode preview` starts a token-protected L40S Jupyter sandbox with a one-hour maximum lifetime. Its authentication URL belongs only in the private local access file. Use `--mode stop-notebook` when finished to avoid idle GPU billing. The bounded preflight is sufficient for ordinary rendering without an idle notebook.
 
@@ -45,3 +45,7 @@ The public `hero-studies/` page offers manual playback of the current 60fps fini
 ## Design language
 
 The visual system is documented in [Chrome Fieldnotes](docs/design-language.md), with a visual guide at [design-guide/](design-guide/). Use these as the common reference for future changes.
+
+## Circuit motion
+
+Short red and violet current pulses follow the existing hero frame, About traces, portrait wiring, and Connect paths. They use SVG stroke dashes rather than layout transforms. Pause motion, reduced motion, hidden tabs and offscreen sections suspend them alongside the existing project-card circuits. Decorative SVGs remain outside the reading and focus order.

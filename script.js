@@ -73,7 +73,7 @@
   const ambientMotion = new IntersectionObserver(entries => {
    entries.forEach(entry => entry.target.classList.toggle('motion-offscreen', !entry.isIntersecting));
   });
-  document.querySelectorAll('.hero-type, .hero-art, .hero-proof, .chromatic-text, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
+  document.querySelectorAll('.hero-type, .hero-art, .hero-proof, .cyber-plate, .chromatic-text, .work-section .project-art, .about-section, .contact-section, .project-header, .dossier-summary').forEach(node => ambientMotion.observe(node));
   document.addEventListener('projectsloaded', () => {
    document.querySelectorAll('[data-project-gallery] .reveal').forEach(observeArrival);
    document.querySelectorAll('[data-project-gallery] .project-art').forEach(node => ambientMotion.observe(node));

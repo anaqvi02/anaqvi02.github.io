@@ -90,14 +90,15 @@ def encode():
     report['bounds']=[min(box[0] for _,box in records),min(box[1] for _,box in records),max(box[2] for _,box in records),max(box[3] for _,box in records)]
     out=root/'media';out.mkdir(exist_ok=True);Image.open(graded/'frame_0001.png').save(out/'hero-final-poster.webp',quality=94,method=6)
     report['clips']={}
-    for stem,size,crf in [('hero-final',768,29),('hero-final-mobile',512,30)]:
+    for stem,size,bitrate,maxrate,budget in [('hero-final',768,1200000,1600000,7000000),('hero-final-mobile',512,600000,800000,3500000)]:
+        webm=out/f"{stem.replace('hero-final','hero-lean')}.webm"
         common=['ffmpeg','-hide_banner','-loglevel','error','-y','-framerate','60','-i',str(graded/'frame_%04d.png'),'-frames:v','1200','-vf',f'scale={size}:{size}:flags=lanczos','-an']
-        subprocess.run(common+['-c:v','libvpx-vp9','-pix_fmt','yuva420p','-b:v','0','-crf',str(crf),'-auto-alt-ref','0','-row-mt','1','-threads','4','-cpu-used','4',str(out/f'{stem}.webm')],check=True)
+        subprocess.run(common+['-c:v','libvpx-vp9','-pix_fmt','yuva420p','-b:v',str(bitrate),'-maxrate',str(maxrate),'-bufsize',str(maxrate*2),'-crf','38','-auto-alt-ref','0','-row-mt','1','-threads','4','-cpu-used','3',str(webm)],check=True)
         # The only local operation later is macOS HEVC-alpha packaging from
         # these already-rendered/graded pixels; all 3D rendering stays on Modal.
         subprocess.run(common+['-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','16','-threads','4',str(out/f'{stem}-prores.mov')],check=True)
-        data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',str(out/f'{stem}.webm')]))
-        assert data['streams'][0]['r_frame_rate']=='60/1' and data['streams'][0]['nb_read_frames']=='1200';report['clips'][stem]=data
+        data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',str(webm)]))
+        assert data['streams'][0]['r_frame_rate']=='60/1' and data['streams'][0]['nb_read_frames']=='1200';assert webm.stat().st_size<=budget, 'Browser export exceeds download budget';data['bytes']=webm.stat().st_size;report['clips'][webm.stem]=data
     (root/'raster-media-audit.json').write_text(json.dumps(report,indent=2));volume.commit();return report
 
 @app.local_entrypoint()
