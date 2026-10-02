@@ -1,61 +1,27 @@
 {
+  "sculpture_version": 10,
   "duration_seconds": 20,
-  "fps": 60,
-  "frame_count": 1200,
-  "desktop_px": 768,
-  "mobile_px": 512,
+  "source_fps": 60,
+  "source_frames": 1200,
+  "delivery_fps": 30,
+  "delivered_frames": 600,
+  "alpha": true,
+  "orb_setting": "Four silver claws on a narrow girdle rail, all attached to the orb",
+  "stellar_core": "Uneven eight-point photosphere; two independent rotations per loop",
   "clips": {
-    "hero-orb-v8.webm": {
-      "bytes": 4944288,
-      "budget_bytes": 7000000,
-      "under_budget_percent": 29.4,
-      "media": {
-        "programs": [],
-        "stream_groups": [],
-        "streams": [
-          {
-            "width": 768,
-            "height": 768,
-            "r_frame_rate": "60/1",
-            "nb_read_frames": "1200",
-            "tags": {
-              "alpha_mode": "1"
-            }
-          }
-        ],
-        "format": {
-          "duration": "20.000000",
-          "size": "4944288"
-        }
-      }
+    "hero-orb-v10.webm": {
+      "width": 512,
+      "height": 512,
+      "bytes": 1823216,
+      "budget_bytes": 2000000
     },
-    "hero-orb-v8-mobile.webm": {
-      "bytes": 2639085,
-      "budget_bytes": 3500000,
-      "under_budget_percent": 24.6,
-      "media": {
-        "programs": [],
-        "stream_groups": [],
-        "streams": [
-          {
-            "width": 512,
-            "height": 512,
-            "r_frame_rate": "60/1",
-            "nb_read_frames": "1200",
-            "tags": {
-              "alpha_mode": "1"
-            }
-          }
-        ],
-        "format": {
-          "duration": "20.000000",
-          "size": "2639085"
-        }
-      }
+    "hero-orb-v10-mobile.webm": {
+      "width": 320,
+      "height": 320,
+      "bytes": 793843,
+      "budget_bytes": 800000
     }
   },
-  "sculpture_version": 8,
-  "orb_attached_silver_hooks": 4,
   "safari_hevc_alpha_ready": false,
-  "safari_note": "Matching WebP poster is used until HEVC-alpha packaging runs on a compatible macOS host."
+  "safari_note": "The matching WebP poster is used until HEVC-alpha packaging runs on a compatible macOS host."
 }

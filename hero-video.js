@@ -40,7 +40,7 @@
   const addSources = () => {
    if (sourcesAdded) return true;
    sourcesAdded = true;
-   const stem = mobileAsset ? 'hero-orb-v8-mobile' : 'hero-orb-v8';
+   const stem = mobileAsset ? 'hero-orb-v10-mobile' : 'hero-orb-v10';
   const candidates = safariLike || ios
    ? []
    : [[`${stem}.webm`, 'video/webm; codecs="vp9"']];

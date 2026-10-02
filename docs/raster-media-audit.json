@@ -1,0 +1,53 @@
+{
+  "source_frames": 1200,
+  "source_fps": 60,
+  "source_size": 512,
+  "delivery_fps": 30,
+  "duration_seconds": 20,
+  "unique_frames": 1200,
+  "alpha_corners": 0,
+  "bounds": [
+    92,
+    58,
+    484,
+    459
+  ],
+  "clips": {
+    "hero-orb-v10": {
+      "programs": [],
+      "streams": [
+        {
+          "width": 512,
+          "height": 512,
+          "r_frame_rate": "30/1",
+          "nb_read_frames": "600",
+          "tags": {
+            "alpha_mode": "1"
+          }
+        }
+      ],
+      "format": {
+        "duration": "20.000000"
+      },
+      "bytes": 1823216
+    },
+    "hero-orb-v10-mobile": {
+      "programs": [],
+      "streams": [
+        {
+          "width": 320,
+          "height": 320,
+          "r_frame_rate": "30/1",
+          "nb_read_frames": "600",
+          "tags": {
+            "alpha_mode": "1"
+          }
+        }
+      ],
+      "format": {
+        "duration": "20.000000"
+      },
+      "bytes": 793843
+    }
+  }
+}

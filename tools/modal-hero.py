@@ -14,18 +14,38 @@ image=(modal.Image.debian_slim(python_version='3.11')
        .uv_pip_install('bpy==4.5.0','numpy','pillow','jupyterlab')
        .add_local_file(HERE/'render-hero.py','/opt/hero/render-hero.py',copy=True)
        .add_local_file(HERE/'encode-hero.py','/opt/hero/encode-hero.py',copy=True))
-LOCAL=HERE.parent.parent/'hero-render-v7'
+LOCAL=HERE.parent.parent/'hero-render-v10'
 ENV={'ALI_HERO_FPS':'60','ALI_HERO_REQUIRE_GPU':'1','ALI_HERO_DEVICE':'OPTIX','ALI_HERO_SAMPLES':'32','ALI_HERO_FAST_EXIT':'1'}
 
-@app.function(image=image,gpu='L40S',cpu=4,memory=12288,timeout=900,volumes={'/data':volume},env=ENV)
+def gpu_benchmark(gpu_name,rate):
+    import subprocess,shutil,time
+    root=Path(f'/tmp/hero-gpu-{gpu_name.lower()}');shutil.rmtree(root,ignore_errors=True);root.mkdir(parents=True)
+    env={**os.environ,'ALI_HERO_RENDER_DIR':str(root),'ALI_HERO_START':'1','ALI_HERO_END':'8'}
+    device=subprocess.check_output(['nvidia-smi','--query-gpu=name,memory.total','--format=csv,noheader'],text=True).strip()
+    start=time.monotonic()
+    subprocess.run(['python','/opt/hero/render-hero.py','--','chunk','512'],env=env,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+    elapsed=time.monotonic()-start
+    shutil.rmtree(root,ignore_errors=True)
+    return {'requested_gpu':gpu_name,'device':device,'sample_frames':8,'elapsed_seconds':round(elapsed,2),'seconds_per_frame':round(elapsed/8,3),'gpu_rate_per_second':rate,'gpu_cost_per_sample_dollar':round(elapsed*rate,5)}
+
+@app.function(image=image,gpu='L4',cpu=4,memory=12288,timeout=600,env=ENV)
+def benchmark_l4():return gpu_benchmark('L4',0.000222)
+
+@app.function(image=image,gpu='L40S',cpu=4,memory=12288,timeout=600,env=ENV)
+def benchmark_l40s():return gpu_benchmark('L40S',0.000542)
+
+@app.function(image=image,gpu='H100',cpu=4,memory=12288,timeout=600,env=ENV)
+def benchmark_h100():return gpu_benchmark('H100',0.001097)
+
+@app.function(image=image,gpu='L4',cpu=4,memory=12288,timeout=900,volumes={'/data':volume},env=ENV)
 def preflight():
     import subprocess,shutil
     results={}
-    for mode in ['preview','audit']:
+    for mode in ['preview','gem-preview','audit']:
         root=Path('/tmp')/mode;root.mkdir(exist_ok=True)
         env={**os.environ,'ALI_HERO_RENDER_DIR':str(root)}
         with (root/f'{mode}.log').open('w') as log:
-            subprocess.run(['python','/opt/hero/render-hero.py','--',mode,'768'],env=env,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=700)
+            subprocess.run(['python','/opt/hero/render-hero.py','--',mode,'512'],env=env,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=700)
         dest=Path('/data')/mode;dest.mkdir(exist_ok=True)
         for file in root.iterdir():
             if file.is_file():shutil.copy2(file,dest/file.name)
@@ -33,14 +53,14 @@ def preflight():
         volume.commit()
     return results
 
-@app.function(image=image,gpu='L40S',cpu=4,memory=12288,timeout=1800,max_containers=4,volumes={'/data':volume},env=ENV)
+@app.function(image=image,gpu='L4',cpu=4,memory=12288,timeout=1800,max_containers=8,volumes={'/data':volume},env=ENV)
 def render_chunk(bounds):
     import subprocess,shutil,time
     start,end=bounds;root=Path(f'/tmp/hero-{start:04d}');root.mkdir(parents=True,exist_ok=True)
     env={**os.environ,'ALI_HERO_RENDER_DIR':str(root),'ALI_HERO_START':str(start),'ALI_HERO_END':str(end)}
     t=time.monotonic()
     with (root/'render.log').open('w') as log:
-        subprocess.run(['python','/opt/hero/render-hero.py','--','chunk','768'],env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
+        subprocess.run(['python','/opt/hero/render-hero.py','--','chunk','512'],env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
     # Different containers write only their own frame names; commit after each
     # complete chunk, then the encoding function reloads the unified snapshot.
     out=Path('/data/final');(out/'frames').mkdir(parents=True,exist_ok=True);(out/'orb-mask').mkdir(exist_ok=True);(out/'logs').mkdir(exist_ok=True)
@@ -53,30 +73,33 @@ def render_chunk(bounds):
         shutil.copy2(root/'chrome-orbit.blend',out/'chrome-orbit.blend')
         shutil.copy2('/opt/hero/render-hero.py',out/'render-source.py')
     volume.commit()
-    return {'start':start,'end':end,'frames':len(frames),'seconds':round(time.monotonic()-t,2),'gpu':'L40S'}
+    return {'start':start,'end':end,'frames':len(frames),'seconds':round(time.monotonic()-t,2),'gpu':'L4'}
 
 @app.function(image=image,cpu=8,memory=12288,timeout=1800,volumes={'/data':volume})
 def encode():
     import importlib.util,subprocess,hashlib
     import numpy as np
-    from PIL import Image,ImageFilter
+    from PIL import Image
     volume.reload();root=Path('/data/final');frames=sorted((root/'frames').glob('frame_*.png'));assert len(frames)==1200
     masks=sorted((root/'orb-mask').glob('mask_*.png'));assert len(masks)==1200
+    source_size=Image.open(frames[0]).width
+    assert source_size==512 and Image.open(masks[0]).size==(source_size,source_size)
     spec=importlib.util.spec_from_file_location('hero_encode','/opt/hero/encode-hero.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     from concurrent.futures import ThreadPoolExecutor
     # Grade independent frames on local scratch, avoiding serial Volume writes.
     # Screen and grain are deterministic, so scheduling cannot alter the finish.
     graded=Path('/tmp/hero-graded');graded.mkdir(exist_ok=True)
-    report={'frames':1200,'fps':60,'seconds':20,'unique_frames':0,'alpha_corners':0,'bounds':[768,768,0,0]}
+    report={'source_frames':1200,'source_fps':60,'source_size':source_size,'delivery_fps':30,'duration_seconds':20,'unique_frames':0,'alpha_corners':0,'bounds':[source_size,source_size,0,0]}
     def grade(pair):
         n,file=pair;assert file.name==f'frame_{n:04d}.png'
         digest=hashlib.sha256(file.read_bytes()).hexdigest()
         im=Image.open(file).convert('RGBA');alpha=im.getchannel('A');box=alpha.getbbox()
-        assert all(alpha.getpixel(xy)==0 for xy in [(0,0),(767,0),(0,767),(767,767)])
+        last=source_size-1
+        assert all(alpha.getpixel(xy)==0 for xy in [(0,0),(last,0),(0,last),(last,last)])
         pixels=module.screenprint(np.array(im));mask=np.array(Image.open(root/'orb-mask'/f'mask_{n:04d}.png').convert('L'))
         # Equivalent to Pillow MinFilter(7), verified pixel-for-pixel in cloud.
-        padded=np.pad(mask,3,mode='edge');horizontal=np.minimum.reduce([padded[:,i:i+768] for i in range(7)])
-        eroded=np.minimum.reduce([horizontal[i:i+768] for i in range(7)])
+        padded=np.pad(mask,3,mode='edge');horizontal=np.minimum.reduce([padded[:,i:i+source_size] for i in range(7)])
+        eroded=np.minimum.reduce([horizontal[i:i+source_size] for i in range(7)])
         rim=(mask.astype(np.float32)-eroded.astype(np.float32))/255
         rgb=pixels[:,:,:3].astype(np.float32);lum=rgb[:,:,0]*.2126+rgb[:,:,1]*.7152+rgb[:,:,2]*.0722
         strength=rim*.65*np.clip((225-lum)/110,0,1)
@@ -88,26 +111,32 @@ def encode():
         records=list(pool.map(grade,enumerate(frames,1)))
     report['unique_frames']=len({digest for digest,box in records});assert report['unique_frames']==1200
     report['bounds']=[min(box[0] for _,box in records),min(box[1] for _,box in records),max(box[2] for _,box in records),max(box[3] for _,box in records)]
-    out=root/'media';out.mkdir(exist_ok=True);Image.open(graded/'frame_0001.png').save(out/'hero-orb-v8-poster.webp',quality=94,method=6)
+    out=root/'media';out.mkdir(exist_ok=True)
+    for old in list(out.glob('hero-orb-v*'))+list(out.glob('hero-final*-prores.mov')):old.unlink()
+    Image.open(graded/'frame_0001.png').save(out/'hero-orb-v10-poster.webp',quality=92,method=6)
     report['clips']={}
-    for stem,size,bitrate,maxrate,budget in [('hero-final',768,1200000,1600000,7000000),('hero-final-mobile',512,600000,800000,3500000)]:
-        webm=out/f"hero-orb-v8{'-mobile' if size==512 else ''}.webm"
-        common=['ffmpeg','-hide_banner','-loglevel','error','-y','-framerate','60','-i',str(graded/'frame_%04d.png'),'-frames:v','1200','-vf',f'scale={size}:{size}:flags=lanczos','-an']
-        subprocess.run(common+['-c:v','libvpx-vp9','-pix_fmt','yuva420p','-b:v',str(bitrate),'-maxrate',str(maxrate),'-bufsize',str(maxrate*2),'-crf','38','-auto-alt-ref','0','-row-mt','1','-threads','4','-cpu-used','3',str(webm)],check=True)
-        # The only local operation later is macOS HEVC-alpha packaging from
-        # these already-rendered/graded pixels; all 3D rendering stays on Modal.
-        prores=out/f'{stem}-prores.mov'
-        subprocess.run(common+['-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','16','-threads','1',str(prores)],check=True)
-        subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-xerror','-i',str(prores),'-f','null','-'],check=True)
-        data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',str(webm)]))
-        assert data['streams'][0]['r_frame_rate']=='60/1' and data['streams'][0]['nb_read_frames']=='1200';assert webm.stat().st_size<=budget, 'Browser export exceeds download budget';data['bytes']=webm.stat().st_size;report['clips'][webm.stem]=data
+    for size,budget in [(512,2000000),(320,800000)]:
+        webm=out/f"hero-orb-v10{'-mobile' if size==320 else ''}.webm"
+        common=['ffmpeg','-hide_banner','-loglevel','error','-y','-framerate','60','-i',str(graded/'frame_%04d.png'),'-frames:v','1200','-vf',f'fps=30,scale={size}:{size}:flags=lanczos','-an']
+        subprocess.run(common+['-c:v','libvpx-vp9','-pix_fmt','yuva420p','-b:v','0','-crf','50','-auto-alt-ref','0','-row-mt','1','-threads','4','-cpu-used','6',str(webm)],check=True)
+        subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-xerror','-i',str(webm),'-f','null','-'],check=True)
+        data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=width,height,r_frame_rate,nb_read_frames:stream_tags=ALPHA_MODE:format=duration','-of','json',str(webm)]))
+        stream=data['streams'][0]
+        assert stream['width']==size and stream['height']==size and stream['r_frame_rate']=='30/1' and stream['nb_read_frames']=='600' and float(data['format']['duration'])==20
+        assert stream.get('tags',{}).get('alpha_mode')=='1','Browser export lost transparent alpha'
+        assert webm.stat().st_size<=budget,f'Browser export exceeds {budget} byte budget'
+        data['bytes']=webm.stat().st_size;report['clips'][webm.stem]=data
     (root/'raster-media-audit.json').write_text(json.dumps(report,indent=2));volume.commit();return report
 
 @app.local_entrypoint()
 def main(mode:str='preview'):
     LOCAL.mkdir(parents=True,exist_ok=True)
     state=LOCAL/'notebook-state.json'
-    if mode=='preflight':
+    if mode=='benchmark':
+        calls=[fn.spawn() for fn in [benchmark_l4,benchmark_l40s,benchmark_h100]]
+        results=[call.get() for call in calls]
+        (LOCAL/'gpu-benchmark.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))
+    elif mode=='preflight':
         report=preflight.remote();(LOCAL/'geometry-audit.json').write_text(json.dumps(report,indent=2));print(json.dumps(report))
     elif mode=='preview':
         import secrets
@@ -127,11 +156,11 @@ def main(mode:str='preview'):
         sandbox.exec('sync','/data').wait()
         print('Cloud notebook preview and geometry audit completed. Notebook state:',state)
     elif mode=='render':
-        bounds=[(1,300),(301,600),(601,900),(901,1200)]
+        bounds=[(1,150),(151,300),(301,450),(451,600),(601,750),(751,900),(901,1050),(1051,1200)]
         reports=list(render_chunk.map(bounds));(LOCAL/'cloud-render-report.json').write_text(json.dumps(reports,indent=2));print(json.dumps(reports))
     elif mode=='encode':
         report=encode.remote();(LOCAL/'raster-media-audit.json').write_text(json.dumps(report,indent=2));print(json.dumps(report))
     elif mode=='stop-notebook':
         if state.exists():
             sandbox=modal.Sandbox.from_id(json.loads(state.read_text())['sandbox_id']);sandbox.terminate();print('Notebook GPU stopped.')
-    else:raise ValueError('Mode must be preflight, preview, render, encode or stop-notebook.')
+    else:raise ValueError('Mode must be benchmark, preflight, preview, render, encode or stop-notebook.')
