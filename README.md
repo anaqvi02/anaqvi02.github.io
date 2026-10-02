@@ -52,6 +52,8 @@ Local encoding adds a restrained fixed purple halftone at 18% ink without random
 
 The visual system is documented in [Chrome Fieldnotes](docs/design-language.md), with a visual guide at [design-guide/](design-guide/). Use these as the common reference for future changes.
 
+The private sibling `../source-assets/` holds the current portrait PNG, its edit prompt, and the original chrome reference image. These editing sources stay outside the published site; `assets/` contains only media used by the current pages. Completed experiments, duplicate exports, and retired render previews can be removed. Keep `../hero-render-v12/hero-stella-v12-lossless.mkv` and its manifest for future re-encoding; current validation reports are in `docs/`.
+
 ## Circuit motion
 
 Short red and violet current pulses follow the existing hero frame, About traces, portrait wiring, and Connect paths. They use SVG stroke dashes rather than layout transforms. Pause motion, reduced motion, hidden tabs and offscreen sections suspend them alongside the existing project-card circuits. Decorative SVGs remain outside the reading and focus order.
