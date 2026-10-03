@@ -166,7 +166,7 @@
    catch { return null; }
   };
   const updateEta = () => document.querySelectorAll('[data-progress-eta]').forEach(node => {
-   const eta = readEta(node.dataset.deadline);
+   const eta = readEta(node.dataset.deadline) || node.dataset.deadline?.trim();
    if (eta) node.textContent = 'ETA / ' + eta;
   });
   let personalStatusSelected = false;
@@ -221,7 +221,7 @@
      meter.setAttribute('aria-valuenow', String(status.completion));
      meter.querySelector('span').style.width = status.completion + '%';
     });
-    if (readEta(status.deadline)) document.querySelectorAll('[data-progress-eta]').forEach(node => { node.dataset.deadline = status.deadline; });
+    if (typeof status.deadline === 'string' && status.deadline.trim()) document.querySelectorAll('[data-progress-eta]').forEach(node => { node.dataset.deadline = status.deadline.trim().slice(0,80); });
     else if (status.deadline === null) document.querySelectorAll('[data-progress-eta]').forEach(node => { delete node.dataset.deadline; node.textContent = 'ETA / TBD'; });
     updateEta();
    } catch { /* The authored status remains readable if a refresh is unavailable. */ }

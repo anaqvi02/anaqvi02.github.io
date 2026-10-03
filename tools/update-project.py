@@ -28,7 +28,11 @@ def today():
 def eta(deadline):
     if deadline is None:
         return 'TBD'
-    days = (date.fromisoformat(deadline) - today()).days
+    try:
+        target = date.fromisoformat(deadline)
+    except ValueError:
+        return deadline
+    days = (target - today()).days
     if days <= 0:
         return 'ASAP'
     if days < 7:
@@ -63,7 +67,13 @@ def build_update(status, markup, project, completion, deadline):
     completion = parse_completion(completion)
     has_progress = isinstance(completion, int)
     if deadline is not None:
-        deadline = date.fromisoformat(deadline).isoformat()
+        deadline = deadline.strip()
+        if len(deadline) > 80 or any(ord(c) < 32 or ord(c) == 127 for c in deadline):
+            raise ValueError('Deadline text must be at most 80 characters with no control characters.')
+        try:
+            deadline = date.fromisoformat(deadline).isoformat()
+        except ValueError:
+            deadline = deadline or None
     updated = dict(status)
     updated.update(project=project, completion=completion, deadline=deadline, updated=today().isoformat())
     old_option = f"Working away on {status['project'].upper()}..."
@@ -86,9 +96,9 @@ def build_update(status, markup, project, completion, deadline):
              f'role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{number}"{meter_hidden}>'
              f'<span style="width:{number}%"></span></div>')
     markup = replace_once(r'<div class="status-meter"[^>]*><span[^>]*></span></div>', meter, markup)
-    attr = f' data-deadline="{deadline}"' if deadline else ''
+    attr = f' data-deadline="{html.escape(deadline, quote=True)}"' if deadline else ''
     markup = replace_once(r'<small class="progress-eta mono" data-progress-eta[^>]*>[^<]*</small>',
-                          f'<small class="progress-eta mono" data-progress-eta{attr}>ETA / {eta(deadline)}</small>', markup)
+                          f'<small class="progress-eta mono" data-progress-eta{attr}>ETA / {html.escape(eta(deadline))}</small>', markup)
     return updated, markup
 
 
@@ -96,7 +106,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, epilog='No arguments: prompts for project, completion, and deadline. Blank keeps the current value.')
     parser.add_argument('--project', help='Current project name')
     parser.add_argument('--completion', help='Integer 0–100 for a percentage/bar; other text displays as-is without the bar')
-    parser.add_argument('--deadline', help='YYYY-MM-DD; use none or - to clear the ETA')
+    parser.add_argument('--deadline', help='YYYY-MM-DD for a countdown, or text such as no clue; none or - clears it')
     parser.add_argument('--repo', type=Path, default=DEFAULT_REPO, help='Website checkout path')
     parser.add_argument('--dry-run', action='store_true', help='Preview without changing files, committing, or pushing')
     parser.add_argument('--push-only', action='store_true', help='Retry a failed push without making another edit')
@@ -129,12 +139,13 @@ def main(argv=None):
         project = input(f"Project [{project}]: ").strip() or project
         value = input(f"Completion [{completion}] (integer %, or text without a bar): ").strip()
         completion = value if value else completion
-        value = input(f"Deadline [{deadline or 'none'}] (YYYY-MM-DD, - to clear): ").strip()
+        value = input(f"Deadline [{deadline or 'none'}] (YYYY-MM-DD or text, - to clear): ").strip()
         deadline = value if value else deadline
     if deadline is not None and deadline.lower() in ('none', '-'):
         deadline = None
     new_status, new_page = build_update(status, page_path.read_text(), project, completion, deadline)
     completion = new_status['completion']
+    deadline = new_status['deadline']
     progress_label = f'{completion}%' if isinstance(completion, int) else completion or 'progress hidden'
     print(f"Current project: {new_status['project']} | {progress_label} | ETA / {eta(deadline)}")
     if args.dry_run:
