@@ -207,9 +207,11 @@
      if (options.length) setPersonalStatus(options[Math.floor(Math.random() * options.length)]);
     }
     const hasProgress = Number.isInteger(status.completion) && status.completion >= 0 && status.completion <= 100;
+    const progressText = typeof status.completion === 'string' ? status.completion.trim().slice(0,80) : '';
     document.querySelectorAll('[data-progress-value]').forEach(node => {
-     node.hidden = !hasProgress;
-     if (!hasProgress) return;
+     node.hidden = !hasProgress && !progressText;
+     node.classList.toggle('progress-text', !hasProgress);
+     if (!hasProgress) { node.textContent = progressText; return; }
      node.replaceChildren(document.createTextNode(String(status.completion)));
      const suffix = document.createElement('span'); suffix.textContent = '%'; node.appendChild(suffix);
     });

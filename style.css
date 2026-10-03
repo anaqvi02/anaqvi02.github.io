@@ -1273,3 +1273,5 @@ html.motion-paused .hero-type .name-line{transition:none}
 
 /* Optional progress must stay hidden despite component display rules. */
 [data-progress-value][hidden],.status-meter[hidden]{display:none!important}
+
+.hero-proof .proof-measure.progress-text{font-size:clamp(1rem,1.8vw,1.5rem);max-width:12ch;white-space:normal;overflow-wrap:anywhere;line-height:1.2;letter-spacing:0}

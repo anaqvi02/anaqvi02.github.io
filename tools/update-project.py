@@ -75,12 +75,15 @@ def build_update(status, markup, project, completion, deadline):
     label = html.escape(project.upper())
     markup = replace_once(r'<span class="mono" data-current-project>[^<]*</span>',
                           f'<span class="mono" data-current-project>CURRENT PROJECT / {label}</span>', markup)
-    hidden = '' if has_progress else ' hidden'
+    hidden = '' if has_progress or completion else ' hidden'
     number = completion if has_progress else 0
-    markup = replace_once(r'<span class="proof-measure" data-progress-value(?: hidden)?>.*?</span></span>',
-                          f'<span class="proof-measure" data-progress-value{hidden}>{number}<span>%</span></span>', markup)
+    text_class = '' if has_progress else ' progress-text'
+    content = f'{number}<span>%</span>' if has_progress else html.escape(completion)
+    markup = replace_once(r'<span class="proof-measure(?: progress-text)?" data-progress-value(?: hidden)?>(?:[^<]|<span>[^<]*</span>)*</span>',
+                          f'<span class="proof-measure{text_class}" data-progress-value{hidden}>{content}</span>', markup)
+    meter_hidden = '' if has_progress else ' hidden'
     meter = (f'<div class="status-meter" aria-label="{html.escape(project, quote=True)} completion" '
-             f'role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{number}"{hidden}>'
+             f'role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{number}"{meter_hidden}>'
              f'<span style="width:{number}%"></span></div>')
     markup = replace_once(r'<div class="status-meter"[^>]*><span[^>]*></span></div>', meter, markup)
     attr = f' data-deadline="{deadline}"' if deadline else ''
@@ -92,7 +95,7 @@ def build_update(status, markup, project, completion, deadline):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, epilog='No arguments: prompts for project, completion, and deadline. Blank keeps the current value.')
     parser.add_argument('--project', help='Current project name')
-    parser.add_argument('--completion', help='Integer 0–100 to show progress; any other text hides the percentage and bar')
+    parser.add_argument('--completion', help='Integer 0–100 for a percentage/bar; other text displays as-is without the bar')
     parser.add_argument('--deadline', help='YYYY-MM-DD; use none or - to clear the ETA')
     parser.add_argument('--repo', type=Path, default=DEFAULT_REPO, help='Website checkout path')
     parser.add_argument('--dry-run', action='store_true', help='Preview without changing files, committing, or pushing')
@@ -124,7 +127,7 @@ def main(argv=None):
     deadline = args.deadline if args.deadline is not None else status.get('deadline')
     if interactive:
         project = input(f"Project [{project}]: ").strip() or project
-        value = input(f"Completion [{completion}] (integer %, or text/- to hide): ").strip()
+        value = input(f"Completion [{completion}] (integer %, or text without a bar): ").strip()
         completion = value if value else completion
         value = input(f"Deadline [{deadline or 'none'}] (YYYY-MM-DD, - to clear): ").strip()
         deadline = value if value else deadline
@@ -132,7 +135,7 @@ def main(argv=None):
         deadline = None
     new_status, new_page = build_update(status, page_path.read_text(), project, completion, deadline)
     completion = new_status['completion']
-    progress_label = f'{completion}%' if isinstance(completion, int) else 'progress hidden'
+    progress_label = f'{completion}%' if isinstance(completion, int) else completion or 'progress hidden'
     print(f"Current project: {new_status['project']} | {progress_label} | ETA / {eta(deadline)}")
     if args.dry_run:
         print('Dry run: no files changed or pushed.')
