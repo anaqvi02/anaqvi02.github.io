@@ -1270,3 +1270,6 @@ html.motion-paused .hero-type .name-line{transition:none}
  .hero-proof .status-meter{grid-column:1;grid-row:2;width:100%;margin:0}
  .hero-proof .progress-eta{grid-column:1;grid-row:3;font-size:.6875rem;margin:0}
 }
+
+/* Optional progress must stay hidden despite component display rules. */
+[data-progress-value][hidden],.status-meter[hidden]{display:none!important}

@@ -206,12 +206,16 @@
      const options = status.status_options.filter(value => typeof value === 'string' && (/^(Studying|Working on) (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.test(value) || value === 'Working away on ' + project.toUpperCase() + '...'));
      if (options.length) setPersonalStatus(options[Math.floor(Math.random() * options.length)]);
     }
-    if (!Number.isFinite(status.completion) || status.completion < 0 || status.completion > 100) return;
+    const hasProgress = Number.isInteger(status.completion) && status.completion >= 0 && status.completion <= 100;
     document.querySelectorAll('[data-progress-value]').forEach(node => {
+     node.hidden = !hasProgress;
+     if (!hasProgress) return;
      node.replaceChildren(document.createTextNode(String(status.completion)));
      const suffix = document.createElement('span'); suffix.textContent = '%'; node.appendChild(suffix);
     });
     document.querySelectorAll('.status-meter').forEach(meter => {
+     meter.hidden = !hasProgress;
+     if (!hasProgress) return;
      meter.setAttribute('aria-valuenow', String(status.completion));
      meter.querySelector('span').style.width = status.completion + '%';
     });

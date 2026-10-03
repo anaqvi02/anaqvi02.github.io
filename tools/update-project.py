@@ -44,12 +44,24 @@ def replace_once(pattern, replacement, text):
     return result
 
 
+def parse_completion(value):
+    text = str(value).strip()
+    if re.fullmatch(r'[+-]?[0-9]+', text):
+        number = int(text)
+        if not 0 <= number <= 100:
+            raise ValueError('Integer percentages must be from 0 to 100.')
+        return number
+    if len(text) > 80 or any(ord(c) < 32 or ord(c) == 127 for c in text):
+        raise ValueError('Completion text must be at most 80 characters with no control characters.')
+    return text
+
+
 def build_update(status, markup, project, completion, deadline):
     project = project.strip()
     if not project or len(project) > 80 or any(ord(c) < 32 or ord(c) == 127 for c in project):
         raise ValueError('Project name must be 1–80 characters with no control characters.')
-    if not 0 <= completion <= 100:
-        raise ValueError('Completion must be a whole number from 0 to 100.')
+    completion = parse_completion(completion)
+    has_progress = isinstance(completion, int)
     if deadline is not None:
         deadline = date.fromisoformat(deadline).isoformat()
     updated = dict(status)
@@ -63,11 +75,13 @@ def build_update(status, markup, project, completion, deadline):
     label = html.escape(project.upper())
     markup = replace_once(r'<span class="mono" data-current-project>[^<]*</span>',
                           f'<span class="mono" data-current-project>CURRENT PROJECT / {label}</span>', markup)
-    markup = replace_once(r'<span class="proof-measure" data-progress-value>.*?</span></span>',
-                          f'<span class="proof-measure" data-progress-value>{completion}<span>%</span></span>', markup)
+    hidden = '' if has_progress else ' hidden'
+    number = completion if has_progress else 0
+    markup = replace_once(r'<span class="proof-measure" data-progress-value(?: hidden)?>.*?</span></span>',
+                          f'<span class="proof-measure" data-progress-value{hidden}>{number}<span>%</span></span>', markup)
     meter = (f'<div class="status-meter" aria-label="{html.escape(project, quote=True)} completion" '
-             f'role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{completion}">'
-             f'<span style="width:{completion}%"></span></div>')
+             f'role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{number}"{hidden}>'
+             f'<span style="width:{number}%"></span></div>')
     markup = replace_once(r'<div class="status-meter"[^>]*><span[^>]*></span></div>', meter, markup)
     attr = f' data-deadline="{deadline}"' if deadline else ''
     markup = replace_once(r'<small class="progress-eta mono" data-progress-eta[^>]*>[^<]*</small>',
@@ -78,7 +92,7 @@ def build_update(status, markup, project, completion, deadline):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, epilog='No arguments: prompts for project, completion, and deadline. Blank keeps the current value.')
     parser.add_argument('--project', help='Current project name')
-    parser.add_argument('--completion', type=int, help='Whole-number percentage, 0–100')
+    parser.add_argument('--completion', help='Integer 0–100 to show progress; any other text hides the percentage and bar')
     parser.add_argument('--deadline', help='YYYY-MM-DD; use none or - to clear the ETA')
     parser.add_argument('--repo', type=Path, default=DEFAULT_REPO, help='Website checkout path')
     parser.add_argument('--dry-run', action='store_true', help='Preview without changing files, committing, or pushing')
@@ -110,14 +124,16 @@ def main(argv=None):
     deadline = args.deadline if args.deadline is not None else status.get('deadline')
     if interactive:
         project = input(f"Project [{project}]: ").strip() or project
-        value = input(f"Completion % [{completion}]: ").strip()
-        completion = int(value) if value else completion
+        value = input(f"Completion [{completion}] (integer %, or text/- to hide): ").strip()
+        completion = value if value else completion
         value = input(f"Deadline [{deadline or 'none'}] (YYYY-MM-DD, - to clear): ").strip()
         deadline = value if value else deadline
     if deadline is not None and deadline.lower() in ('none', '-'):
         deadline = None
     new_status, new_page = build_update(status, page_path.read_text(), project, completion, deadline)
-    print(f"Current project: {new_status['project']} | {completion}% | ETA / {eta(deadline)}")
+    completion = new_status['completion']
+    progress_label = f'{completion}%' if isinstance(completion, int) else 'progress hidden'
+    print(f"Current project: {new_status['project']} | {progress_label} | ETA / {eta(deadline)}")
     if args.dry_run:
         print('Dry run: no files changed or pushed.')
         return
@@ -135,7 +151,7 @@ def main(argv=None):
         return
     git(repo, 'diff', '--check', '--', *FILES)
     git(repo, 'add', '--', *FILES)
-    git(repo, 'commit', '-m', f"Update current project: {project} ({completion}%)", '--', *FILES, capture=False)
+    git(repo, 'commit', '-m', f"Update current project: {project} ({progress_label})", '--', *FILES, capture=False)
     try:
         git(repo, 'push', 'origin', 'main', capture=False)
     except subprocess.CalledProcessError:
