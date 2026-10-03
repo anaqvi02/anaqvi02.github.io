@@ -16,7 +16,9 @@ Homepage selected work is curated separately; adding a gallery entry does not re
 
 ## Current status
 
-Edit `status_options` in `status.json` to change the hero’s Current status choices. Course choices use “Studying COURSE” or “Working on COURSE” for ECON 101, COMMST 100, MATH 137, MATH 135, and CS 135; “Working away on MTDI...” remains available. The page chooses one option at random on its first successful status-file load and keeps it for that page load; the once-per-minute refresh updates MTDI progress without rerolling the personal status. The homepage HTML contains a readable no-JavaScript fallback.
+Run `python3 ~/Desktop/update_project.py` for an interactive project/progress/deadline update that commits and pushes automatically. The maintained source is `tools/update-project.py`. Blank answers keep the current value; `-` clears the deadline. For a direct update: `python3 tools/update-project.py --project "mtdi" --completion 95 --deadline 2026-10-14`. Use `--dry-run` to preview without writing or pushing, and `--push-only` to retry a failed push. It requires a clean `main` checkout, syncs with origin first, and updates both `status.json` and the homepage's no-JavaScript fallback. Dates use America/Toronto.
+
+Edit `status_options` in `status.json` to change the hero’s Current status choices. Course choices use “Studying COURSE” or “Working on COURSE” for ECON 101, COMMST 100, MATH 137, MATH 135, and CS 135; “Working away on PROJECT...” follows the current project name. The page chooses one option at random on its first successful status-file load and keeps it for that page load; the once-per-minute refresh updates current project progress without rerolling the personal status. The homepage HTML contains a readable no-JavaScript fallback. A project's detail-page progress remains scoped to that project.
 
 ## Offline chrome hero
 

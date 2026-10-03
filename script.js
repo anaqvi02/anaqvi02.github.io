@@ -172,7 +172,7 @@
   let personalStatusSelected = false;
   const setPersonalStatus = value => {
    const match = /^(Studying|Working on) (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.exec(value)
-    || /^(Working away on )(MTDI)(\.\.\.)$/.exec(value);
+    || /^(Working away on )(.+)(\.\.\.)$/.exec(value);
    if (!match) return;
    document.querySelectorAll('[data-personal-status]').forEach(node => {
     node.replaceChildren();
@@ -195,10 +195,15 @@
     const response = await fetch(statusUrl, {cache:'no-store'});
     if (!response.ok) return;
     const status = await response.json();
-    if (status.project !== 'mtdi') return;
+    if (typeof status.project !== 'string' || !status.project.trim() || status.project.length > 80) return;
+    const project = status.project.trim();
+    const projectScope = document.querySelector('[data-progress-project]');
+    if (projectScope && projectScope.dataset.progressProject !== project) return;
+    document.querySelectorAll('[data-current-project]').forEach(node => { node.textContent = 'CURRENT PROJECT / ' + project.toUpperCase(); });
+    document.querySelectorAll('.status-meter').forEach(meter => { meter.setAttribute('aria-label', project + ' completion'); });
     // Choose once per page load; periodic progress refreshes never reroll the status.
     if (!personalStatusSelected && Array.isArray(status.status_options)) {
-     const options = status.status_options.filter(value => typeof value === 'string' && (/^(Studying|Working on) (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.test(value) || value === 'Working away on MTDI...'));
+     const options = status.status_options.filter(value => typeof value === 'string' && (/^(Studying|Working on) (ECON 101|COMMST 100|MATH 137|MATH 135|CS 135)$/.test(value) || value === 'Working away on ' + project.toUpperCase() + '...'));
      if (options.length) setPersonalStatus(options[Math.floor(Math.random() * options.length)]);
     }
     if (!Number.isFinite(status.completion) || status.completion < 0 || status.completion > 100) return;
@@ -211,6 +216,7 @@
      meter.querySelector('span').style.width = status.completion + '%';
     });
     if (readEta(status.deadline)) document.querySelectorAll('[data-progress-eta]').forEach(node => { node.dataset.deadline = status.deadline; });
+    else if (status.deadline === null) document.querySelectorAll('[data-progress-eta]').forEach(node => { delete node.dataset.deadline; node.textContent = 'ETA / TBD'; });
     updateEta();
    } catch { /* The authored status remains readable if a refresh is unavailable. */ }
   };
