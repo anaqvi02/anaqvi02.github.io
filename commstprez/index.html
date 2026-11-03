@@ -469,9 +469,18 @@ body.presenter #pv{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;padding
   video.addEventListener('loadedmetadata', () => { haveLocal = true; });
   video.src = 'assets/nail.mp4';
   video.addEventListener('playing', () => screen.parentElement.classList.add('playing'));
+  let yt = null;
   const playClip = () => {
-    if (haveLocal) { video.play(); }
-    else window.open(document.getElementById('ytLink').href, '_blank');
+    if (haveLocal) { video.play(); return; }
+    if (yt) return;
+    // no local file (e.g. the github.io copy): play the creator's official upload inside the frame
+    yt = document.createElement('iframe');
+    yt.src = 'https://www.youtube-nocookie.com/embed/-4EDhdAHrOg?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+    yt.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    yt.allowFullscreen = true; yt.title = "It's Not About the Nail";
+    yt.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:2';
+    screen.appendChild(yt);
+    screen.parentElement.classList.add('playing');
   };
   document.getElementById('playBtn').addEventListener('click', (e) => { e.stopPropagation(); playClip(); });
   screen.addEventListener('click', (e) => e.stopPropagation());
@@ -570,6 +579,7 @@ body.presenter #pv{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;padding
     const was = slides[prev];
     if (was && timers.has(was)) timers.get(was).running = false;
     if (was && was.contains(video)) video.pause();
+    if (was && was.contains(video) && yt) { yt.remove(); yt = null; slides[prev].classList.remove('playing'); }
     prev = i;
     chats.forEach((c) => { if (c.slide === slides[i]) c.reset(); });
     startTimer(slides[i]);
