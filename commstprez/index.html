@@ -281,7 +281,7 @@ body.presenter #pv{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;padding
  *   blur             defocus/refocus dissolve
  *   none
  *
- * Keys: → / Space / PageDown / click = next, ← / PageUp = back, Home/End, F = fullscreen.
+ * Keys: → / Space / PageDown / click = next, ← / PageUp = back (instant, no animation), Home/End, F = fullscreen.
  * Deep link: #3. Exposes window.deck = { go(n), next(), prev(), index, count }.
  * Uses the native View Transitions API (Chrome/Edge 111+, Safari 18+). Without it, slides cut.
  * Respects prefers-reduced-motion (falls back to a short fade).
@@ -357,9 +357,19 @@ body.presenter #pv{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;padding
     window.deck.index = i;
   };
 
+  let curVT = null;
   async function go(target, { built = false } = {}) {
     target = Math.max(0, Math.min(target, slides.length - 1));
-    if (target === index || busy) return;
+    if (target === index) return;
+    if (target < index) {
+      // going back is instant: no animation, and it cuts off any transition still running
+      if (curVT) { try { curVT.skipTransition(); } catch (e) {} }
+      slides.forEach((s) => nameMorphs(s, false));
+      builds(slides[target]).forEach((e) => e.classList.toggle('md-built', built));
+      document.documentElement.className = document.documentElement.className.replace(/\bmd-t-\S+/g, '').trim();
+      show(target); busy = false; return;
+    }
+    if (busy) return;
     busy = true;
     const from = slides[index], to = slides[target];
     const kind = (target > index ? to : from).dataset.transition || 'morph';
@@ -375,14 +385,19 @@ body.presenter #pv{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;padding
     nameMorphs(from, true);
     // dissolve through the destination's background colour, never black, never double text
     document.documentElement.style.backgroundColor = getComputedStyle(to).backgroundColor;
-    const vt = document.startViewTransition(() => { nameMorphs(from, false); show(target); nameMorphs(to, true); });
+    const vt = curVT = document.startViewTransition(() => { nameMorphs(from, false); show(target); nameMorphs(to, true); });
     try { await vt.finished; } catch (e) { /* skipped */ }
     nameMorphs(to, false);
-    busy = false;
+    if (curVT === vt) { curVT = null; busy = false; }
   }
 
   const next = () => { const p = pending(slides[index]); if (p.length) { const k = p[0].dataset.build; p.filter((e) => e.dataset.build === k).forEach((e) => e.classList.add('md-built')); return; } go(index + 1); };
-  const prev = () => go(index - 1, { built: true });
+  const prev = async () => {
+    // if a forward animation is mid-flight, finish it instantly first so "back" counts from where you were heading
+    const v = curVT;
+    if (v) { try { v.skipTransition(); } catch (e) {} try { await v.updateCallbackDone; } catch (e) {} }
+    go(index - 1, { built: true });
+  };
 
   addEventListener('keydown', (e) => {
     if (['ArrowRight', ' ', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
