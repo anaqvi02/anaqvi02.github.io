@@ -13,8 +13,7 @@
 | Time | Part | Who's talking |
 |---|---|---|
 | 0:00 | **Marvin texts. Write your reply.** | Everyone writes, 45 s |
-| 0:50 | **Share what you wrote** | Discuss, 1:30 |
-| 2:20 | **Why did you send that?** | Discuss, 1:30 |
+| 0:50 | **Share what you wrote, and why** | Discuss, 3:00 |
 | 3:50 | Here's what people send | Hands up, 40 s |
 | 4:30 | Those are the eight responses | B, 75 s |
 | 5:45 | The quote, then the clip | Nobody, 2:00 |
@@ -43,13 +42,9 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 *(45 seconds. The reply bar's cursor keeps blinking.)*
 
-**▸ Read them out** *(1:30 timer)*
+**▸ Share and why** *(3:00 timer)*
 
-**Ali:** "Now discuss. Read yours out, no explaining yet."
-
-**▸ Why?** *(1:30 timer)*
-
-**Ali:** "OK. Now discuss why you sent that. What were you trying to do for Marvin?"
+**Ali:** "Now discuss. Read yours out, then talk about why you sent it. What were you trying to do for Marvin?"
 
 *Both of you walk around. Listen for a few replies worth quoting later. Don't teach anything yet.*
 
