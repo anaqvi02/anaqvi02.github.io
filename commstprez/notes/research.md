@@ -1,6 +1,6 @@
 # Research notes
 
-Everything here is from *Interplay*, 6th Canadian ed., Chapter 5 (printed pp. 139–169). Page numbers were checked against the book.
+Everything here is from Adler et al., *Interplay*, 6th Canadian ed., Chapter 5 (cited as "Adler") (printed pp. 139–169). Page numbers were checked against the book.
 
 ## The main idea: the listening response continuum (Fig. 5.2, pp. 153–154)
 

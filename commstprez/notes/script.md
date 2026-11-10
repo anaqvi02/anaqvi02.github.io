@@ -15,13 +15,13 @@
 | 0:00 | **Marvin texts. Write your reply.** | Everyone writes, 45 s |
 | 0:50 | **Share what you wrote, and why** | Discuss, 3:00 |
 | 3:50 | Here's what people send | Hands up, 40 s |
-| 4:30 | Those are the eight responses | B, 75 s |
+| 4:30 | Those are the eight responses | Marvin, 75 s |
 | 5:45 | The quote, then the clip | Nobody, 2:00 |
-| 7:50 | Where he landed | B, 20 s |
-| 8:10 | **Round 1: back to your paper** | Discuss 2:00, then the room |
+| 7:50 | Where he landed | Marvin, 20 s |
+| 8:10 | **Round 1: back to your paper, then takeup** | Discuss 2:00, then the room |
 | 11:40 | Was he wrong? | Vote, then the three checks |
 | 12:40 | **New friend, new text** | Write, read, place it: 1:45 |
-| 14:25 | Thanks | A |
+| 14:25 | Thanks | Ali |
 
 The activity is the first 3:50, and nobody teaches anything during it. After that, we're talking for about 4 minutes and they're talking for about 8.
 
@@ -79,14 +79,14 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 **▸ Quote**
 
-**Marvin:** "And the book says which one we pick most." *(reads)* "When we're approached with someone's problem, the most common reaction is advising." "Page 164. Here's what that looks like."
+**Marvin:** "And the book says which one we pick most." *(reads)* "When we're approached with someone's problem, the most common reaction is advising." "Adler, page 164. Here's what that looks like."
 
 **▸ Clip** *(1:42. Press V. Say nothing.)*
 
 **▸ Where he landed** *(his four lines drop onto the line, one per click)*
 
 **Marvin:** "Analyzing. Advising. Evaluating. And once, empathizing: 'That sounds really hard.' That's the only time she says thank you."
-*(Look to A.)*
+*(Look to Ali.)*
 
 ---
 
@@ -100,9 +100,9 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 >
 > **Q2. Has someone ever fixed your problem when you just wanted to vent? What did you actually want?**
 
-**▸ Takeup** *(1:30. The line is on screen.)*
+**Takeup** *(1:30. Same slide stays up.)*
 
-**Ali:** "Now, think about where your own answer landed. Anyone want to read theirs?"
+**Ali:** "OK, anyone want to read theirs?"
 
 1. **Ali** says it back: "So you sent '…' because…?"
 2. **Marvin** places it: "That's advising. Agree?"
@@ -112,7 +112,7 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 **Ali:** "Most of us landed where he did."
 "Also, did you notice I said every answer back before I responded? That's paraphrasing, number 3."
-*(Look to B.)*
+*(Look to Marvin.)*
 
 ---
 
@@ -128,19 +128,19 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 ---
 
-## Part 5: New friend, new text (12:40 to 14:25) · Marvin, then A
+## Part 5: New friend, new text (12:40 to 14:25) · Marvin, then Ali
 
-**▸ New text** *(a different friend, Priya)*
+**▸ New text** *(a different friend, Johnathan Zheng)*
 
-> **"i bombed the calc midterm. like actually bombed it. what do i do"**
+> **"i bombed the calc midterm. like actually bombed it."**
 
-**Marvin:** "New friend. This time she's asking. Write what you'd send her." *(30 s timer)*
+**Marvin:** "New friend, new text. Write what you'd send him." *(30 s timer)*
 
 **Marvin:** "Discuss. Is it different from your Marvin one?" *(45 s)*
 
-**Marvin:** "Couple of you, read it out." *(two replies, B places each on the line)*
+**Marvin:** "Couple of you, read it out." *(two replies, Marvin places each on the line)*
 
-**Ali:** "She asked, so advice is fair game. But it lands better if you start on the left. 'oh no, that sucks,' then the plan."
+**Ali:** "Did more of us start on the left this time? He didn't ask for a plan. 'oh no, that sucks, you okay?' does more than a study schedule. If he asks for help, then the plan."
 
 ---
 
@@ -159,7 +159,7 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 |---|---|
 | Running behind | In Part 5, skip the discussion. Take two replies straight from the room. |
 | Still behind | Cut "Was he wrong?" and go straight to the three checks. |
-| Clip won't play | Press V again, then the YouTube link. With no internet, B tells it in 20 s: she has a nail in her head, he keeps pointing it out, she wants him to just listen. |
+| Clip won't play | Press V again, then the YouTube link. With no internet, Marvin tells it in 20 s: she has a nail in her head, he keeps pointing it out, she wants him to just listen. |
 | Silence | Read a reply you overheard (no names), or call on someone you heard something good from. |
 | A group finishes early | "Whose reply would you most want to get?" |
 | Someone shares something heavy | Say it back, thank them, don't label it, move on. |
@@ -173,11 +173,11 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 ## For the Learn dropbox
 
-**How we chose the topic.** We chose advising because it's the response almost everyone reaches for without noticing. The class starts by writing the text they'd send a stressed friend, then discussing why they sent it, all before any terms come up. We then show a spread of real-sounding replies, sort them onto the listening response continuum, and show the clip. The discussion goes back to the reply each person wrote. The session ends with a new scenario where the friend does ask for advice, so the class applies the book's checks for when advice helps.
+**How we chose the topic.** We chose advising because it's the response almost everyone reaches for without noticing. The class starts by writing the text they'd send a stressed friend, then discussing why they sent it, all before any terms come up. We then show a spread of real-sounding replies, sort them onto the listening response continuum, and show the clip. The discussion goes back to the reply each person wrote. The session ends with a new scenario, a friend who bombed a midterm, to see whether replies start on the listening side this time.
 
 **Final questions**
 1. Where does your reply to Marvin land on the listening response continuum? Is that what you were going for? (Fig. 5.2, pp. 153-154; mindless listening, p. 143)
 2. Has someone ever fixed your problem when you just wanted to vent? What did you actually want? (advising, p. 164; "I know exactly how you feel… let me tell you about it," p. 162)
 3. Was he wrong? When is advice the right call? (advice needed, wanted, in the right sequence, pp. 164-165)
-4. New scenario: a friend bombed a midterm and asks "what do i do". What do you send, and did it change from your first reply? (choosing a response, pp. 166-167)
+4. New scenario: a friend texts that he bombed his calc midterm. What do you send, and did it change from your first reply? (choosing a response, pp. 166-167)
 5. *(Backup)* "I guess men are just like that" (p. 159). Is the clip funny because it's true, or because it's a stereotype?
