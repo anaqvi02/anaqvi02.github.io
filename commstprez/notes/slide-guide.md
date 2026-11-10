@@ -1,4 +1,4 @@
-# Slide guide: Listening (15 slides)
+# Slide guide: Listening (14 slides)
 
 1. **Waiting:** "Listening. We'll start in a moment." Leave it up while the room settles; click once to begin.
 2. **Marvin texts:** read his message. Everyone writes the reply they'd actually send (45 s).
@@ -12,6 +12,5 @@
 10. **Was he wrong?:** show of hands. Advice isn't always bad.
 11. **Before giving advice:** is it needed, is it wanted, did you listen first? (Adler, pp. 164–165)
 12. **Johnathan texts:** "i bombed the calc midterm. like actually bombed it." Everyone writes a reply (30 s).
-13. **Discuss:** is it different from your Marvin reply? Take two out loud.
-14. **Where does it land?:** place them. Did more of us start on the left? He didn't ask for a plan.
-15. **Thanks:** "Listen first. Fix if they ask."
+13. **Discuss:** is it different from your Marvin reply? Take two out loud and say where each lands. Did more of us start on the left? He didn't ask for a plan.
+14. **Thanks:** "Listen first. Fix if they ask."

@@ -138,7 +138,7 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 **Marvin:** "Discuss. Is it different from your Marvin one?" *(45 s)*
 
-**Marvin:** "Couple of you, read it out." *(two replies, Marvin places each on the line)*
+**Marvin:** "Couple of you, read it out." *(two replies; Marvin says where each one lands)*
 
 **Ali:** "Did more of us start on the left this time? He didn't ask for a plan. 'oh no, that sucks, you okay?' does more than a study schedule. If he asks for help, then the plan."
 
