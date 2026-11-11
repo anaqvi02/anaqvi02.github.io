@@ -7,7 +7,7 @@
 5. **Eight responses:** the replies sort onto the line from listening to fixing. One click names each.
 6. **Quote:** advising is the most common response (Adler, p. 164).
 7. **The clip:** play it. No talking.
-8. **Where he landed:** analyzing, advising, evaluating, and once empathizing. That's the only time she says thank you.
+8. **Where he landed:** four clicks: each circle expands, then its exact video quote appears. Analyzing, advising, evaluating, then empathizing. Only empathizing gets a thank you.
 9. **Round 1, then takeup:** where does your reply land, and was that the goal? Has someone fixed when you wanted to vent? After the timer, keep it up: hear three replies, Ali says each back, Marvin places it.
 10. **Was he wrong?:** show of hands. Advice isn't always bad.
 11. **Before giving advice:** is it needed, is it wanted, did you listen first? (Adler, pp. 164–165)

@@ -83,9 +83,15 @@ Leave **Listening. We’ll start in a moment.** on screen while everyone settles
 
 **▸ Clip** *(1:42. Press V. Say nothing.)*
 
-**▸ Where he landed** *(his four lines drop onto the line, one per click)*
+**▸ Where he landed** *(four clicks: each circle expands, then its quote appears underneath, replacing the previous quote)*
 
-**Marvin:** "Analyzing. Advising. Evaluating. And once, empathizing: 'That sounds really hard.' That's the only time she says thank you."
+**Marvin:** *(one click and quote at a time)*
+- **Analyzing:** “I’m just pointing out that maybe the nail is causing...”
+- **Advising:** “I think what you need is to get the nail...”
+- **Evaluating:** “See I don’t think that is what you need.”
+- **Empathizing:** “That sounds really hard.”
+
+“That's the only time she says thank you.”
 *(Look to Ali.)*
 
 ---
